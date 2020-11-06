@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/turbo.iml" filepath="$PROJECT_DIR$/turbo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/turbo-api/turbo-api.iml" filepath="$PROJECT_DIR$/turbo-api/turbo-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/turbo-core/turbo-core.iml" filepath="$PROJECT_DIR$/turbo-core/turbo-core.iml" />
     </modules>
   </component>
 </project>

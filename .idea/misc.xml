@@ -1,27 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="GradleLocalSettings">
-    <option name="modificationStamps">
-      <map>
-        <entry key="$USER_HOME$/Downloads/Newbie/java/springcores" value="3015284296000" />
-        <entry key="$USER_HOME$/development_workplace/kungang" value="30672513442127" />
-        <entry key="$USER_HOME$/development_workplace/operation" value="1512028564822" />
-        <entry key="$USER_HOME$/workplace/cambrian" value="10794105840280" />
-        <entry key="$USER_HOME$/workplace/ddpay-common" value="12058990392000" />
-        <entry key="$USER_HOME$/workplace/merchant" value="9126124815282" />
-        <entry key="$USER_HOME$/workplace/operation" value="1507373956000" />
-      </map>
-    </option>
-    <option name="externalProjectsViewState">
-      <projects_view />
-    </option>
+  <component name="EntryPointsManager">
+    <entry_points version="2.0" />
   </component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="mavenHome" value="Bundled (Maven 3)" />
-        <option name="userSettingsFile" value="$USER_HOME$/.m2/settings.xml" />
-      </MavenGeneralSettings>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+      </list>
     </option>
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
