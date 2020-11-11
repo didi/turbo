@@ -69,7 +69,6 @@ public class HttpUtil {
             }
             LOGGER.info("postJson.||urlName={}||url={}||body={}||code={}||reStr={}||costTime={}",
                     urlName, url, body, code, reStr, costTime);
-            MetricUtil.report("ProcessEngine", url, String.valueOf(code), costTime);
         }
     }
 }
