@@ -7,14 +7,14 @@ import com.fasterxml.uuid.impl.TimeBasedGenerator;
 /**
  * Created by Stefanie on 2019/11/26.
  */
-public class StrongUuidGenerator {
+public class StrongUuidGenerator implements IdGenerator {
 
     private static volatile StrongUuidGenerator singleGenerator;
 
     // different ProcessEngines on the same classloader share one generator.
-    protected static TimeBasedGenerator timeBasedGenerator;
+    private static TimeBasedGenerator timeBasedGenerator;
 
-    public StrongUuidGenerator() {
+    private StrongUuidGenerator() {
         initGenerator();
     }
 
@@ -39,19 +39,8 @@ public class StrongUuidGenerator {
         }
     }
 
-    public static String getNextId() {
+    public String getNextId() {
         return timeBasedGenerator.generate().toString();
     }
-
-//    public static void main(String[] args) {
-//        StrongUuidGenerator snowFlake = new StrongUuidGenerator();
-//
-//        long start = System.currentTimeMillis();
-//        for (int i = 0; i < 1000000; i++) {
-//            System.out.println(snowFlake.getNextId());
-//        }
-//
-//        System.out.println(System.currentTimeMillis() - start);
-//    }
 
 }

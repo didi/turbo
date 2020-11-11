@@ -18,6 +18,7 @@ import com.xiaoju.uemc.turbo.engine.exception.ParamException;
 import com.xiaoju.uemc.turbo.engine.param.CreateFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.DeployFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.UpdateFlowParam;
+import com.xiaoju.uemc.turbo.engine.util.IdGenerator;
 import com.xiaoju.uemc.turbo.engine.util.StrongUuidGenerator;
 import com.xiaoju.uemc.turbo.engine.validator.ModelValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +36,7 @@ public class DefinitionProcessor {
 
     private static final ReportLogger LOGGER = LoggerFactory.getLogger(DefinitionProcessor.class);
 
-    private static final StrongUuidGenerator idGenerator = StrongUuidGenerator.getInstance();
+    private static final IdGenerator idGenerator = StrongUuidGenerator.getInstance();
 
     @Autowired
     FlowDefinitionDAO flowDefinitionDAO;
