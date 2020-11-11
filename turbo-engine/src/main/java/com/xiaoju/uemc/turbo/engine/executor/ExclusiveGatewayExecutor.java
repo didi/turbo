@@ -161,7 +161,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
      */
     @Override
     protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception {
-        FlowElement nextNode = FlowModelUtil.calculateNextNode(runtimeContext.getCurrentNodeModel(),
+        FlowElement nextNode = calculateNextNode(runtimeContext.getCurrentNodeModel(),
                 runtimeContext.getFlowElementMap(), runtimeContext.getInstanceDataMap());
 
         runtimeContext.setCurrentNodeModel(nextNode);

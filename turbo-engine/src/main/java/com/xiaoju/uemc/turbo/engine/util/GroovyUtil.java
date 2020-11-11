@@ -25,20 +25,9 @@ public class GroovyUtil {
 
     protected static final ReportLogger LOGGER = LoggerFactory.getLogger(GroovyUtil.class);
 
-    //缓存脚本编译生成的Script类，解决groovy解析脚本动态生成过多class类占满Perm区不断触发fullGC的bug。
     private static final Map<String, Class> SCRIPT_CLASS_CACHE = new ConcurrentHashMap<String, Class>();
 
-    /**
-     * 这个是数学公式计算的方法。返回值类型代表计算结果的类型
-     *
-     * @param expression 表达式,变量不包含$符号 例如：(1 * orderPrice+returnMoney-deductMoney)/2 + 1000;
-     *                   eg1.rentCarCompanyId==1;
-     *                   eg2.rentCarCompanyId.equals(\"1\");
-     *                   eg3.list.contains("2");
-     * @param dataMap    计算表达式需要的变量
-     * @return 返回计算结果，class表示数据类型
-     */
-    public static Object calculate(String expression, Map<String, Object> dataMap) throws Exception {
+    public static Object execute(String expression, Map<String, Object> dataMap) throws Exception {
         if (StringUtils.isBlank(expression)) {
             LOGGER.warn("calculate: expression is empty");
             return null;

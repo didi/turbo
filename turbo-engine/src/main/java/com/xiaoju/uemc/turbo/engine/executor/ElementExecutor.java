@@ -1,7 +1,9 @@
 package com.xiaoju.uemc.turbo.engine.executor;
 
+import com.alibaba.fastjson.JSONObject;
 import com.xiaoju.uemc.turbo.engine.bo.NodeInstanceBO;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
+import com.xiaoju.uemc.turbo.engine.common.FlowElementType;
 import com.xiaoju.uemc.turbo.engine.common.NodeInstanceStatus;
 import com.xiaoju.uemc.turbo.engine.common.RuntimeContext;
 import com.xiaoju.uemc.turbo.engine.entity.NodeInstancePO;
@@ -9,16 +11,25 @@ import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.exception.ReentrantException;
 import com.xiaoju.uemc.turbo.engine.exception.SuspendException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
+import com.xiaoju.uemc.turbo.engine.model.InstanceData;
+import com.xiaoju.uemc.turbo.engine.service.CalculateService;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
+import com.xiaoju.uemc.turbo.engine.util.InstanceDataUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
+import javax.annotation.Resource;
+import java.text.MessageFormat;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Created by Stefanie on 2019/12/1.
  */
 public abstract class ElementExecutor extends RuntimeExecutor {
+
+    @Resource
+    CalculateService calculateService;
 
     @Override
     public void execute(RuntimeContext runtimeContext) throws Exception {
@@ -89,7 +100,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     @Override
     protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception {
         Map<String, FlowElement> flowElementMap = runtimeContext.getFlowElementMap();
-        FlowElement flowElement = FlowModelUtil.getUniqueNextNode(runtimeContext.getCurrentNodeModel(), flowElementMap);
+        FlowElement flowElement = getUniqueNextNode(runtimeContext.getCurrentNodeModel(), flowElementMap);
         runtimeContext.setCurrentNodeModel(flowElement);
         return executorFactory.getElementExecutor(flowElement);
     }
@@ -255,5 +266,71 @@ public abstract class ElementExecutor extends RuntimeExecutor {
 
         //case 4.to process
         return false;
+    }
+
+    protected   FlowElement getUniqueNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap) {
+        List<String> outgoingKeyList = currentFlowElement.getOutgoing();
+        String nextElementKey = outgoingKeyList.get(0);
+        FlowElement nextFlowElement = FlowModelUtil.getFlowElement(flowElementMap, nextElementKey);
+        while (nextFlowElement.getType() == FlowElementType.SEQUENCE_FLOW) {
+            nextFlowElement = getUniqueNextNode(nextFlowElement, flowElementMap);
+        }
+        return nextFlowElement;
+    }
+
+    protected FlowElement calculateNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap,
+                                                Map<String, InstanceData> instanceDataMap) throws Exception {
+        FlowElement nextFlowElement = calculateOutgoing(currentFlowElement, flowElementMap, instanceDataMap);
+
+        while (nextFlowElement.getType() == FlowElementType.SEQUENCE_FLOW) {
+            nextFlowElement = getUniqueNextNode(nextFlowElement, flowElementMap);
+        }
+        return nextFlowElement;
+    }
+
+    protected FlowElement calculateOutgoing(FlowElement flowElement, Map<String, FlowElement> flowElementMap,
+                                                 Map<String, InstanceData> instanceDataMap) throws Exception {
+        FlowElement defaultElement = null;
+
+        List<String> outgoingList = flowElement.getOutgoing();
+        for (String outgoingKey : outgoingList) {
+            FlowElement outgoingSequenceFlow = FlowModelUtil.getFlowElement(flowElementMap, outgoingKey);
+
+            //case1 condition is true, hit the outgoing
+            String condition = FlowModelUtil.getConditionFromSequenceFlow(outgoingSequenceFlow);
+            if (StringUtils.isNotBlank(condition) && processCondition(condition, instanceDataMap)) {
+                return outgoingSequenceFlow;
+            }
+
+            if (FlowModelUtil.isDefaultCondition(outgoingSequenceFlow)) {
+                defaultElement = outgoingSequenceFlow;
+            }
+        }
+        //case2 return default while it has is configured
+        if (defaultElement != null) {
+            LOGGER.info("calculateOutgoing: return defaultElement.||nodeKey={}", flowElement.getKey());
+            return defaultElement;
+        }
+
+        LOGGER.warn("calculateOutgoing failed.||nodeKey={}", flowElement.getKey());
+        throw new ProcessException(ErrorEnum.GET_OUTGOING_FAILED);
+    }
+
+    protected boolean processCondition(String expression, Map<String, InstanceData> instanceDataMap) throws Exception {
+
+        boolean result = false;
+        Map<String, Object> dataMap = InstanceDataUtil.parseInstanceDataMap(instanceDataMap);
+        try {
+            result = calculateService.calculate(expression, dataMap);
+        } catch (Throwable t) {
+            LOGGER.error("processCondition exception.||message={}||expression={}||instanceDataMap={}, ",
+                    t.getMessage(), expression, instanceDataMap, t);
+            String groovyExFormat = "{0}: expression={1}";
+            throw new ProcessException(ErrorEnum.GROOVY_CALCULATE_FAILED, MessageFormat.format(groovyExFormat, t.getMessage(), expression));
+        } finally {
+            LOGGER.info("processCondition.||expression={}||instanceDataMap={}||result={}",
+                    expression, JSONObject.toJSONString(instanceDataMap), result);
+        }
+        return result;
     }
 }
