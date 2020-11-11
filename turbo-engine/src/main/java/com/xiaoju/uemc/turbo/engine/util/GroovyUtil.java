@@ -28,26 +28,6 @@ public class GroovyUtil {
     //缓存脚本编译生成的Script类，解决groovy解析脚本动态生成过多class类占满Perm区不断触发fullGC的bug。
     private static final Map<String, Class> SCRIPT_CLASS_CACHE = new ConcurrentHashMap<String, Class>();
 
-    public static void main(String[] args) {
-        String groovyExpression = "{\"companyId\":\"${rentCarCompanyId}\"}";
-//        String groovyExpression1 = "rentCarCompanyId==1";
-//        String groovyExpression1 = "rentCarCompanyId.equals(\"1\")";
-        String groovyExpression1 = "list.contains(\"2\")";
-        Map<String, Object> infos = Maps.newHashMap();
-        infos.put("rentCarCompanyId", "1");
-        List<String> data1List = Lists.newArrayList();
-        data1List.add("2");
-        infos.put("list", data1List);
-
-        try {
-            Object res = calculate(groovyExpression1, infos);
-            System.out.println("====res===" + res);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
     /**
      * 这个是数学公式计算的方法。返回值类型代表计算结果的类型
      *
@@ -96,5 +76,4 @@ public class GroovyUtil {
         }
         return binding;
     }
-
 }
