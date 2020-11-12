@@ -30,13 +30,13 @@ import com.xiaoju.uemc.turbo.engine.param.CommitTaskParam;
 import com.xiaoju.uemc.turbo.engine.param.RecallTaskParam;
 import com.xiaoju.uemc.turbo.engine.param.StartProcessParam;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
-import com.xiaoju.uemc.turbo.engine.util.IdGenerator;
 import com.xiaoju.uemc.turbo.engine.util.InstanceDataUtil;
 import com.xiaoju.uemc.turbo.engine.validator.ParamValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -45,16 +45,10 @@ import java.util.Map;
 /**
  * Created by Stefanie on 2019/12/1.
  */
-public class RuntimeProcessor extends Processor {
+@Component
+public class RuntimeProcessor {
 
     private static final ReportLogger LOGGER = LoggerFactory.getLogger(RuntimeProcessor.class);
-
-    public RuntimeProcessor() {
-    }
-
-    public RuntimeProcessor(IdGenerator idGenerator) {
-        this.idGenerator = idGenerator;
-    }
 
     @Resource
     private FlowDeploymentDAO flowDeploymentDAO;

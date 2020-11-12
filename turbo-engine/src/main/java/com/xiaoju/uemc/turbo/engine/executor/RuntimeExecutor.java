@@ -33,7 +33,7 @@ public abstract class RuntimeExecutor {
 
     protected final RedisUtils redisClient = RedisUtils.getInstance();
 
-    // TODO: 2020/11/11  
+    // TODO: 2020/11/11
     private static final IdGenerator idGenerator = StrongUuidGenerator.getInstance();
 
     protected String genId() {

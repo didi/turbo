@@ -19,26 +19,24 @@ import com.xiaoju.uemc.turbo.engine.param.CreateFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.DeployFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.UpdateFlowParam;
 import com.xiaoju.uemc.turbo.engine.util.IdGenerator;
+import com.xiaoju.uemc.turbo.engine.util.StrongUuidGenerator;
 import com.xiaoju.uemc.turbo.engine.validator.ModelValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 /**
  * Created by Stefanie on 2019/12/1.
  */
-public class DefinitionProcessor extends Processor {
+@Component
+public class DefinitionProcessor {
 
     private static final ReportLogger LOGGER = LoggerFactory.getLogger(DefinitionProcessor.class);
 
-    public DefinitionProcessor() {
-    }
-
-    public DefinitionProcessor(IdGenerator idGenerator) {
-        this.idGenerator = idGenerator;
-    }
+    private static final IdGenerator idGenerator = StrongUuidGenerator.getInstance();
 
     @Autowired
     FlowDefinitionDAO flowDefinitionDAO;
