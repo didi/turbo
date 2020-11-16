@@ -70,7 +70,7 @@ public class ExclusiveGatewayExecutorTest extends BaseTest {
         try {
             exclusiveGatewayExecutor.getExecuteExecutor(runtimeContext);
             String modelKey = runtimeContext.getCurrentNodeModel().getKey();
-            Assert.assertTrue("sequenceFlow4".equals(modelKey));
+            Assert.assertTrue("userTask2".equals(modelKey));
         } catch (Exception e) {
             e.printStackTrace();
         }

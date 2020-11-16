@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dec902bc-4d64-42d4-b7b8-06bdea8075f5" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/turbo-engine/src/main/resources/application.properties" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/turbo-engine/src/main/resources/logback-spring.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/turbo-engine/src/test/resources/redis.properties" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/turbo-engine/pom.xml" afterPath="$PROJECT_DIR$/turbo-engine/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/turbo-engine/src/test/resources/application.properties" afterPath="$PROJECT_DIR$/turbo-engine/src/test/resources/application.properties" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/turbo-engine/src/test/resources/logback-spring.xml" afterPath="$PROJECT_DIR$/turbo-engine/src/test/resources/logback-spring.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/executor/ExclusiveGatewayExecutorTest.java" afterPath="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/executor/ExclusiveGatewayExecutorTest.java" />
     </list>
     <ignored path="turbo.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,7 +34,7 @@
         <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/engine/ProcessEngineTest.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="61" column="9" selection-start-line="61" selection-start-column="9" selection-end-line="61" selection-end-column="9" />
+              <caret line="41" column="80" selection-start-line="41" selection-start-column="80" selection-end-line="41" selection-end-column="80" />
               <folding />
             </state>
           </provider>
@@ -48,8 +43,8 @@
       <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/turbo-engine/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-4.352941">
-              <caret line="68" column="42" selection-start-line="0" selection-start-column="0" selection-end-line="124" selection-end-column="10" />
+            <state vertical-scroll-proportion="4.098039">
+              <caret line="69" column="37" selection-start-line="69" selection-start-column="37" selection-end-line="69" selection-end-column="37" />
               <folding>
                 <marker date="1605513837031" expanded="true" signature="658:4527" placeholder="..." />
               </folding>
@@ -57,44 +52,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="turbo-engine.iml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/turbo-engine/turbo-engine.iml">
+      <file leaf-file-name="RuntimeProcessorTest.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/processor/RuntimeProcessorTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
+            <state vertical-scroll-proportion="-1.4096385">
+              <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
               <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RuntimeProcessor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/turbo-engine/src/main/java/com/xiaoju/uemc/turbo/engine/processor/RuntimeProcessor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="78" column="27" selection-start-line="78" selection-start-column="27" selection-end-line="78" selection-end-column="27" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="logback-spring.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/turbo-engine/src/main/resources/logback-spring.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.72549">
-              <caret line="119" column="11" selection-start-line="0" selection-start-column="0" selection-end-line="120" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestEngineApplication.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/runner/TestEngineApplication.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="15" column="57" selection-start-line="15" selection-start-column="57" selection-end-line="15" selection-end-column="57" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
             </state>
           </provider>
         </entry>
@@ -109,34 +72,66 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="logback-spring.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/resources/logback-spring.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-12.416667">
-              <caret line="99" column="77" selection-start-line="0" selection-start-column="0" selection-end-line="123" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="application.properties" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/resources/application.properties">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="FlowDefinitionMapperTest.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="FlowDefinitionMapperTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/FlowDefinitionMapperTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5421687">
-              <caret line="18" column="18" selection-start-line="18" selection-start-column="18" selection-end-line="18" selection-end-column="18" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="20" column="59" selection-start-line="20" selection-start-column="59" selection-end-line="20" selection-end-column="59" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ExclusiveGatewayExecutorTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/executor/ExclusiveGatewayExecutorTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="52" column="58" selection-start-line="52" selection-start-column="58" selection-end-line="52" selection-end-column="58" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EntityBuilder.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/util/EntityBuilder.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="19" column="61" selection-start-line="19" selection-start-column="55" selection-end-line="19" selection-end-column="61" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ProcessInstanceMapperTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/ProcessInstanceMapperTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FlowDefinitionDAOTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/FlowDefinitionDAOTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="15" column="48" selection-start-line="15" selection-start-column="48" selection-end-line="15" selection-end-column="48" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FlowDeploymentMapperTest.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/FlowDeploymentMapperTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="26" column="27" selection-start-line="26" selection-start-column="27" selection-end-line="26" selection-end-column="27" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -192,16 +187,13 @@
         <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/TestEngineApplication.java" />
         <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/runner/BaseTest.java" />
         <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/FlowDefinitionMapperTest.java" />
-        <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/util/EntityBuilder.java" />
         <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/FlowDeploymentMapperTest.java" />
         <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/InstanceDataMapperTest.java" />
         <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/NodeInstanceLogMapperTest.java" />
         <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/NodeInstanceMapperTest.java" />
-        <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/ProcessInstanceMapperTest.java" />
         <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/FlowDefinitionDAOTest.java" />
         <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/ProcessInstanceDAOTest.java" />
         <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/engine/ProcessEngineTest.java" />
-        <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/executor/ExclusiveGatewayExecutorTest.java" />
         <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/processor/RuntimeProcessorTest.java" />
         <option value="$PROJECT_DIR$/CHANGELOG.MD" />
         <option value="$PROJECT_DIR$/pom.xml" />
@@ -224,6 +216,9 @@
         <option value="$PROJECT_DIR$/turbo-engine/src/main/resources/logback-spring.xml" />
         <option value="$PROJECT_DIR$/turbo-engine/src/test/resources/logback-spring.xml" />
         <option value="$PROJECT_DIR$/turbo-engine/pom.xml" />
+        <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/util/EntityBuilder.java" />
+        <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/ProcessInstanceMapperTest.java" />
+        <option value="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/executor/ExclusiveGatewayExecutorTest.java" />
       </list>
     </option>
   </component>
@@ -587,6 +582,10 @@
               <option name="myItemId" value="engine" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="util" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -652,7 +651,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="engine" />
+              <option name="myItemId" value="processor" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -686,7 +685,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="dao" />
+              <option name="myItemId" value="executor" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -720,11 +719,37 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="dao" />
+              <option name="myItemId" value="engine" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="turbo" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="turbo" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="mapper" />
+              <option name="myItemId" value="turbo-engine" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="engine" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -884,60 +909,8 @@
       <recent name="$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.FlowDefinitionMapperTest.insert">
-    <configuration default="false" name="IdGeneratorTest.testDoExecute" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="com.xiaoju.uemc.turbo.engine.util.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="turbo-engine" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="com.xiaoju.uemc.turbo.engine.util" />
-      <option name="MAIN_CLASS_NAME" value="com.xiaoju.uemc.turbo.engine.util.IdGeneratorTest" />
-      <option name="METHOD_NAME" value="testDoExecute" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <envs />
-      <patterns />
-      <method />
-    </configuration>
-    <configuration default="false" name="FlowDefinitionDAOTest.insertTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
-        <pattern>
-          <option name="PATTERN" value="com.xiaoju.uemc.turbo.engine.dao.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <module name="turbo-engine" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="com.xiaoju.uemc.turbo.engine.dao" />
-      <option name="MAIN_CLASS_NAME" value="com.xiaoju.uemc.turbo.engine.dao.FlowDefinitionDAOTest" />
-      <option name="METHOD_NAME" value="insertTest" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <envs />
-      <patterns />
-      <method />
-    </configuration>
-    <configuration default="false" name="FlowDefinitionMapperTest.query" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.RuntimeProcessorTest">
+    <configuration default="false" name="ProcessInstanceMapperTest.update" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
           <option name="PATTERN" value="com.xiaoju.uemc.turbo.engine.dao.mapper.*" />
@@ -948,8 +921,8 @@
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <option name="PACKAGE_NAME" value="com.xiaoju.uemc.turbo.engine.dao.mapper" />
-      <option name="MAIN_CLASS_NAME" value="com.xiaoju.uemc.turbo.engine.dao.mapper.FlowDefinitionMapperTest" />
-      <option name="METHOD_NAME" value="query" />
+      <option name="MAIN_CLASS_NAME" value="com.xiaoju.uemc.turbo.engine.dao.mapper.ProcessInstanceMapperTest" />
+      <option name="METHOD_NAME" value="update" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
@@ -963,20 +936,96 @@
       <patterns />
       <method />
     </configuration>
-    <configuration default="false" name="FlowDefinitionMapperTest.insert" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration default="false" name="FlowDefinitionDAOTest and 1 more" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="turbo-engine" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="pattern" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns>
+        <pattern testClass="com.xiaoju.uemc.turbo.engine.dao.FlowDefinitionDAOTest" />
+        <pattern testClass="com.xiaoju.uemc.turbo.engine.dao.ProcessInstanceDAOTest" />
+      </patterns>
+      <method />
+    </configuration>
+    <configuration default="false" name="ProcessEngineTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
-          <option name="PATTERN" value="com.xiaoju.uemc.turbo.engine.dao.mapper.*" />
+          <option name="PATTERN" value="com.xiaoju.uemc.turbo.engine.engine.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
       <module name="turbo-engine" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="com.xiaoju.uemc.turbo.engine.dao.mapper" />
-      <option name="MAIN_CLASS_NAME" value="com.xiaoju.uemc.turbo.engine.dao.mapper.FlowDefinitionMapperTest" />
-      <option name="METHOD_NAME" value="insert" />
-      <option name="TEST_OBJECT" value="method" />
+      <option name="PACKAGE_NAME" value="com.xiaoju.uemc.turbo.engine.engine" />
+      <option name="MAIN_CLASS_NAME" value="com.xiaoju.uemc.turbo.engine.engine.ProcessEngineTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="false" name="ExclusiveGatewayExecutorTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="com.xiaoju.uemc.turbo.engine.executor.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="turbo-engine" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.xiaoju.uemc.turbo.engine.executor" />
+      <option name="MAIN_CLASS_NAME" value="com.xiaoju.uemc.turbo.engine.executor.ExclusiveGatewayExecutorTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="false" name="RuntimeProcessorTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
+        <pattern>
+          <option name="PATTERN" value="com.xiaoju.uemc.turbo.engine.processor.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <module name="turbo-engine" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="com.xiaoju.uemc.turbo.engine.processor" />
+      <option name="MAIN_CLASS_NAME" value="com.xiaoju.uemc.turbo.engine.processor.RuntimeProcessorTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
@@ -1658,18 +1707,20 @@
       <option name="USE_KEYWORD" value="false" />
       <method />
     </configuration>
-    <list size="4">
-      <item index="0" class="java.lang.String" itemvalue="JUnit.IdGeneratorTest.testDoExecute" />
-      <item index="1" class="java.lang.String" itemvalue="JUnit.FlowDefinitionDAOTest.insertTest" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.FlowDefinitionMapperTest.query" />
-      <item index="3" class="java.lang.String" itemvalue="JUnit.FlowDefinitionMapperTest.insert" />
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="JUnit.ProcessInstanceMapperTest.update" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.FlowDefinitionDAOTest and 1 more" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.ProcessEngineTest" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.ExclusiveGatewayExecutorTest" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.RuntimeProcessorTest" />
     </list>
     <recent_temporary>
-      <list size="4">
-        <item index="0" class="java.lang.String" itemvalue="JUnit.FlowDefinitionMapperTest.insert" />
-        <item index="1" class="java.lang.String" itemvalue="JUnit.FlowDefinitionMapperTest.query" />
-        <item index="2" class="java.lang.String" itemvalue="JUnit.FlowDefinitionDAOTest.insertTest" />
-        <item index="3" class="java.lang.String" itemvalue="JUnit.IdGeneratorTest.testDoExecute" />
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="JUnit.RuntimeProcessorTest" />
+        <item index="1" class="java.lang.String" itemvalue="JUnit.ExclusiveGatewayExecutorTest" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.ProcessEngineTest" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.FlowDefinitionDAOTest and 1 more" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.ProcessInstanceMapperTest.update" />
       </list>
     </recent_temporary>
   </component>
@@ -1697,57 +1748,57 @@
       <workItem from="1605009532361" duration="3893000" />
       <workItem from="1605084872916" duration="3549000" />
       <workItem from="1605153444044" duration="4521000" />
-      <workItem from="1605499185826" duration="7446000" />
+      <workItem from="1605499185826" duration="8576000" />
     </task>
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="FlowDefinitionMapperTest_query - 2020.11.16 at 15h 53m 29s.xml">
-      <configuration name="FlowDefinitionMapperTest.query" configurationId="JUnit" />
+    <history-entry file="ExclusiveGatewayExecutorTest - 2020.11.16 at 16h 24m 49s.xml">
+      <configuration name="ExclusiveGatewayExecutorTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="FlowDefinitionMapperTest_query - 2020.11.16 at 15h 53m 51s.xml">
-      <configuration name="FlowDefinitionMapperTest.query" configurationId="JUnit" />
+    <history-entry file="ExclusiveGatewayExecutorTest - 2020.11.16 at 16h 25m 44s.xml">
+      <configuration name="ExclusiveGatewayExecutorTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="FlowDefinitionMapperTest_query - 2020.11.16 at 15h 54m 04s.xml">
-      <configuration name="FlowDefinitionMapperTest.query" configurationId="JUnit" />
+    <history-entry file="ExclusiveGatewayExecutorTest - 2020.11.16 at 16h 25m 53s.xml">
+      <configuration name="ExclusiveGatewayExecutorTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="FlowDefinitionMapperTest_query - 2020.11.16 at 15h 59m 29s.xml">
-      <configuration name="FlowDefinitionMapperTest.query" configurationId="JUnit" />
+    <history-entry file="FlowDefinitionDAOTest_and_1_more - 2020.11.16 at 16h 16m 29s.xml">
+      <configuration name="FlowDefinitionDAOTest and 1 more" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="FlowDefinitionMapperTest_query - 2020.11.16 at 16h 02m 23s.xml">
-      <configuration name="FlowDefinitionMapperTest.query" configurationId="JUnit" />
+    <history-entry file="ProcessEngineTest - 2020.11.16 at 16h 24m 38s.xml">
+      <configuration name="ProcessEngineTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="FlowDefinitionMapperTest_query - 2020.11.16 at 16h 02m 37s.xml">
-      <configuration name="FlowDefinitionMapperTest.query" configurationId="JUnit" />
+    <history-entry file="ProcessInstanceMapperTest_update - 2020.11.16 at 16h 13m 53s.xml">
+      <configuration name="ProcessInstanceMapperTest.update" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="FlowDefinitionMapperTest_query - 2020.11.16 at 16h 02m 50s.xml">
-      <configuration name="FlowDefinitionMapperTest.query" configurationId="JUnit" />
+    <history-entry file="ProcessInstanceMapperTest_update - 2020.11.16 at 16h 15m 42s.xml">
+      <configuration name="ProcessInstanceMapperTest.update" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="FlowDefinitionMapperTest_query - 2020.11.16 at 16h 03m 14s.xml">
-      <configuration name="FlowDefinitionMapperTest.query" configurationId="JUnit" />
+    <history-entry file="ProcessInstanceMapperTest_update - 2020.11.16 at 16h 15m 55s.xml">
+      <configuration name="ProcessInstanceMapperTest.update" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="FlowDefinitionMapperTest_query - 2020.11.16 at 16h 03m 49s.xml">
-      <configuration name="FlowDefinitionMapperTest.query" configurationId="JUnit" />
+    <history-entry file="RuntimeProcessorTest - 2020.11.16 at 16h 26m 19s.xml">
+      <configuration name="RuntimeProcessorTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="FlowDefinitionMapperTest_query - 2020.11.16 at 16h 04m 10s.xml">
-      <configuration name="FlowDefinitionMapperTest.query" configurationId="JUnit" />
+    <history-entry file="com_xiaoju_uemc_turbo_engine_dao_mapper_in_turbo-engine - 2020.11.16 at 16h 13m 42s.xml">
+      <configuration name="com.xiaoju.uemc.turbo.engine.dao.mapper in turbo-engine" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="49733000" />
+    <option name="totallyTimeSpent" value="50863000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-3" y="23" width="1440" height="877" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32866243" sideWeight="0.49353796" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17707007" sideWeight="0.5078684" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13304721" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.13304721" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3299363" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3299363" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3312102" sideWeight="0.49213162" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.26323318" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1778,7 +1829,17 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/executor/ExclusiveGatewayExecutorTest.java</url>
+          <line>71</line>
+          <properties />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="2" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="antWorkspaceConfiguration">
@@ -1786,27 +1847,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/turbo-engine/src/main/java/com/xiaoju/uemc/turbo/engine/model/FlowNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/turbo-engine/src/main/java/com/xiaoju/uemc/turbo/engine/model/EventNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/turbo-engine/src/main/java/com/xiaoju/uemc/turbo/engine/model/EndEvent.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/turbo-engine/src/main/java/com/xiaoju/uemc/turbo/engine/model/SequenceFlow.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.14478764">
@@ -1876,16 +1916,6 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/executor/ExclusiveGatewayExecutorTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="58" column="0" selection-start-line="58" selection-start-column="0" selection-end-line="65" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2085,16 +2115,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/FlowDefinitionDAOTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="15" column="48" selection-start-line="15" selection-start-column="48" selection-end-line="15" selection-end-column="48" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$MAVEN_REPOSITORY$/com/h2database/h2/1.4.196/h2-1.4.196.pom">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -2118,14 +2138,6 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/util/EntityBuilder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="22" column="70" selection-start-line="22" selection-start-column="70" selection-end-line="22" selection-end-column="70" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -2163,22 +2175,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/resources/application.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/turbo-engine/src/main/resources/application.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/turbo-engine/src/main/resources/logback-spring.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-6.72549">
@@ -2195,12 +2191,72 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turbo-engine/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="15" column="0" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/turbo-engine/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-4.352941">
-          <caret line="68" column="42" selection-start-line="0" selection-start-column="0" selection-end-line="124" selection-end-column="10" />
+        <state vertical-scroll-proportion="4.098039">
+          <caret line="69" column="37" selection-start-line="69" selection-start-column="37" selection-end-line="69" selection-end-column="37" />
           <folding>
             <marker date="1605513837031" expanded="true" signature="658:4527" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/FlowDefinitionMapperTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="20" column="59" selection-start-line="20" selection-start-column="59" selection-end-line="20" selection-end-column="59" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/FlowDeploymentMapperTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="26" column="27" selection-start-line="26" selection-start-column="27" selection-end-line="26" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/util/EntityBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="19" column="61" selection-start-line="19" selection-start-column="55" selection-end-line="19" selection-end-column="61" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/ProcessInstanceMapperTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/FlowDefinitionDAOTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="15" column="48" selection-start-line="15" selection-start-column="48" selection-end-line="15" selection-end-column="48" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2208,18 +2264,24 @@
     <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/engine/ProcessEngineTest.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="61" column="9" selection-start-line="61" selection-start-column="9" selection-end-line="61" selection-end-column="9" />
+          <caret line="41" column="80" selection-start-line="41" selection-start-column="80" selection-end-line="41" selection-end-column="80" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/dao/mapper/FlowDefinitionMapperTest.java">
+    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/executor/ExclusiveGatewayExecutorTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5421687">
-          <caret line="18" column="18" selection-start-line="18" selection-start-column="18" selection-end-line="18" selection-end-column="18" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="0.0">
+          <caret line="52" column="58" selection-start-line="52" selection-start-column="58" selection-end-line="52" selection-end-column="58" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/turbo-engine/src/test/java/com/xiaoju/uemc/turbo/engine/processor/RuntimeProcessorTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.4096385">
+          <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
