@@ -112,9 +112,6 @@
     <logger name="com.xiaoju.uemc.modules.support.utils.HttpTraceUtils" level="INFO">
         <appender-ref ref="TRACE"/>
     </logger>
-    <logger name="traceLogger" level="DEBUG" additivity="false">
-        <appender-ref ref="TRACE"/>
-    </logger>
 
     <!-- 日志输出级别 -->
     <root level="WARN">
