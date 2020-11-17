@@ -22,7 +22,7 @@ public class StrongUuidGenerator implements IdGenerator {
         if (singleGenerator == null) {
             synchronized (StrongUuidGenerator.class) {
                 if (singleGenerator == null) {
-                    return new StrongUuidGenerator();
+                    singleGenerator = new StrongUuidGenerator();
                 }
             }
         }
