@@ -37,7 +37,13 @@ public class FlowModelUtil {
         }
 
         FlowModel flowModel = parseModelFromString(flowModelStr);
-        List<FlowElement> flowElementList = flowModel.getFlowElementList();
+        if (flowModel == null) {
+            return MapUtils.EMPTY_MAP;
+        }
+        return getFlowElementMap(flowModel.getFlowElementList());
+    }
+
+    public static Map<String, FlowElement> getFlowElementMap(List<FlowElement> flowElementList) {
         if (CollectionUtils.isEmpty(flowElementList)) {
             return MapUtils.EMPTY_MAP;
         }

@@ -26,6 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 /**
@@ -38,11 +39,14 @@ public class DefinitionProcessor {
 
     private static final IdGenerator idGenerator = StrongUuidGenerator.getInstance();
 
-    @Autowired
-    FlowDefinitionDAO flowDefinitionDAO;
+    @Resource
+    private ModelValidator modelValidator;
 
-    @Autowired
-    FlowDeploymentDAO flowDeploymentDAO;
+    @Resource
+    private FlowDefinitionDAO flowDefinitionDAO;
+
+    @Resource
+    private FlowDeploymentDAO flowDeploymentDAO;
 
     public CreateFlowDTO create(CreateFlowParam createFlowParam) throws Exception {
         FlowDefinitionPO flowDefinitionPO = new FlowDefinitionPO();
@@ -86,7 +90,7 @@ public class DefinitionProcessor {
         }
 
         String flowModel = flowDefinitionPO.getFlowModel();
-        ModelValidator.validate(flowModel);
+        modelValidator.validate(flowModel);
         FlowDeploymentPO flowDeploymentPO = new FlowDeploymentPO();
         BeanUtils.copyProperties(flowDefinitionPO, flowDeploymentPO);
         String flowDeployId = idGenerator.getNextId();

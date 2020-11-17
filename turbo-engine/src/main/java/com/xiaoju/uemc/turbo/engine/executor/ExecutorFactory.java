@@ -68,9 +68,6 @@ public class ExecutorFactory {
             case FlowElementType.USER_TASK: {
                 return userTaskExecutor;
             }
-            case FlowElementType.SERVICE_TASK: {
-                return serviceTaskExecutor;
-            }
             case FlowElementType.EXCLUSIVE_GATEWAY: {
                 return exclusiveGatewayExecutor;
             }

@@ -30,6 +30,8 @@ public enum ErrorEnum {
     GATEWAY_TOO_MANY_DEFAULT_EDGE(3210, "网关节点最多只能有一条默认分支"),
     MODEL_UNKNOWN_ELEMENT_KEY(3211, "不支持该类型"),
     NORMAL_NODE_MUST_ONE_OUTGOING(3212, "非条件判断节点以及起始节点外，其他节点有且仅有一个出口"),
+    ELEMENT_LACK_INCOMING(3213, "element lack incoming"),
+    ELEMENT_LACK_OUTGOING(3214, "element lack outgoing"),
 
     //4000~4999 流程执行错误
     COMMIT_FAILED(4001, "提交失败"),
