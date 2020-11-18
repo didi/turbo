@@ -17,7 +17,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <report-logger.version>1.0.2</report-logger.version>
         <groovy.version>2.3.7</groovy.version>
     </properties>
 
@@ -57,11 +56,6 @@
             <groupId>com.baomidou</groupId>
             <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
             <version>2.5.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.didiglobal</groupId>
-            <artifactId>report-logger</artifactId>
-            <version>${report-logger.version}</version>
         </dependency>
         <dependency>
             <groupId>com.xiaoju.metric</groupId>

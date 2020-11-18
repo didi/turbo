@@ -1,7 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.processor;
 
-import com.didiglobal.reportlogger.LoggerFactory;
-import com.didiglobal.reportlogger.ReportLogger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import com.google.common.collect.Lists;
 import com.xiaoju.uemc.turbo.engine.dto.CommitTaskDTO;
 import com.xiaoju.uemc.turbo.engine.dto.RecallTaskDTO;
@@ -22,7 +22,7 @@ import java.util.List;
  * Created by Stefanie on 2019/12/13.
  */
 public class RuntimeProcessorTest extends BaseTest {
-    private static final ReportLogger LOGGER = LoggerFactory.getLogger(RuntimeProcessorTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeProcessorTest.class);
 
     //deploy_id:ff9015c2-27b8-11ea-b85e-5ef9e2914105
     //module_id:3bb38aba-27b4-11ea-9109-5ef9e2914105

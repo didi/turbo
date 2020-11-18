@@ -1,8 +1,8 @@
 package com.xiaoju.uemc.turbo.engine.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.didiglobal.reportlogger.LoggerFactory;
-import com.didiglobal.reportlogger.ReportLogger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import com.google.common.collect.Maps;
 import com.xiaoju.uemc.turbo.engine.common.Constants;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
@@ -23,7 +23,7 @@ import java.util.Map;
  * Created by Stefanie on 2019/12/5.
  */
 public class FlowModelUtil {
-    protected static final ReportLogger LOGGER = LoggerFactory.getLogger(FlowModelUtil.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(FlowModelUtil.class);
 
     /**
      * Parse flowModelStr to flowModel, put flowElement into map, with key=key and value=flowElement
