@@ -1,7 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.util;
 
-import com.didiglobal.reportlogger.LoggerFactory;
-import com.didiglobal.reportlogger.ReportLogger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 // TODO: 2019/12/16
 public class GroovyUtil {
 
-    protected static final ReportLogger LOGGER = LoggerFactory.getLogger(GroovyUtil.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(GroovyUtil.class);
 
     //缓存脚本编译生成的Script类，解决groovy解析脚本动态生成过多class类占满Perm区不断触发fullGC的bug。
     private static final Map<String, Class> SCRIPT_CLASS_CACHE = new ConcurrentHashMap<String, Class>();

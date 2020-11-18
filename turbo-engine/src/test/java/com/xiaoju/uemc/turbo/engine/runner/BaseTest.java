@@ -1,7 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.runner;
 
-import com.didiglobal.reportlogger.LoggerFactory;
-import com.didiglobal.reportlogger.ReportLogger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -14,5 +14,5 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(classes = TestEngineApplication.class)
 public class BaseTest {
 
-    protected static final ReportLogger LOGGER = LoggerFactory.getLogger(BaseTest.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 }

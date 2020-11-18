@@ -12,7 +12,6 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <properties>
-        <report-logger.version>1.0.2</report-logger.version>
         <groovy.version>2.3.7</groovy.version>
     </properties>
 
@@ -70,11 +69,6 @@
         <!--<version>1.4.196</version>-->
         <!--<scope>runtime</scope>-->
         <!--</dependency>-->
-        <dependency>
-            <groupId>com.didiglobal</groupId>
-            <artifactId>report-logger</artifactId>
-            <version>${report-logger.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.xiaoju.metric</groupId>
             <artifactId>metric</artifactId>

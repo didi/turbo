@@ -1,7 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.util;
 
-import com.didiglobal.reportlogger.LoggerFactory;
-import com.didiglobal.reportlogger.ReportLogger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 // TODO: 2019/12/16 upgrade
 public class HttpUtil {
 
-    private static final ReportLogger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
 
     public static String postJson(String urlName, String url, String body, int timeout) {
         Long costTime = 0L;

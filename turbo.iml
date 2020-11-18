@@ -62,7 +62,6 @@
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-aop:1.5.1.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:4.3.6.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjweaver:1.8.9" level="project" />
-    <orderEntry type="library" name="Maven: com.didiglobal:report-logger:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.xiaoju.metric:metric:1.5-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.7.4" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.7.0" level="project" />
