@@ -30,25 +30,68 @@ public abstract class RuntimeExecutor {
 
     @Resource
     protected NodeInstanceLogDAO nodeInstanceLogDAO;
-
+    // redis cache
     protected final RedisUtils redisClient = RedisUtils.getInstance();
 
     // TODO: 2020/11/11
     private static final IdGenerator idGenerator = StrongUuidGenerator.getInstance();
 
+    /**
+     * generate random id
+     * @return
+     */
     protected String genId() {
         return idGenerator.getNextId();
     }
 
+    /**
+     * execute flow module with runtimeContext
+     *
+     * @param runtimeContext
+     * @throws Exception
+     */
     public abstract void execute(RuntimeContext runtimeContext) throws Exception;
 
+    /**
+     * commit flow module with runtimeContext
+     *
+     * @param runtimeContext
+     * @throws Exception
+     */
     public abstract void commit(RuntimeContext runtimeContext) throws Exception;
 
+    /**
+     * rollback flow module with runtimeContext
+     *
+     * @param runtimeContext
+     * @throws Exception
+     */
     public abstract void rollback(RuntimeContext runtimeContext) throws Exception;
 
+    /**
+     * judge current status is complete from runtimeContext
+     *
+     * @param runtimeContext
+     * @return
+     * @throws Exception
+     */
     protected abstract boolean isCompleted(RuntimeContext runtimeContext) throws Exception;
 
+    /**
+     * get executor on execute
+     *
+     * @param runtimeContext
+     * @return
+     * @throws Exception
+     */
     protected abstract RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception;
 
+    /**
+     * get executor on rollback
+     *
+     * @param runtimeContext
+     * @return
+     * @throws Exception
+     */
     protected abstract RuntimeExecutor getRollbackExecutor(RuntimeContext runtimeContext) throws Exception;
 }

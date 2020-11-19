@@ -39,7 +39,13 @@ public class ExecutorFactory {
     @Resource
     private ExclusiveGatewayExecutor exclusiveGatewayExecutor;
 
-
+    /**
+     * get element executor by current flowElement type
+     *
+     * @param flowElement current flowElement
+     * @return flowElement executor
+     * @throws Exception
+     */
     public ElementExecutor getElementExecutor(FlowElement flowElement) throws Exception {
         int elementType = flowElement.getType();
         ElementExecutor elementExecutor = getElementExecutor(elementType);

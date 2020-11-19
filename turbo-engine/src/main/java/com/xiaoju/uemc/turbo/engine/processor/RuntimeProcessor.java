@@ -70,6 +70,13 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////startProcess////////////////////////////////////////
 
+    /**
+     * start process entry
+     *
+     * @param startProcessParam param
+     * @return
+     * @throws Exception
+     */
     public StartProcessDTO startProcess(StartProcessParam startProcessParam) throws Exception {
         RuntimeContext runtimeContext = null;
         try {
@@ -79,7 +86,7 @@ public class RuntimeProcessor {
             //2.getFlowInfo
             FlowInfo flowInfo = getFlowInfo(startProcessParam);
 
-            //3.init context for runtime
+            //3.init context for runtime, but not all data
             runtimeContext = buildStartProcessContext(flowInfo, startProcessParam.getVariables());
 
             //4.process
@@ -96,6 +103,14 @@ public class RuntimeProcessor {
         }
     }
 
+    /**
+     * get flowInfo from db by using flowDeployId or flowModuleId.
+     * We use flowDeployId first.
+     *
+     * @param startProcessParam
+     * @return flowInfo
+     * @throws Exception
+     */
     private FlowInfo getFlowInfo(StartProcessParam startProcessParam) throws Exception {
         if (StringUtils.isNotBlank(startProcessParam.getFlowDeployId())) {
             return getFlowInfoByFlowDeployId(startProcessParam.getFlowDeployId());
@@ -105,9 +120,11 @@ public class RuntimeProcessor {
     }
 
     /**
-     * Init runtimeContext for startProcess:
-     * 1.flowInfo: flowDeployId, flowModuleId, tenantId, flowModel(FlowElementList)
-     * 2.variables: inputDataList fr. param
+     * Init runtimeContext for startProcess
+     *
+     * @param flowInfo flowDeployId, flowModuleId, flowModel(FlowElementList), tenant, caller
+     * @param variables inputDataList fr. param
+     * @return runtime context
      */
     private RuntimeContext buildStartProcessContext(FlowInfo flowInfo, List<InstanceData> variables) {
         return buildRuntimeContext(flowInfo, variables);
@@ -127,20 +144,28 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////commit////////////////////////////////////////
 
+    /**
+     * commit user task
+     * only user task can commit
+     *
+     * @param commitTaskParam
+     * @return
+     * @throws Exception
+     */
     public CommitTaskDTO commit(CommitTaskParam commitTaskParam) throws Exception {
         RuntimeContext runtimeContext = null;
         try {
             //1.param validate
             ParamValidator.validate(commitTaskParam);
 
-            //2.get flowInstance
+            //2.get flowInstance from cache or db
             FlowInstanceBO flowInstanceBO = getFlowInstanceBO(commitTaskParam.getFlowInstanceId());
             if (flowInstanceBO == null) {
                 LOGGER.warn("commit failed: cannot find flowInstanceBO.||flowInstanceId={}", commitTaskParam.getFlowInstanceId());
                 throw new ProcessException(ErrorEnum.GET_FLOW_INSTANCE_FAILED);
             }
 
-            //3.check status
+            //3.check status, FlowInstanceStatus not allow terminated or completed
             if (flowInstanceBO.getStatus() == FlowInstanceStatus.TERMINATED) {
                 LOGGER.warn("commit failed: flowInstance has been completed.||commitTaskParam={}", commitTaskParam);
                 throw new ProcessException(ErrorEnum.TERMINATE_CANNOT_COMMIT);
@@ -151,7 +176,7 @@ public class RuntimeProcessor {
             }
             String flowDeployId = flowInstanceBO.getFlowDeployId();
 
-            //4.getFlowInfo
+            //4.get flowInfo from db
             FlowInfo flowInfo = getFlowInfoByFlowDeployId(flowDeployId);
 
             //5.init runtimeContext
@@ -170,6 +195,14 @@ public class RuntimeProcessor {
         }
     }
 
+    /**
+     * build commit context
+     * set flowInstance, suspendNodeInstance
+     * @param commitTaskParam
+     * @param flowInfo
+     * @param flowInstanceStatus
+     * @return
+     */
     private RuntimeContext buildCommitContext(CommitTaskParam commitTaskParam, FlowInfo flowInfo, int flowInstanceStatus) {
         //1. set flow info
         RuntimeContext runtimeContext = buildRuntimeContext(flowInfo, commitTaskParam.getVariables());
@@ -178,7 +211,8 @@ public class RuntimeProcessor {
         runtimeContext.setFlowInstanceId(commitTaskParam.getFlowInstanceId());
         runtimeContext.setFlowInstanceStatus(flowInstanceStatus);
 
-        //3. set suspendNodeInstance with taskInstance in param
+        //3. set suspendNodeInstance with taskInstanceId.
+        // Notice, this is a empty object unless taskInstanceId, so we will query db to fill object later
         NodeInstanceBO suspendNodeInstance = new NodeInstanceBO();
         suspendNodeInstance.setNodeInstanceId(commitTaskParam.getTaskInstanceId());
         runtimeContext.setSuspendNodeInstance(suspendNodeInstance);
@@ -473,6 +507,15 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////common////////////////////////////////////////
 
+    /**
+     * get flowDeploymentPO by using flowDeployId
+     * and copy flowDeploymentPO' properties to flowInfo by BeanUtils
+     * query cache first, if data is null, query db.
+     *
+     * @param flowDeployId
+     * @return
+     * @throws Exception
+     */
     private FlowInfo getFlowInfoByFlowDeployId(String flowDeployId) throws Exception {
 //        //get from cache firstly
 //        String redisKey = RedisConstants.FLOW_INFO + flowDeployId;
@@ -500,6 +543,15 @@ public class RuntimeProcessor {
         return flowInfo;
     }
 
+    /**
+     * get recent flowDeploymentPO by using flowModuleId
+     * and copy flowDeploymentPO' properties to flowInfo by BeanUtils
+     * final, set data to cache with expire time
+     *
+     * @param flowModuleId
+     * @return
+     * @throws Exception
+     */
     private FlowInfo getFlowInfoByFlowModuleId(String flowModuleId) throws Exception {
         //get from db directly
         FlowDeploymentPO flowDeploymentPO = flowDeploymentDAO.selectRecentByFlowModuleId(flowModuleId);
@@ -541,6 +593,15 @@ public class RuntimeProcessor {
         return flowInstanceBO;
     }
 
+    /**
+     * build runtime context object
+     * 1.copy flowInfo's properties to runtimeContext by BeanUtils
+     * 2.set flowElementMap
+     * up to now, flowInfo of runtimeContext is complete
+     *
+     * @param flowInfo
+     * @return
+     */
     private RuntimeContext buildRuntimeContext(FlowInfo flowInfo) {
         RuntimeContext runtimeContext = new RuntimeContext();
         BeanUtils.copyProperties(flowInfo, runtimeContext);
@@ -549,8 +610,10 @@ public class RuntimeProcessor {
     }
 
     private RuntimeContext buildRuntimeContext(FlowInfo flowInfo, List<InstanceData> variables) {
+        // init flow info is done
         RuntimeContext runtimeContext = buildRuntimeContext(flowInfo);
         Map<String, InstanceData> instanceDataMap = InstanceDataUtil.getInstanceDataMap(variables);
+        // init data info is not done, this init instanceDataMap only expect instanceDataId
         runtimeContext.setInstanceDataMap(instanceDataMap);
         return runtimeContext;
     }

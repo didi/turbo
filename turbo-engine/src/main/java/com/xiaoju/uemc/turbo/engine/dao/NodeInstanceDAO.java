@@ -37,6 +37,7 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
             if (nodeInstancePO.getId() == null) {
                 insertNodeInstanceList.add(nodeInstancePO);
             } else {
+                // because this node instance is exist
                 baseMapper.updateStatus(nodeInstancePO);
             }
         });

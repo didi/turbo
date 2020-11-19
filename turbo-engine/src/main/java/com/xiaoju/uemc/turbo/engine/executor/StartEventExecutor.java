@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 /**
+ * start node executor
+ *
  * Created by Stefanie on 2019/12/1.
  */
 
@@ -19,8 +21,11 @@ public class StartEventExecutor extends ElementExecutor {
     @Override
     protected void postExecute(RuntimeContext runtimeContext) throws Exception {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
+        // second time set instance data id
         currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());
+        // change status to complete
         currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);
+        // add this node to processed nodeInstance list tail
         runtimeContext.getNodeInstanceList().add(currentNodeInstance);
     }
 
