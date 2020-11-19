@@ -79,7 +79,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
         String hookUrl = engineConfig.getHookUrl();
         if (StringUtils.isBlank(hookUrl)) {
             LOGGER.warn("getHookInfoValueMap: cannot find hookConfig.||flowInstanceId={}", flowInstanceId);
-            throw new ProcessException(ErrorEnum.GET_HOOK_CONFIG_FAILED);
+            return MapUtils.EMPTY_MAP;
         }
 
         Integer timeout = engineConfig.getHookTimeout();
