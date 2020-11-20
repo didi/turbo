@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.text.MessageFormat;
 
 /**
+ * end node executor
+ *
  * Created by Stefanie on 2019/12/1.
  */
 @Service
@@ -22,7 +24,9 @@ public class EndEventExecutor extends ElementExecutor {
     protected void postExecute(RuntimeContext runtimeContext) throws Exception {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
         currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());
+        // change status to complete
         currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);
+        // add this node to processed nodeInstance list tail
         runtimeContext.getNodeInstanceList().add(currentNodeInstance);
     }
 

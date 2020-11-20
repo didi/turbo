@@ -13,6 +13,8 @@ import com.xiaoju.uemc.turbo.engine.util.StrongUuidGenerator;
 import javax.annotation.Resource;
 
 /**
+ * the root of executor
+ *
  * Created by Stefanie on 2019/12/1.
  */
 public abstract class RuntimeExecutor {

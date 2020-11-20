@@ -306,6 +306,13 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////terminate////////////////////////////////////////
 
+    /**
+     * force terminate process
+     *
+     * @param flowInstanceId
+     * @return
+     * @throws Exception
+     */
     public TerminateDTO terminateProcess(String flowInstanceId) throws Exception {
         TerminateDTO terminateDTO;
         try {
@@ -335,6 +342,14 @@ public class RuntimeProcessor {
     }
 
     ////////////////////////////////////////updateInstanceData////////////////////////////////////////
+
+    /**
+     * ？？？
+     * @param flowInstanceId
+     * @param dataMap
+     * @return
+     * @throws Exception
+     */
     public CommonDTO updateInstanceData(String flowInstanceId, Map<String, InstanceData> dataMap) throws Exception {
         InstanceDataPO instanceDataPO = instanceDataDAO.selectRecentOne(flowInstanceId);
         CommonDTO commonDTO = new CommonDTO(ErrorEnum.SUCCESS);
@@ -343,6 +358,12 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////getHistoryUserTaskList////////////////////////////////////////
 
+    /**
+     * get user task list by flowInstanceId desc
+     * @param flowInstanceId
+     * @return
+     * @throws Exception
+     */
     public NodeInstanceListDTO getHistoryUserTaskList(String flowInstanceId) throws Exception {
 
         //1.get nodeInstanceList by flowInstanceId order by id desc
@@ -394,16 +415,35 @@ public class RuntimeProcessor {
         return historyListDTO;
     }
 
+    /**
+     * get flowElement map by flowDeployId
+     * @param flowDeployId
+     * @return
+     * @throws Exception
+     */
     private Map<String, FlowElement> getFlowElementMap(String flowDeployId) throws Exception {
         FlowInfo flowInfo = getFlowInfoByFlowDeployId(flowDeployId);
         String flowModel = flowInfo.getFlowModel();
         return FlowModelUtil.getFlowElementMap(flowModel);
     }
 
+    /**
+     * completed or active is effective only
+     * @param status
+     * @return
+     */
     private boolean isEffectiveNodeInstance(int status) {
         return status == NodeInstanceStatus.COMPLETED || status == NodeInstanceStatus.ACTIVE;
     }
 
+    /**
+     * check exist and judge type is user task or not
+     *
+     * @param nodeKey
+     * @param flowElementMap
+     * @return
+     * @throws Exception
+     */
     private boolean isUserTask(String nodeKey, Map<String, FlowElement> flowElementMap) throws Exception {
         if (!flowElementMap.containsKey(nodeKey)) {
             LOGGER.warn("isUserTask: invalid nodeKey which is not in flowElementMap.||nodeKey={}||flowElementMap={}",
@@ -416,6 +456,13 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////getHistoryElementList////////////////////////////////////////
 
+    /**
+     * get history element list by flowInstanceId in order to see snapshot
+     * because our db don't save sequenceFlow, so there wo will calculate sequenceFlow between sourceNode and targetNode
+     * @param flowInstanceId
+     * @return
+     * @throws Exception
+     */
     public ElementInstanceListDTO getHistoryElementList(String flowInstanceId) throws Exception {
         //1.getHistoryNodeList
         List<NodeInstancePO> historyNodeInstanceList = getHistoryNodeInstanceList(flowInstanceId);
@@ -466,14 +513,38 @@ public class RuntimeProcessor {
         return elementInstanceListDTO;
     }
 
+    /**
+     * query nodeInstanceList from db by flowInstanceId
+     * the order is asc
+     *
+     * @param flowInstanceId
+     * @return
+     * @throws Exception
+     */
     private List<NodeInstancePO> getHistoryNodeInstanceList(String flowInstanceId) throws Exception {
         return nodeInstanceDAO.selectByFlowInstanceId(flowInstanceId);
     }
 
+    /**
+     * query nodeInstanceList from db by flowInstanceId
+     * the order is desc
+     *
+     * @param flowInstanceId
+     * @return
+     * @throws Exception
+     */
     private List<NodeInstancePO> getDescHistoryNodeInstanceList(String flowInstanceId) throws Exception {
         return nodeInstanceDAO.selectDescByFlowInstanceId(flowInstanceId);
     }
 
+    /**
+     * get node instance by flowInstanceId and nodeInstanceId
+     *
+     * @param flowInstanceId
+     * @param nodeInstanceId
+     * @return
+     * @throws Exception
+     */
     public NodeInstanceDTO getNodeInstance(String flowInstanceId, String nodeInstanceId) throws Exception {
         NodeInstancePO nodeInstancePO = nodeInstanceDAO.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
         String flowDeployId = nodeInstancePO.getFlowDeployId();
@@ -492,6 +563,13 @@ public class RuntimeProcessor {
     }
 
     ////////////////////////////////////////getInstanceData////////////////////////////////////////
+
+    /**
+     * get most new InstanceDataList by flowInstanceId
+     * @param flowInstanceId
+     * @return
+     * @throws Exception
+     */
     public List<InstanceData> getInstanceData(String flowInstanceId) throws Exception {
         InstanceDataPO instanceDataPO = instanceDataDAO.selectRecentOne(flowInstanceId);
 

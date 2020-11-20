@@ -16,6 +16,8 @@ import org.springframework.beans.BeanUtils;
 import java.util.Map;
 
 /**
+ * abstract element executor
+ *
  * Created by Stefanie on 2019/12/1.
  */
 public abstract class ElementExecutor extends RuntimeExecutor {
@@ -81,12 +83,33 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
     }
 
+    /**
+     * do execute
+     * we suggest subclass override it
+     *
+     * @param runtimeContext
+     * @throws Exception
+     */
     protected void doExecute(RuntimeContext runtimeContext) throws Exception {
     }
 
+    /**
+     * post execute
+     * we suggest subclass override it
+     *
+     * @param runtimeContext
+     * @throws Exception
+     */
     protected void postExecute(RuntimeContext runtimeContext) throws Exception {
     }
 
+    /**
+     * get next unique execute executor and set current node model
+     *
+     * @param runtimeContext
+     * @return
+     * @throws Exception
+     */
     @Override
     protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception {
         Map<String, FlowElement> flowElementMap = runtimeContext.getFlowElementMap();

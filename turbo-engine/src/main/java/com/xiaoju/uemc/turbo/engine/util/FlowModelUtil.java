@@ -140,6 +140,14 @@ public class FlowModelUtil {
         return StringUtils.defaultString((String) properties.get(Constants.ELEMENT_PROPERTIES.NAME), StringUtils.EMPTY);
     }
 
+    /**
+     * get unique next node
+     * if currentFlowElement have many outgoings, wo choose first outgoing default
+     *
+     * @param currentFlowElement
+     * @param flowElementMap
+     * @return
+     */
     public static FlowElement getUniqueNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap) {
         List<String> outgoingKeyList = currentFlowElement.getOutgoing();
         String nextElementKey = outgoingKeyList.get(0);
