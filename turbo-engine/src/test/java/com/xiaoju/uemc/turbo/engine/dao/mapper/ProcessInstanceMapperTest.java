@@ -7,8 +7,8 @@ import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 /**
@@ -16,7 +16,7 @@ import java.util.Date;
  */
 public class ProcessInstanceMapperTest extends BaseTest {
 
-    @Autowired
+    @Resource
     private ProcessInstanceMapper processInstanceMapper;
 
     @Test
@@ -27,15 +27,21 @@ public class ProcessInstanceMapperTest extends BaseTest {
     }
 
     @Test
-    public void update() {
+    public void selectByFlowInstanceId() {
         FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
         processInstanceMapper.insert(flowInstancePO);
         String flowInstanceId = flowInstancePO.getFlowInstanceId();
         flowInstancePO = processInstanceMapper.selectByFlowInstanceId(flowInstancePO.getFlowInstanceId());
-        Assert.assertTrue(StringUtils.equals(flowInstancePO.getFlowInstanceId(),flowInstanceId));
-        flowInstancePO.setStatus(FlowInstanceStatus.TERMINATED);
+        Assert.assertTrue(StringUtils.equals(flowInstancePO.getFlowInstanceId(), flowInstanceId));
+    }
+
+    @Test
+    public void updateStatus() {
+        FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
+        processInstanceMapper.insert(flowInstancePO);
+        // change status
+        flowInstancePO.setStatus(FlowInstanceStatus.COMPLETED);
         flowInstancePO.setModifyTime(new Date());
         processInstanceMapper.updateStatus(flowInstancePO);
     }
-
 }

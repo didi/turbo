@@ -262,6 +262,8 @@ public class EntityBuilder {
         flowInstancePO.setStatus(FlowInstanceStatus.RUNNING);
         flowInstancePO.setCreateTime(new Date());
         flowInstancePO.setModifyTime(new Date());
+        flowInstancePO.setCaller("caller");
+        flowInstancePO.setTenant("tenant");
         return flowInstancePO;
     }
 
@@ -277,6 +279,21 @@ public class EntityBuilder {
         nodeInstancePO.setStatus(NodeInstanceStatus.ACTIVE);
         nodeInstancePO.setCreateTime(new Date());
         nodeInstancePO.setModifyTime(new Date());
+        nodeInstancePO.setCaller("caller");
+        nodeInstancePO.setTenant("tenant");
+        return nodeInstancePO;
+    }
+
+    public static NodeInstancePO buildDynamicNodeInstancePO() {
+        NodeInstancePO nodeInstancePO = buildNodeInstancePO();
+        // avoid repeat
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        nodeInstancePO.setNodeInstanceId("testNodeInstanceId_" + System.currentTimeMillis());
+        nodeInstancePO.setSourceNodeInstanceId("testSourceNodeInstanceId_" + System.currentTimeMillis());
         return nodeInstancePO;
     }
 
@@ -289,6 +306,8 @@ public class EntityBuilder {
         nodeInstanceLogPO.setType(NodeInstanceType.EXECUTE);
         nodeInstanceLogPO.setStatus(NodeInstanceStatus.ACTIVE);
         nodeInstanceLogPO.setCreateTime(new Date());
+        nodeInstanceLogPO.setCaller("caller");
+        nodeInstanceLogPO.setTenant("tenant");
         return nodeInstanceLogPO;
     }
 
@@ -304,6 +323,14 @@ public class EntityBuilder {
         instanceDataPO.setInstanceData(JSON.toJSONString(instanceDataList));
         instanceDataPO.setType(InstanceDataType.EXECUTE);
         instanceDataPO.setCreateTime(new Date());
+        instanceDataPO.setCaller("caller");
+        instanceDataPO.setTenant("tenant");
+        return instanceDataPO;
+    }
+
+    public static InstanceDataPO buildDynamicInstanceDataPO() {
+        InstanceDataPO instanceDataPO = buildInstanceDataPO();
+        instanceDataPO.setInstanceDataId("testInstanceDataId_" + System.currentTimeMillis());
         return instanceDataPO;
     }
 

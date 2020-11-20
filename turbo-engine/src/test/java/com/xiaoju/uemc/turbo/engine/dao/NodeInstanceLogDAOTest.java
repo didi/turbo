@@ -1,4 +1,4 @@
-package com.xiaoju.uemc.turbo.engine.dao.mapper;
+package com.xiaoju.uemc.turbo.engine.dao;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiaoju.uemc.turbo.engine.entity.NodeInstanceLogPO;
@@ -12,17 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Stefanie on 2019/12/1.
+ * Created by Stefanie on 2020/11/20.
  */
-public class NodeInstanceLogMapperTest extends BaseTest {
+public class NodeInstanceLogDAOTest extends BaseTest {
 
     @Resource
-    private NodeInstanceLogMapper nodeInstanceLogMapper;
+    private NodeInstanceLogDAO nodeInstanceLogDAO;
 
     @Test
     public void insert() {
         NodeInstanceLogPO nodeInstanceLogPO = EntityBuilder.buildNodeInstanceLogPO();
-        int result = nodeInstanceLogMapper.insert(nodeInstanceLogPO);
+        int result = nodeInstanceLogDAO.insert(nodeInstanceLogPO);
         Assert.assertTrue(result == 1);
     }
 
@@ -33,11 +33,11 @@ public class NodeInstanceLogMapperTest extends BaseTest {
         nodeInstanceLogPOList.add(nodeInstanceLogPO);
         nodeInstanceLogPOList.add(EntityBuilder.buildNodeInstanceLogPO());
         nodeInstanceLogPOList.add(EntityBuilder.buildNodeInstanceLogPO());
-        nodeInstanceLogMapper.batchInsert(nodeInstanceLogPO.getFlowInstanceId(), nodeInstanceLogPOList);
+        nodeInstanceLogDAO.insertList(nodeInstanceLogPOList);
 
         QueryWrapper<NodeInstanceLogPO> entityWrapper = new QueryWrapper<>();
         entityWrapper.in("flow_instance_id", nodeInstanceLogPO.getFlowInstanceId());
-        nodeInstanceLogPOList = nodeInstanceLogMapper.selectList(entityWrapper);
+        nodeInstanceLogPOList = nodeInstanceLogDAO.list(entityWrapper);
         Assert.assertTrue(nodeInstanceLogPOList.size() == 3);
     }
 }

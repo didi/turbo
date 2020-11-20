@@ -1,7 +1,5 @@
 package com.xiaoju.uemc.turbo.engine.processor;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import com.google.common.collect.Lists;
 import com.xiaoju.uemc.turbo.engine.dto.CommitTaskDTO;
 import com.xiaoju.uemc.turbo.engine.dto.RecallTaskDTO;
@@ -13,6 +11,8 @@ import com.xiaoju.uemc.turbo.engine.param.StartProcessParam;
 import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import java.util.Date;

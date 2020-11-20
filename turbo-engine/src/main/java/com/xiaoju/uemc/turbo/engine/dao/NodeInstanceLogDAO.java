@@ -12,6 +12,13 @@ import java.util.List;
 @Service
 public class NodeInstanceLogDAO extends BaseDAO<NodeInstanceLogMapper, NodeInstanceLogPO> {
 
+    /**
+     * insert nodeInstanceLogPO
+     * if error, this will not throw exption but return -1
+     *
+     * @param nodeInstanceLogPO
+     * @return
+     */
     public int insert(NodeInstanceLogPO nodeInstanceLogPO) {
         try {
             return baseMapper.insert(nodeInstanceLogPO);
@@ -21,6 +28,12 @@ public class NodeInstanceLogDAO extends BaseDAO<NodeInstanceLogMapper, NodeInsta
         return -1;
     }
 
+    /**
+     * batch insert nodeInstanceLogList
+     *
+     * @param nodeInstanceLogList
+     * @return
+     */
     public boolean insertList(List<NodeInstanceLogPO> nodeInstanceLogList) {
         return baseMapper.batchInsert(nodeInstanceLogList.get(0).getFlowInstanceId(), nodeInstanceLogList);
     }
