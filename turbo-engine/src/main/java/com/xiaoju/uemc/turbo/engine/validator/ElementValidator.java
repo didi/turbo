@@ -39,7 +39,7 @@ public class ElementValidator {
 
         if (outgoingList.size() > 1) {
             LOGGER.warn("element has too much outgoing.||flowElement={}", JSON.toJSONString(flowElement));
-            throw new ModelException(ErrorEnum.ELEMENT_LACK_OUTGOING);
+            throw new ModelException(ErrorEnum.ELEMENT_TOO_MUCH_OUTGOING);
         }
     }
 

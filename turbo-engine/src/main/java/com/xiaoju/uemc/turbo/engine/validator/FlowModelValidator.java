@@ -65,13 +65,13 @@ public class FlowModelValidator {
         }
 
         if (startEventCount != 1) {
-            LOGGER.error(ErrorEnum.MODEL_MUST_ONE_START_NODE.getErrMsg());
-            throw new ModelException(ErrorEnum.MODEL_MUST_ONE_START_NODE);
+            LOGGER.error(ErrorEnum.START_NODE_INVALID.getErrMsg());
+            throw new ModelException(ErrorEnum.START_NODE_INVALID);
         }
 
         if (endEventCount < 1) {
-            LOGGER.error(ErrorEnum.MODEL_NO_END_NODE.getErrMsg());
-            throw new ModelException(ErrorEnum.MODEL_NO_END_NODE);
+            LOGGER.error(ErrorEnum.END_NODE_INVALID.getErrMsg());
+            throw new ModelException(ErrorEnum.END_NODE_INVALID);
         }
     }
 }

@@ -50,9 +50,9 @@ public class ExclusiveGatewayValidator extends ElementValidator {
 
             if (StringUtils.isBlank(condition) && !isDefaultCondition) {
                 String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT,
-                        ErrorEnum.GATEWAY_EMPTY_EDGE_OUTGOING.getErrMsg(), elementName, elementkey);
+                        ErrorEnum.EMPTY_SEQUENCE_OUTGOING.getErrMsg(), elementName, elementkey);
                 LOGGER.error(exceptionMsg);
-                throw new ModelException(ErrorEnum.GATEWAY_EMPTY_EDGE_OUTGOING.getErrNo(), exceptionMsg);
+                throw new ModelException(ErrorEnum.EMPTY_SEQUENCE_OUTGOING.getErrNo(), exceptionMsg);
             }
             if (isDefaultCondition) {
                 defaultConditionCount++;
@@ -61,9 +61,9 @@ public class ExclusiveGatewayValidator extends ElementValidator {
 
         if (defaultConditionCount > 1) {
             String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT,
-                    ErrorEnum.GATEWAY_TOO_MANY_DEFAULT_EDGE.getErrMsg(), elementName, elementkey);
+                    ErrorEnum.TOO_MANY_DEFAULT_SEQUENCE.getErrMsg(), elementName, elementkey);
             LOGGER.error(exceptionMsg);
-            throw new ModelException(ErrorEnum.GATEWAY_TOO_MANY_DEFAULT_EDGE.getErrNo(), exceptionMsg);
+            throw new ModelException(ErrorEnum.TOO_MANY_DEFAULT_SEQUENCE.getErrNo(), exceptionMsg);
         }
     }
 }
