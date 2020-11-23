@@ -63,6 +63,13 @@ public class FlowModelUtil {
         return null;
     }
 
+    /**
+     * get flowElement from map
+     *
+     * @param flowModel
+     * @param elementKey
+     * @return
+     */
     public static FlowElement getFlowElement(Map<String, FlowElement> flowModel, String elementKey) {
         return flowModel.get(elementKey);
     }

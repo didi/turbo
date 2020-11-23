@@ -20,6 +20,7 @@ import java.util.ArrayList;
 /**
  * 错误码覆盖单元测试类
  */
+@Deprecated
 public class ErrorTest  extends BaseTest {
 
     @Resource
@@ -31,30 +32,10 @@ public class ErrorTest  extends BaseTest {
     @Resource
     private UserTaskExecutor userTaskExecutor;
 
-    // ErrorEnum.PARAM_INVALID
-    @Test
-    public void error_2001() {
-        StartProcessParam startProcessParam = new StartProcessParam();
-        try {
-            StartProcessDTO startProcessDTO = runtimeProcessor.startProcess(startProcessParam);
-            LOGGER.info("result.||startProcessDTO={}", startProcessDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
 
     // ErrorEnum.GET_FLOW_DEPLOYMENT_FAILED
-    @Test
-    public void error_4007() {
-        StartProcessParam startProcessParam = new StartProcessParam();
-        startProcessParam.setFlowDeployId("notExistFlowDeployId");
-        try {
-            StartProcessDTO startProcessDTO = runtimeProcessor.startProcess(startProcessParam);
-            LOGGER.info("result.||startProcessDTO={}", startProcessDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
 
     // ErrorEnum.SAVE_FLOW_INSTANCE_FAILED
     @Test
@@ -79,17 +60,7 @@ public class ErrorTest  extends BaseTest {
     }
 
     // ErrorEnum.UNSUPPORTED_ELEMENT_TYPE
-    @Test
-    public void error_4014() {
-        FlowElement unSupportedElement = new FlowElement();
-        unSupportedElement.setType(100);
-        try {
-            ElementExecutor elementExecutor = executorFactory.getElementExecutor(unSupportedElement);
-            LOGGER.info("result.||elementExecutor={}", elementExecutor);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
 
     // ErrorEnum.COMMIT_SUSPEND
     @Test
@@ -105,34 +76,10 @@ public class ErrorTest  extends BaseTest {
     }
 
     // ErrorEnum.GET_FLOW_INSTANCE_FAILE
-    @Test
-    public void error_4008() {
-        CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId("notExistFlowInstanceId");
-        commitTaskParam.setTaskInstanceId("test");
-        commitTaskParam.setVariables(new ArrayList<>());
-        try {
-            CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
-            LOGGER.info("testCommit.||commitTaskDTO={}", commitTaskDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
 
     // ErrorEnum.GET_NODE_INSTANCE_FAILED
-    @Test
-    public void error_4010() {
-        CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId("test");
-        commitTaskParam.setTaskInstanceId("notExistNodeInstanceId");
-        commitTaskParam.setVariables(new ArrayList<>());
-        try {
-            CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
-            LOGGER.info("testCommit.||commitTaskDTO={}", commitTaskDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
 
     // ErrorEnum.REENTRANT_WARNING
 

@@ -85,8 +85,9 @@ public class RuntimeProcessorTest_zk extends BaseTest {
         }
     }
 
+    // user task <- exclusive gateway node <- user task
     @Test
-    public void testRollback() {
+    public void testRollback_1() {
         // start process
         StartProcessDTO startProcessDTO = startProcess();
         CommitTaskParam commitTaskParam = new CommitTaskParam();
@@ -109,6 +110,75 @@ public class RuntimeProcessorTest_zk extends BaseTest {
 
             LOGGER.info("testRollback.||recallTaskDTO={}", recallTaskDTO);
             Assert.assertTrue(recallTaskDTO.getErrCode() == ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // start node <- user task
+    @Test
+    public void testRollback_2() {
+        // start process
+        StartProcessDTO startProcessDTO = startProcess();
+        CommitTaskParam commitTaskParam = new CommitTaskParam();
+        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        List<InstanceData> variables = new ArrayList<>();
+        variables.add(new InstanceData("danxuankuang_ytgyk", "int", 0));
+        commitTaskParam.setVariables(variables);
+        try {
+            // user task -> exclusive gateway node -> user task
+            // commit
+            CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+
+            // rollback
+            // user task <- exclusive gateway node <- user task
+            RecallTaskParam recallTaskParam = new RecallTaskParam();
+            recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
+            recallTaskParam.setTaskInstanceId(commitTaskDTO.getActiveTaskInstance().getNodeInstanceId());
+            RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
+
+            LOGGER.info("testRollback.||recallTaskDTO={}", recallTaskDTO);
+            Assert.assertTrue(recallTaskDTO.getErrCode() == ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
+
+            // rollback
+            // start node <- user task
+            recallTaskParam = new RecallTaskParam();
+            recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
+            recallTaskParam.setTaskInstanceId(recallTaskDTO.getActiveTaskInstance().getNodeInstanceId());
+            recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
+
+            LOGGER.info("testRollback.||recallTaskDTO={}", recallTaskDTO);
+            Assert.assertTrue(recallTaskDTO.getErrCode() == ErrorEnum.NO_USER_TASK_TO_ROLLBACK.getErrNo());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // rollback completed process
+    @Test
+    public void testRollback_3() {
+        // start process
+        StartProcessDTO startProcessDTO = startProcess();
+        CommitTaskParam commitTaskParam = new CommitTaskParam();
+        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        List<InstanceData> variables = new ArrayList<>();
+        variables.add(new InstanceData("danxuankuang_ytgyk", "int", 1));
+        commitTaskParam.setVariables(variables);
+        try {
+            // user task -> end node
+            // commit
+            CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+
+            // rollback end node
+            RecallTaskParam recallTaskParam = new RecallTaskParam();
+            recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
+            recallTaskParam.setTaskInstanceId(commitTaskDTO.getActiveTaskInstance().getNodeInstanceId());
+            RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
+
+            LOGGER.info("testRollback.||recallTaskDTO={}", recallTaskDTO);
+            Assert.assertTrue(recallTaskDTO.getErrCode() == ErrorEnum.FLOW_INSTANCE_CANNOT_ROLLBACK.getErrNo());
         } catch (Exception e) {
             e.printStackTrace();
         }
