@@ -20,9 +20,16 @@ import java.text.MessageFormat;
 @Service
 public class EndEventExecutor extends ElementExecutor {
 
+    /**
+     * get currentNodeInstance and reset value, add it to list tail last
+     *
+     * @param runtimeContext
+     * @throws Exception
+     */
     @Override
     protected void postExecute(RuntimeContext runtimeContext) throws Exception {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
+        // second time set instanceDataId in case of change when doExecute
         currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());
         // change status to complete
         currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);

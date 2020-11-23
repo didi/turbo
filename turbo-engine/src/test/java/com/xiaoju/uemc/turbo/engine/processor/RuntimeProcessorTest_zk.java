@@ -4,6 +4,7 @@ import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.dto.*;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.param.CommitTaskParam;
+import com.xiaoju.uemc.turbo.engine.param.RecallTaskParam;
 import com.xiaoju.uemc.turbo.engine.param.StartProcessParam;
 import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import org.junit.Assert;
@@ -42,7 +43,8 @@ public class RuntimeProcessorTest_zk extends BaseTest {
 
     @Test
     public void testStartProcess() {
-        startProcess();
+        StartProcessDTO startProcessDTO = startProcess();
+        Assert.assertTrue(startProcessDTO.getErrCode() == ErrorEnum.COMMIT_SUSPEND.getErrNo());
     }
 
     @Test
@@ -58,6 +60,7 @@ public class RuntimeProcessorTest_zk extends BaseTest {
             // user task -> end node
             CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
             LOGGER.info("testCommit.||commitTaskDTO={}", commitTaskDTO);
+            Assert.assertTrue(commitTaskDTO.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,6 +79,7 @@ public class RuntimeProcessorTest_zk extends BaseTest {
             // user task -> exclusive gateway node -> user task
             CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
             LOGGER.info("testCommit.||commitTaskDTO={}", commitTaskDTO);
+            Assert.assertTrue(commitTaskDTO.getErrCode() == ErrorEnum.COMMIT_SUSPEND.getErrNo());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,7 +87,31 @@ public class RuntimeProcessorTest_zk extends BaseTest {
 
     @Test
     public void testRollback() {
+        // start process
+        StartProcessDTO startProcessDTO = startProcess();
+        CommitTaskParam commitTaskParam = new CommitTaskParam();
+        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        List<InstanceData> variables = new ArrayList<>();
+        variables.add(new InstanceData("danxuankuang_ytgyk", "int", 0));
+        commitTaskParam.setVariables(variables);
+        try {
+            // user task -> exclusive gateway node -> user task
+            // commit
+            CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
 
+            // rollback
+            // user task <- exclusive gateway node <- user task
+            RecallTaskParam recallTaskParam = new RecallTaskParam();
+            recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
+            recallTaskParam.setTaskInstanceId(commitTaskDTO.getActiveTaskInstance().getNodeInstanceId());
+            RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
+
+            LOGGER.info("testRollback.||recallTaskDTO={}", recallTaskDTO);
+            Assert.assertTrue(recallTaskDTO.getErrCode() == ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test

@@ -52,7 +52,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         String flowInstanceId = runtimeContext.getFlowInstanceId();
         String nodeKey = runtimeContext.getCurrentNodeModel().getKey();
 
-        //get sourceInfo
+        // get sourceInfo from runtimeContext's currentNodeInstance
         String sourceNodeInstanceId = StringUtils.EMPTY;
         String sourceNodeKey = StringUtils.EMPTY;
         NodeInstanceBO sourceNodeInstance = runtimeContext.getCurrentNodeInstance();
@@ -60,7 +60,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
             // TODO: 2019/12/30 cache
             NodeInstancePO nodeInstancePO = nodeInstanceDAO.selectBySourceInstanceId(flowInstanceId,
                     sourceNodeInstance.getNodeInstanceId(), nodeKey);
-            //reentrant check
+            // reentrant check
             if (nodeInstancePO != null) {
                 BeanUtils.copyProperties(nodeInstancePO, currentNodeInstance);
                 runtimeContext.setCurrentNodeInstance(currentNodeInstance);
@@ -76,10 +76,11 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         currentNodeInstance.setNodeKey(nodeKey);
         currentNodeInstance.setSourceNodeInstanceId(sourceNodeInstanceId);
         currentNodeInstance.setSourceNodeKey(sourceNodeKey);
+        // init status active
         currentNodeInstance.setStatus(NodeInstanceStatus.ACTIVE);
         // first time set instance data id
         currentNodeInstance.setInstanceDataId(StringUtils.defaultString(runtimeContext.getInstanceDataId(), StringUtils.EMPTY));
-
+        // reset currentNodeInstance if exist
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
     }
 
@@ -133,6 +134,11 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         }
     }
 
+    /**
+     * this function need subclass override, if not, it will throw unsupported exception
+     * @param runtimeContext
+     * @throws Exception
+     */
     protected void preCommit(RuntimeContext runtimeContext) throws Exception {
         LOGGER.warn("preCommit: unsupported element type.||flowInstanceId={}||elementType={}",
                 runtimeContext.getFlowInstanceId(), runtimeContext.getCurrentNodeModel().getType());

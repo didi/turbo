@@ -18,12 +18,18 @@ import java.util.Collections;
 @Service
 public class StartEventExecutor extends ElementExecutor {
 
+    /**
+     * get currentNodeInstance and reset value, add it to list tail last
+     *
+     * @param runtimeContext
+     * @throws Exception
+     */
     @Override
     protected void postExecute(RuntimeContext runtimeContext) throws Exception {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
-        // second time set instance data id
+        // second time set instanceDataId in case of change when doExecute
         currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());
-        // change status to complete
+        // change status to complete last
         currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);
         // add this node to processed nodeInstance list tail
         runtimeContext.getNodeInstanceList().add(currentNodeInstance);

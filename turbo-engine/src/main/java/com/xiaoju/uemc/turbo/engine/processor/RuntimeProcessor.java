@@ -308,6 +308,8 @@ public class RuntimeProcessor {
 
     /**
      * force terminate process
+     * if it's status is completed, it not change
+     * if it's status isn't completed, force update status to terminated
      *
      * @param flowInstanceId
      * @return

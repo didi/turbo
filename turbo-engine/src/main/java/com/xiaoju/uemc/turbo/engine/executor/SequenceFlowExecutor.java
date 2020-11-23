@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * sequence flow executor
+ * sequence flow executor will not run, so this will not implement
  *
  * Created by Stefanie on 2019/12/1.
  */
