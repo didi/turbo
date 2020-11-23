@@ -145,10 +145,10 @@ public class UserTaskExecutor extends ElementExecutor {
         FlowElement nextNode;
         if (currentFlowElement.getOutgoing().size() == 1) {
             //case1. unique outgoing
-            nextNode = FlowModelUtil.getUniqueNextNode(currentFlowElement, flowElementMap);
+            nextNode = getUniqueNextNode(currentFlowElement, flowElementMap);
         } else {
             //case2. multiple outgoings and calculate the next node with instanceDataMap
-            nextNode = FlowModelUtil.calculateNextNode(currentFlowElement, flowElementMap, runtimeContext.getInstanceDataMap());
+            nextNode = calculateNextNode(currentFlowElement, flowElementMap, runtimeContext.getInstanceDataMap());
         }
         LOGGER.info("getExecuteExecutor.||nextNode={}||runtimeContext={}", nextNode, runtimeContext);
 

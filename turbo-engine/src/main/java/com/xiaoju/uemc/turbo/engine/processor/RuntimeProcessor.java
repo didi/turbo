@@ -143,7 +143,7 @@ public class RuntimeProcessor {
             //3.check status
             if (flowInstanceBO.getStatus() == FlowInstanceStatus.TERMINATED) {
                 LOGGER.warn("commit failed: flowInstance has been completed.||commitTaskParam={}", commitTaskParam);
-                throw new ProcessException(ErrorEnum.TERMINATE_CANNOT_COMMIT);
+                throw new ProcessException(ErrorEnum.COMMIT_REJECTRD);
             }
             if (flowInstanceBO.getStatus() == FlowInstanceStatus.COMPLETED) {
                 LOGGER.warn("commit: reentrant process.||commitTaskParam={}", commitTaskParam);
@@ -221,7 +221,7 @@ public class RuntimeProcessor {
             //3.check status
             if (flowInstanceBO.getStatus() != FlowInstanceStatus.RUNNING) {
                 LOGGER.warn("recall failed: invalid status to recall.||recallTaskParam={}||status={}", recallTaskParam, flowInstanceBO.getStatus());
-                throw new ProcessException(ErrorEnum.FLOW_INSTANCE_CANNOT_ROLLBACK);
+                throw new ProcessException(ErrorEnum.ROLLBACK_REJECTRD);
             }
             String flowDeployId = flowInstanceBO.getFlowDeployId();
 

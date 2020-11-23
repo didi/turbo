@@ -7,9 +7,8 @@ import com.google.common.collect.Maps;
 import com.xiaoju.uemc.turbo.engine.bo.HookInfoResponse;
 import com.xiaoju.uemc.turbo.engine.bo.NodeInstanceBO;
 import com.xiaoju.uemc.turbo.engine.common.*;
-import com.xiaoju.uemc.turbo.engine.config.EngineConfig;
+import com.xiaoju.uemc.turbo.engine.config.HookProperties;
 import com.xiaoju.uemc.turbo.engine.entity.InstanceDataPO;
-import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
@@ -36,7 +35,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
     private static final String PARAM_DATA_LIST = "dataList";
 
     @Resource
-    private EngineConfig engineConfig;
+    private HookProperties hookProperties;
 
     /**
      * Update data map: http request to update data map
@@ -76,13 +75,13 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
 
     private Map<String, InstanceData> getHookInfoValueMap(String flowInstanceId, String hookInfoParam) throws Exception {
         //get hook config: url and timeout
-        String hookUrl = engineConfig.getHookUrl();
+        String hookUrl = hookProperties.getUrl();
         if (StringUtils.isBlank(hookUrl)) {
             LOGGER.warn("getHookInfoValueMap: cannot find hookConfig.||flowInstanceId={}", flowInstanceId);
-            throw new ProcessException(ErrorEnum.GET_HOOK_CONFIG_FAILED);
+            return MapUtils.EMPTY_MAP;
         }
 
-        Integer timeout = engineConfig.getHookTimeout();
+        Integer timeout = hookProperties.getTimeout();
         if (timeout == null) {
             timeout = Constants.DEFAULT_TIMEOUT;
         }
@@ -162,7 +161,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
      */
     @Override
     protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception {
-        FlowElement nextNode = FlowModelUtil.calculateNextNode(runtimeContext.getCurrentNodeModel(),
+        FlowElement nextNode = calculateNextNode(runtimeContext.getCurrentNodeModel(),
                 runtimeContext.getFlowElementMap(), runtimeContext.getInstanceDataMap());
 
         runtimeContext.setCurrentNodeModel(nextNode);
