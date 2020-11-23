@@ -1,7 +1,6 @@
 package com.xiaoju.uemc.turbo.engine.service;
 
-import com.xiaoju.uemc.turbo.engine.util.GroovyUtil;
-
+import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import java.util.Map;
 
 /**
@@ -13,5 +12,5 @@ import java.util.Map;
  */
 public interface CalculateService {
 
-    Boolean calculate(String expression, Map<String, Object> dataMap) throws Exception;
+    Boolean calculate(String expression, Map<String, Object> dataMap) throws ProcessException;
 }
