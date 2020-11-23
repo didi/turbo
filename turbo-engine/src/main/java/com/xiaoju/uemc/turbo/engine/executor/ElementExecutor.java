@@ -316,21 +316,8 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         throw new ProcessException(ErrorEnum.GET_OUTGOING_FAILED);
     }
 
-    protected boolean processCondition(String expression, Map<String, InstanceData> instanceDataMap) throws Exception {
-
-        boolean result = false;
+    protected boolean processCondition(String expression, Map<String, InstanceData> instanceDataMap) throws ProcessException {
         Map<String, Object> dataMap = InstanceDataUtil.parseInstanceDataMap(instanceDataMap);
-        try {
-            result = calculateService.calculate(expression, dataMap);
-        } catch (Throwable t) {
-            LOGGER.error("processCondition exception.||message={}||expression={}||instanceDataMap={}, ",
-                    t.getMessage(), expression, instanceDataMap, t);
-            String groovyExFormat = "{0}: expression={1}";
-            throw new ProcessException(ErrorEnum.GROOVY_CALCULATE_FAILED, MessageFormat.format(groovyExFormat, t.getMessage(), expression));
-        } finally {
-            LOGGER.info("processCondition.||expression={}||instanceDataMap={}||result={}",
-                    expression, JSONObject.toJSONString(instanceDataMap), result);
-        }
-        return result;
+        return calculateService.calculate(expression, dataMap);
     }
 }
