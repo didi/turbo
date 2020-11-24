@@ -325,6 +325,12 @@ public class EntityBuilder {
         updateFlowParam.setFlowModel(buildModelString());
         return updateFlowParam;
     }
+    public static DeployFlowParam buildDeployFlowParm() {
+        DeployFlowParam deployFlowParam = new DeployFlowParam("didi", "optimus-prime");
+        deployFlowParam.setFlowModuleId(flowModuleId);
+        return deployFlowParam;
+    }
+
 
     private static List<InstanceData> buildInstanceDataList() {
         InstanceData instanceData1 = new InstanceData("key1", "string", "value1");
