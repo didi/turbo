@@ -29,9 +29,11 @@ public enum ErrorEnum {
     EMPTY_SEQUENCE_OUTGOING(3209, "Empty sequence outgoing"),
     TOO_MANY_DEFAULT_SEQUENCE(3210, "Too many default sequence"),
     MODEL_UNKNOWN_ELEMENT_KEY(3211, "Unknown element key"),
-    ELEMENT_TOO_MUCH_OUTGOING(3212, "Too many outgoing"),
-    ELEMENT_LACK_INCOMING(3213, "Element lack incoming"),
-    ELEMENT_LACK_OUTGOING(3214, "Element lack outgoing"),
+    ELEMENT_TOO_MUCH_INCOMING(3212, "Too many incoming"),
+    ELEMENT_TOO_MUCH_OUTGOING(3213, "Too many outgoing"),
+    ELEMENT_LACK_INCOMING(3214, "Element lack incoming"),
+    ELEMENT_LACK_OUTGOING(3215, "Element lack outgoing"),
+
 
     //4000~4999 流程执行错误
     COMMIT_FAILED(4001, "Commit task failed"),

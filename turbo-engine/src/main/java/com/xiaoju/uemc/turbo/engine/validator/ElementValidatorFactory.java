@@ -52,24 +52,18 @@ public class ElementValidatorFactory {
 
     private ElementValidator getElementValidator(int elementType) {
         switch (elementType) {
-            case FlowElementType.START_EVENT: {
+            case FlowElementType.START_EVENT:
                 return startEventValidator;
-            }
-            case FlowElementType.END_EVENT: {
+            case FlowElementType.END_EVENT:
                 return endEventValidator;
-            }
-            case FlowElementType.SEQUENCE_FLOW: {
+            case FlowElementType.SEQUENCE_FLOW:
                 return sequenceFlowValidator;
-            }
-            case FlowElementType.USER_TASK: {
+            case FlowElementType.USER_TASK:
                 return userTaskValidator;
-            }
-            case FlowElementType.EXCLUSIVE_GATEWAY: {
+            case FlowElementType.EXCLUSIVE_GATEWAY:
                 return exclusiveGatewayValidator;
-            }
-            default: {
+            default:
                 return null;
-            }
         }
     }
 }

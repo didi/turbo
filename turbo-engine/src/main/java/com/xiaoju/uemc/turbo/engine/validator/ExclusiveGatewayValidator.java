@@ -33,12 +33,9 @@ public class ExclusiveGatewayValidator extends ElementValidator {
         List<String> outgoing = flowElement.getOutgoing();
 
         if (CollectionUtils.isEmpty(outgoing)) {
-            LOGGER.warn("element lack outgoing.||flowElement={}", JSON.toJSONString(flowElement));
-            throw new ModelException(ErrorEnum.ELEMENT_LACK_OUTGOING);
+            throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_LACK_OUTGOING);
         }
 
-        String elementName = FlowModelUtil.getElementName(flowElement);
-        String elementkey = flowElement.getKey();
         List<String> outgoingList = flowElement.getOutgoing();
         int defaultConditionCount = 0;
 
@@ -49,10 +46,8 @@ public class ExclusiveGatewayValidator extends ElementValidator {
             boolean isDefaultCondition = FlowModelUtil.isDefaultCondition(outgoingSequenceFlow);
 
             if (StringUtils.isBlank(condition) && !isDefaultCondition) {
-                String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT,
-                        ErrorEnum.EMPTY_SEQUENCE_OUTGOING.getErrMsg(), elementName, elementkey);
-                LOGGER.error(exceptionMsg);
-                throw new ModelException(ErrorEnum.EMPTY_SEQUENCE_OUTGOING.getErrNo(), exceptionMsg);
+                throwElementValidatorException(flowElement, ErrorEnum.EMPTY_SEQUENCE_OUTGOING);
+
             }
             if (isDefaultCondition) {
                 defaultConditionCount++;
@@ -60,10 +55,7 @@ public class ExclusiveGatewayValidator extends ElementValidator {
         }
 
         if (defaultConditionCount > 1) {
-            String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT,
-                    ErrorEnum.TOO_MANY_DEFAULT_SEQUENCE.getErrMsg(), elementName, elementkey);
-            LOGGER.error(exceptionMsg);
-            throw new ModelException(ErrorEnum.TOO_MANY_DEFAULT_SEQUENCE.getErrNo(), exceptionMsg);
+            throwElementValidatorException(flowElement, ErrorEnum.TOO_MANY_DEFAULT_SEQUENCE);
         }
     }
 }
