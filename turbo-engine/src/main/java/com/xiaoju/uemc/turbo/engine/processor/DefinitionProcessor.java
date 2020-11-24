@@ -1,8 +1,6 @@
 package com.xiaoju.uemc.turbo.engine.processor;
 
 import com.alibaba.fastjson.JSON;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.common.FlowDefinitionStatus;
 import com.xiaoju.uemc.turbo.engine.common.FlowDeploymentStatus;
@@ -22,6 +20,8 @@ import com.xiaoju.uemc.turbo.engine.util.IdGenerator;
 import com.xiaoju.uemc.turbo.engine.util.StrongUuidGenerator;
 import com.xiaoju.uemc.turbo.engine.validator.ModelValidator;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,7 @@ public class DefinitionProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefinitionProcessor.class);
 
-    private static final IdGenerator idGenerator = StrongUuidGenerator.getInstance();
+    private static final IdGenerator idGenerator = new StrongUuidGenerator();
 
     @Autowired
     FlowDefinitionDAO flowDefinitionDAO;

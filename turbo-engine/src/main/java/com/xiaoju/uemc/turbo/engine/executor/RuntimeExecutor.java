@@ -1,7 +1,5 @@
 package com.xiaoju.uemc.turbo.engine.executor;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import com.xiaoju.uemc.modules.support.jedis.RedisUtils;
 import com.xiaoju.uemc.turbo.engine.common.RuntimeContext;
 import com.xiaoju.uemc.turbo.engine.dao.InstanceDataDAO;
@@ -9,6 +7,8 @@ import com.xiaoju.uemc.turbo.engine.dao.NodeInstanceDAO;
 import com.xiaoju.uemc.turbo.engine.dao.NodeInstanceLogDAO;
 import com.xiaoju.uemc.turbo.engine.util.IdGenerator;
 import com.xiaoju.uemc.turbo.engine.util.StrongUuidGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 
@@ -34,7 +34,7 @@ public abstract class RuntimeExecutor {
     protected final RedisUtils redisClient = RedisUtils.getInstance();
 
     // TODO: 2020/11/11
-    private static final IdGenerator idGenerator = StrongUuidGenerator.getInstance();
+    private static final IdGenerator idGenerator = new StrongUuidGenerator();
 
     protected String genId() {
         return idGenerator.getNextId();

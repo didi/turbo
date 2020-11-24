@@ -7,7 +7,7 @@ import org.junit.Test;
  */
 public class IdGeneratorTest {
 
-    private IdGenerator idGenerator = StrongUuidGenerator.getInstance();
+    private IdGenerator idGenerator = new StrongUuidGenerator();
 
     @Test
     public void testDoExecute() {

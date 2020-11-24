@@ -9,24 +9,11 @@ import com.fasterxml.uuid.impl.TimeBasedGenerator;
  */
 public class StrongUuidGenerator implements IdGenerator {
 
-    private static volatile StrongUuidGenerator singleGenerator;
-
     // different ProcessEngines on the same classloader share one generator.
-    private static TimeBasedGenerator timeBasedGenerator;
+    private static volatile TimeBasedGenerator timeBasedGenerator;
 
-    private StrongUuidGenerator() {
+    public StrongUuidGenerator() {
         initGenerator();
-    }
-
-    public static StrongUuidGenerator getInstance() {
-        if (singleGenerator == null) {
-            synchronized (StrongUuidGenerator.class) {
-                if (singleGenerator == null) {
-                    singleGenerator = new StrongUuidGenerator();
-                }
-            }
-        }
-        return singleGenerator;
     }
 
     private void initGenerator() {
