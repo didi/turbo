@@ -42,7 +42,11 @@ public class FlowModelValidator {
 
         for(FlowElement flowElement : flowElementList) {
             if (flowElementMap.containsKey(flowElement.getKey())) {
-
+                String elementName = FlowModelUtil.getElementName(flowElement);
+                String elementkey = flowElement.getKey();
+                String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT, ErrorEnum.START_NODE_INVALID, elementName, elementkey);
+                LOGGER.error(exceptionMsg);
+                throw new ModelException(ErrorEnum.START_NODE_INVALID);
             }
             flowElementMap.put(flowElement.getKey(), flowElement);
         }
