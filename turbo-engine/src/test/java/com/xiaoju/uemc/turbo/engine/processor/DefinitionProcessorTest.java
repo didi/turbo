@@ -57,9 +57,9 @@ public class DefinitionProcessorTest extends BaseTest {
     @Test
     public void deployTest() {
         DeployFlowParam deployFlowParam = EntityBuilder.buildDeployFlowParm();
-        //deployFlowParam.setFlowModuleId("955500c2-298f-11eb-b7c8-6eca5e511091");
+        deployFlowParam.setFlowModuleId("955500c2-298f-11eb-b7c8-6eca5e511091");
         //deployFlowParam.setFlowModuleId("b1598eec-2a32-11eb-bcb2-6eca5e511091");
-        deployFlowParam.setFlowModuleId("111");
+        //deployFlowParam.setFlowModuleId("111");
         try {
             DeployFlowDTO deployFlowDTO = definitionProcessor.deploy(deployFlowParam);
             LOGGER.info("deployFlowTest.||deployFlowDTO={}", deployFlowDTO);

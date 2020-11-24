@@ -263,7 +263,7 @@ public class EntityBuilder {
         startEvent.setOutgoing(seOutgoings);
         return startEvent;
     }
-    public static FlowElement buildStartEventVaild() {
+    public static FlowElement buildStartEventInvalid() {
         StartEvent startEvent = new StartEvent();
         startEvent.setKey("startEvent1");
         startEvent.setType(FlowElementType.START_EVENT);
@@ -281,10 +281,93 @@ public class EntityBuilder {
         endEvent.setKey("endEvent1");
         endEvent.setType(FlowElementType.END_EVENT);
         List<String> eeIncomings1 = new ArrayList<>();
-        eeIncomings1.add("sequenceFlow5");
+        eeIncomings1.add("sequenceFlow");
         endEvent.setIncoming(eeIncomings1);
         return endEvent;
     }
+
+    public static FlowElement buildSequenceFlow() {
+        FlowElement sequenceFlow = new SequenceFlow();
+        sequenceFlow.setKey("sequenceFlow5");
+        sequenceFlow.setType(FlowElementType.SEQUENCE_FLOW);
+
+        List<String> sfIncomings = new ArrayList<>();
+        sfIncomings.add("userTask2");
+        sequenceFlow.setIncoming(sfIncomings);
+
+        List<String> sfOutgoings = new ArrayList<>();
+        sfOutgoings.add("endEvent1");
+        sequenceFlow.setOutgoing(sfOutgoings);
+        return sequenceFlow;
+    }
+
+    public static FlowElement buildSequenceFlowInvalid1() {
+        FlowElement sequenceFlow = new SequenceFlow();
+        sequenceFlow.setKey("sequenceFlow5");
+        sequenceFlow.setType(FlowElementType.SEQUENCE_FLOW);
+        List<String> sfIncomings = new ArrayList<>();
+        sfIncomings.add("userTask2");
+        sequenceFlow.setIncoming(sfIncomings);
+        return sequenceFlow;
+    }
+
+    public static ExclusiveGateway buildExclusiveGateway() {
+        ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
+
+        exclusiveGateway.setKey("exclusiveGateway1");
+        exclusiveGateway.setType(FlowElementType.EXCLUSIVE_GATEWAY);
+
+        List<String> egIncomings = new ArrayList<>();
+        egIncomings.add("sequenceFlow1");
+        exclusiveGateway.setIncoming(egIncomings);
+
+        List<String> egOutgoings = new ArrayList<>();
+        egOutgoings.add("sequenceFlow2");
+        egOutgoings.add("sequenceFlow3");
+        exclusiveGateway.setOutgoing(egOutgoings);
+        return exclusiveGateway;
+    }
+
+    public static FlowElement buildSequenceFlow2() {
+        FlowElement sequenceFlow = new SequenceFlow();
+        sequenceFlow.setKey("sequenceFlow2");
+        sequenceFlow.setType(FlowElementType.SEQUENCE_FLOW);
+
+        List<String> sfIncomings = new ArrayList<>();
+        sfIncomings.add("exclusiveGateway1");
+        sequenceFlow.setIncoming(sfIncomings);
+
+        List<String> sfOutgoings = new ArrayList<>();
+        sfOutgoings.add("endEvent1");
+        sequenceFlow.setOutgoing(sfOutgoings);
+        Map<String, Object> map = new HashMap<>();
+        map.put("defaultConditions", "false");
+        map.put("conditionsequenceflow", "${(orderId>1)}");
+        sequenceFlow.setProperties(map);
+        return sequenceFlow;
+    }
+
+    public static FlowElement buildSequenceFlow3() {
+        FlowElement sequenceFlow = new SequenceFlow();
+        sequenceFlow.setKey("sequenceFlow3");
+        sequenceFlow.setType(FlowElementType.SEQUENCE_FLOW);
+
+        List<String> sfIncomings = new ArrayList<>();
+        sfIncomings.add("exclusiveGateway1");
+        sequenceFlow.setIncoming(sfIncomings);
+
+        List<String> sfOutgoings = new ArrayList<>();
+        sfOutgoings.add("endEvent2");
+        sequenceFlow.setOutgoing(sfOutgoings);
+        Map<String, Object> map = new HashMap<>();
+        map.put("defaultConditions", "false");
+        map.put("conditionsequenceflow", "${(orderId<1)}");
+        sequenceFlow.setProperties(map);
+        return sequenceFlow;
+    }
+
+
+
 
     public static FlowInstancePO buildFlowInstancePO() {
         FlowInstancePO flowInstancePO = new FlowInstancePO();
@@ -532,22 +615,6 @@ public class EntityBuilder {
         return recallTaskParam;
     }
 
-    public static ExclusiveGateway buildExclusiveGateway() {
-        ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
-
-        exclusiveGateway.setKey("exclusiveGateway1");
-        exclusiveGateway.setType(FlowElementType.EXCLUSIVE_GATEWAY);
-
-        List<String> egIncomings = new ArrayList<>();
-        egIncomings.add("sequenceFlow1");
-        exclusiveGateway.setIncoming(egIncomings);
-
-        List<String> egOutgoings = new ArrayList<>();
-        egOutgoings.add("sequenceFlow2");
-        egOutgoings.add("sequenceFlow3");
-        exclusiveGateway.setOutgoing(egOutgoings);
-        return exclusiveGateway;
-    }
 
 //    //flowInfo
 //    private String flowDeployId;
