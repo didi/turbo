@@ -1,7 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.executor;
 
-import com.didiglobal.reportlogger.LoggerFactory;
-import com.didiglobal.reportlogger.ReportLogger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import com.xiaoju.uemc.turbo.engine.common.Constants;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.common.FlowElementType;
@@ -19,7 +19,7 @@ import java.text.MessageFormat;
 @Service
 public class ExecutorFactory {
 
-    private static final ReportLogger LOGGER = LoggerFactory.getLogger(ExecutorFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorFactory.class);
 
     @Resource
     private StartEventExecutor startEventExecutor;

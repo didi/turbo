@@ -3,8 +3,8 @@ package com.xiaoju.uemc.turbo.engine.processor;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
-import com.didiglobal.reportlogger.LoggerFactory;
-import com.didiglobal.reportlogger.ReportLogger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.xiaoju.uemc.modules.support.jedis.RedisUtils;
@@ -48,7 +48,7 @@ import java.util.Map;
 @Component
 public class RuntimeProcessor {
 
-    private static final ReportLogger LOGGER = LoggerFactory.getLogger(RuntimeProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeProcessor.class);
 
     @Resource
     private FlowDeploymentDAO flowDeploymentDAO;

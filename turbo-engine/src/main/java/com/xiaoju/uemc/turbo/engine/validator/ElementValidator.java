@@ -1,7 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.validator;
 
-import com.didiglobal.reportlogger.LoggerFactory;
-import com.didiglobal.reportlogger.ReportLogger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import com.xiaoju.uemc.turbo.engine.common.Constants;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.common.FlowElementType;
@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class ElementValidator {
 
-    protected static final ReportLogger LOGGER = LoggerFactory.getLogger(FlowModelValidator.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(FlowModelValidator.class);
 
     public static void validate(List<FlowElement> flowElementList) throws ModelException {
 
