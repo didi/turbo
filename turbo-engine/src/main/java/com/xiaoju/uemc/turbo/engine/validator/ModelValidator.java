@@ -1,5 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.validator;
 
+import com.didiglobal.reportlogger.LoggerFactory;
+import com.didiglobal.reportlogger.ReportLogger;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.exception.ModelException;
 import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
@@ -17,15 +19,20 @@ import javax.annotation.Resource;
 @Component
 public class ModelValidator {
 
+    protected static final ReportLogger LOGGER = LoggerFactory.getLogger(FlowModelValidator.class);
+
     @Resource
     private FlowModelValidator flowModelValidator;
+
     public void validate(String flowModelStr) throws ModelException, ProcessException {
         if (StringUtils.isBlank(flowModelStr)) {
+            LOGGER.error(ErrorEnum.MODEL_EMPTY.getErrMsg());
             throw new ModelException(ErrorEnum.MODEL_EMPTY);
         }
 
         FlowModel flowModel = FlowModelUtil.parseModelFromString(flowModelStr);
         if (flowModel == null || CollectionUtils.isEmpty(flowModel.getFlowElementList())) {
+            LOGGER.error(ErrorEnum.MODEL_EMPTY.getErrMsg());
             throw new ModelException(ErrorEnum.MODEL_EMPTY);
         }
         flowModelValidator.validate(flowModel);
