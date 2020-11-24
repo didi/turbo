@@ -254,6 +254,38 @@ public class EntityBuilder {
         return flowElementList;
     }
 
+    public static FlowElement buildStartEvent() {
+        StartEvent startEvent = new StartEvent();
+        startEvent.setKey("startEvent1");
+        startEvent.setType(FlowElementType.START_EVENT);
+        List<String> seOutgoings = new ArrayList<>();
+        seOutgoings.add("sequenceFlow1");
+        startEvent.setOutgoing(seOutgoings);
+        return startEvent;
+    }
+    public static FlowElement buildStartEventVaild() {
+        StartEvent startEvent = new StartEvent();
+        startEvent.setKey("startEvent1");
+        startEvent.setType(FlowElementType.START_EVENT);
+        List<String> seOutgoings = new ArrayList<>();
+        seOutgoings.add("sequenceFlow1");
+        startEvent.setOutgoing(seOutgoings);
+        List<String> setIncomings = new ArrayList<>();
+        setIncomings.add("sequenceFlow2");
+        startEvent.setIncoming(seOutgoings);
+        return startEvent;
+    }
+
+    public static FlowElement buildEndEvent() {
+        EndEvent endEvent = new EndEvent();
+        endEvent.setKey("endEvent1");
+        endEvent.setType(FlowElementType.END_EVENT);
+        List<String> eeIncomings1 = new ArrayList<>();
+        eeIncomings1.add("sequenceFlow5");
+        endEvent.setIncoming(eeIncomings1);
+        return endEvent;
+    }
+
     public static FlowInstancePO buildFlowInstancePO() {
         FlowInstancePO flowInstancePO = new FlowInstancePO();
         flowInstancePO.setFlowModuleId(flowModuleId);
@@ -361,7 +393,7 @@ public class EntityBuilder {
 //        return model.toJSONString();
 //    }
 
-    private static String buildModelString() {
+    public static String buildModelString() {
         FlowModel flowModel = new FlowModel();
         List<FlowElement> flowElementList = new ArrayList<>();
 

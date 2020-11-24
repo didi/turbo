@@ -10,6 +10,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class FlowDeploymentDAO extends BaseDAO<FlowDeploymentMapper, FlowDeploymentPO> {
 
+    /**
+     * Insert: insert flowDeploymentPO to database
+     *
+     * @param  flowDeploymentPO
+     * @return int
+     */
     public int insert(FlowDeploymentPO flowDeploymentPO) {
         try {
             return baseMapper.insert(flowDeploymentPO);
@@ -19,10 +25,22 @@ public class FlowDeploymentDAO extends BaseDAO<FlowDeploymentMapper, FlowDeploym
         return -1;
     }
 
+    /**
+     * SelectByDeployId : query flowDeploymentPO by flowDeployId from database
+     *
+     * @param  flowDeployId
+     * @return flowDeploymentPO
+     */
     public FlowDeploymentPO selectByDeployId(String flowDeployId) {
         return baseMapper.selectByDeployId(flowDeployId);
     }
 
+    /**
+     * SelectRecentByFlowModuleId : query recent flowDeploymentPO by flowModuleId from database
+     *
+     * @param  flowModuleId
+     * @return flowDeploymentPO
+     */
     public FlowDeploymentPO selectRecentByFlowModuleId(String flowModuleId) {
         return baseMapper.selectByModuleId(flowModuleId);
     }

@@ -1,7 +1,5 @@
 package com.xiaoju.uemc.turbo.engine.executor;
 
-import com.didiglobal.reportlogger.LoggerFactory;
-import com.didiglobal.reportlogger.ReportLogger;
 import com.xiaoju.uemc.turbo.engine.common.RuntimeContext;
 import com.xiaoju.uemc.turbo.engine.dao.InstanceDataDAO;
 import com.xiaoju.uemc.turbo.engine.dao.NodeInstanceDAO;
@@ -9,6 +7,8 @@ import com.xiaoju.uemc.turbo.engine.dao.NodeInstanceLogDAO;
 import com.xiaoju.uemc.turbo.engine.util.IdGenerator;
 import com.xiaoju.uemc.turbo.engine.util.RedisClient;
 import com.xiaoju.uemc.turbo.engine.util.StrongUuidGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 
@@ -17,7 +17,7 @@ import javax.annotation.Resource;
  */
 public abstract class RuntimeExecutor {
 
-    protected static final ReportLogger LOGGER = LoggerFactory.getLogger(RuntimeExecutor.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(RuntimeExecutor.class);
 
     @Resource
     protected ExecutorFactory executorFactory;

@@ -48,6 +48,13 @@ public class DefinitionProcessor {
     @Resource
     private FlowDeploymentDAO flowDeploymentDAO;
 
+    /**
+     * Create: create new flow
+     *
+     * @param createFlowParam: flowKey + flowName + remark
+     * @return createFlowDTO: flowModuleId
+     * @throws Exception
+     */
     public CreateFlowDTO create(CreateFlowParam createFlowParam) throws Exception {
         FlowDefinitionPO flowDefinitionPO = new FlowDefinitionPO();
         BeanUtils.copyProperties(createFlowParam, flowDefinitionPO);
@@ -65,7 +72,13 @@ public class DefinitionProcessor {
         return createFlowDTO;
     }
 
-    // TODO: 2019/12/2  Attention: update tenantId in FlowDeployment while update tenantId // why？？？
+    /**
+     * Update: update flow
+     *
+     * @param updateFlowParam: flowKey + flowName + flowModuleId + flowModel + remark
+     * @return boolean
+     * @throws ParamException
+     */
     public boolean update(UpdateFlowParam updateFlowParam) throws ParamException {
         FlowDefinitionPO flowDefinitionPO = new FlowDefinitionPO();
         BeanUtils.copyProperties(updateFlowParam, flowDefinitionPO);
@@ -78,6 +91,13 @@ public class DefinitionProcessor {
         return true;
     }
 
+    /**
+     * Deploy: deploy flow
+     *
+     * @param deployFlowParam : flowModuleId
+     * @return deployFlowDTO : flowModuleId + flowDeployId
+     * @throws Exception
+     */
     public DeployFlowDTO deploy(DeployFlowParam deployFlowParam) throws Exception {
         FlowDefinitionPO flowDefinitionPO = flowDefinitionDAO.selectByModuleId(deployFlowParam.getFlowModuleId());
         if (null == flowDefinitionPO) {
@@ -105,6 +125,12 @@ public class DefinitionProcessor {
         return deployFlowDTO;
     }
 
+    /**
+     * GetFlowModule: get flowModule
+     *
+     * @param  flowModuleId, flowDeployId
+     * @return flowModuleDTO
+     */
     public FlowModuleDTO getFlowModule(String flowModuleId, String flowDeployId) {
         if (StringUtils.isNotBlank(flowDeployId)) {
             return getFlowModuleByFlowDeployId(flowDeployId);
