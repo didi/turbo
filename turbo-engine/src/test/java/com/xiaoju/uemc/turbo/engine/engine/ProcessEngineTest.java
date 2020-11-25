@@ -3,6 +3,7 @@ package com.xiaoju.uemc.turbo.engine.engine;
 import com.xiaoju.uemc.turbo.engine.dto.CreateFlowDTO;
 import com.xiaoju.uemc.turbo.engine.dto.DeployFlowDTO;
 import com.xiaoju.uemc.turbo.engine.dto.FlowModuleDTO;
+import com.xiaoju.uemc.turbo.engine.dto.UpdateFlowDTO;
 import com.xiaoju.uemc.turbo.engine.engine.impl.ProcessEngineImpl;
 import com.xiaoju.uemc.turbo.engine.param.CreateFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.DeployFlowParam;
@@ -41,8 +42,8 @@ public class ProcessEngineTest extends BaseTest {
         UpdateFlowParam updateFlowParam = EntityBuilder.buildUpdateFlowParam();
         updateFlowParam.setFlowModuleId("a038f993-1d7c-11ea-928e-8214dae31b03");
         try {
-            boolean result = processEngineImpl.updateFlow(updateFlowParam);
-            LOGGER.info("result={}", result);
+            UpdateFlowDTO updateFlowDTO = processEngineImpl.updateFlow(updateFlowParam);
+            LOGGER.info("result={}", updateFlowDTO);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,7 +53,7 @@ public class ProcessEngineTest extends BaseTest {
     public void getFlowModuleTest() {
         String flowModuleId = "a038f993-1d7c-11ea-928e-8214dae31b03";
         try {
-            FlowModuleDTO flowModule = processEngineImpl.getFlowModule(flowModuleId);
+            FlowModuleDTO flowModule = processEngineImpl.getFlowModule(flowModuleId, null);
             LOGGER.info("flowModule={} by flowModuleId", flowModule);
         } catch (Exception e) {
             e.printStackTrace();

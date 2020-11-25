@@ -180,8 +180,6 @@ public class FlowExecutor extends RuntimeExecutor {
 
             runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.COMPLETED);
 
-            //4.clear cache
-            redisClient.del(RedisConstants.FLOW_INSTANCE + runtimeContext.getFlowInstanceId());
             LOGGER.info("postExecute: flowInstance process completely.||flowInstanceId={}", runtimeContext.getFlowInstanceId());
         }
     }
@@ -323,8 +321,6 @@ public class FlowExecutor extends RuntimeExecutor {
             //update context
             runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.COMPLETED);
 
-            //clear cache
-            redisClient.del(RedisConstants.FLOW_INSTANCE + runtimeContext.getFlowInstanceId());
             LOGGER.info("postCommit: flowInstance process completely.||flowInstanceId={}", runtimeContext.getFlowInstanceId());
         }
     }

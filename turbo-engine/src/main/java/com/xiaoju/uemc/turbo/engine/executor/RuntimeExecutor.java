@@ -8,7 +8,6 @@ import com.xiaoju.uemc.turbo.engine.dao.NodeInstanceDAO;
 import com.xiaoju.uemc.turbo.engine.dao.NodeInstanceLogDAO;
 import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.util.IdGenerator;
-import com.xiaoju.uemc.turbo.engine.util.RedisClient;
 import com.xiaoju.uemc.turbo.engine.util.StrongUuidGenerator;
 
 import javax.annotation.Resource;
@@ -32,10 +31,6 @@ public abstract class RuntimeExecutor {
     @Resource
     protected NodeInstanceLogDAO nodeInstanceLogDAO;
 
-    @Resource
-    protected RedisClient redisClient;
-
-    // TODO: 2020/11/11
     private static final IdGenerator idGenerator = StrongUuidGenerator.getInstance();
 
     protected String genId() {

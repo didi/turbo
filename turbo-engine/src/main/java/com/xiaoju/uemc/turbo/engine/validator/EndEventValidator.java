@@ -24,12 +24,12 @@ import java.util.Map;
  * 创 建 人：didiwangxing
  */
 @Component
-public class EndEventValidator extends ElementValidator{
+public class EndEventValidator extends ElementValidator {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(EndEventValidator.class);
 
     @Override
-    protected void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement)  {
+    protected void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement) {
         List<String> outgoing = flowElement.getOutgoing();
 
         if (CollectionUtils.isNotEmpty(outgoing)) {

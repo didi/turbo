@@ -36,6 +36,10 @@ public class FlowModelValidator {
     private ElementValidatorFactory elementValidatorFactory;
 
     public void validate(FlowModel flowModel) throws ProcessException, ModelException {
+        if (flowModel == null || CollectionUtils.isEmpty(flowModel.getFlowElementList())) {
+            LOGGER.warn("message={}", ErrorEnum.MODEL_EMPTY.getErrMsg());
+            throw new ModelException(ErrorEnum.MODEL_EMPTY);
+        }
 
         List<FlowElement> flowElementList = flowModel.getFlowElementList();
         Map<String, FlowElement> flowElementMap = Maps.newHashMap();
@@ -45,7 +49,7 @@ public class FlowModelValidator {
                 String elementName = FlowModelUtil.getElementName(flowElement);
                 String elementkey = flowElement.getKey();
                 String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT, ErrorEnum.ELEMENT_KEY_NOT_UNIQUE, elementName, elementkey);
-                LOGGER.error(exceptionMsg);
+                LOGGER.warn(exceptionMsg);
                 throw new ModelException(ErrorEnum.ELEMENT_KEY_NOT_UNIQUE.getErrNo(), exceptionMsg);
             }
             flowElementMap.put(flowElement.getKey(), flowElement);
@@ -69,12 +73,12 @@ public class FlowModelValidator {
         }
 
         if (startEventCount != 1) {
-            LOGGER.error(ErrorEnum.START_NODE_INVALID.getErrMsg());
+            LOGGER.warn("message={}||startEventCount={}", ErrorEnum.START_NODE_INVALID.getErrMsg(), startEventCount);
             throw new ModelException(ErrorEnum.START_NODE_INVALID);
         }
 
         if (endEventCount < 1) {
-            LOGGER.error(ErrorEnum.END_NODE_INVALID.getErrMsg());
+            LOGGER.warn("message={}", ErrorEnum.END_NODE_INVALID.getErrMsg());
             throw new ModelException(ErrorEnum.END_NODE_INVALID);
         }
     }

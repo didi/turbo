@@ -47,7 +47,6 @@ public class ExclusiveGatewayValidator extends ElementValidator {
 
             if (StringUtils.isBlank(condition) && !isDefaultCondition) {
                 throwElementValidatorException(flowElement, ErrorEnum.EMPTY_SEQUENCE_OUTGOING);
-
             }
             if (isDefaultCondition) {
                 defaultConditionCount++;

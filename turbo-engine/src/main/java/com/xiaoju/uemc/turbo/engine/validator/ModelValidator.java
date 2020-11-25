@@ -26,13 +26,13 @@ public class ModelValidator {
 
     public void validate(String flowModelStr) throws ModelException, ProcessException {
         if (StringUtils.isBlank(flowModelStr)) {
-            LOGGER.error(ErrorEnum.MODEL_EMPTY.getErrMsg());
+            LOGGER.warn("message={}||flowModelStr={}", ErrorEnum.MODEL_EMPTY.getErrMsg());
             throw new ModelException(ErrorEnum.MODEL_EMPTY);
         }
 
         FlowModel flowModel = FlowModelUtil.parseModelFromString(flowModelStr);
         if (flowModel == null || CollectionUtils.isEmpty(flowModel.getFlowElementList())) {
-            LOGGER.error(ErrorEnum.MODEL_EMPTY.getErrMsg());
+            LOGGER.warn("message={}||flowModelStr={}", ErrorEnum.MODEL_EMPTY.getErrMsg(), flowModelStr);
             throw new ModelException(ErrorEnum.MODEL_EMPTY);
         }
         flowModelValidator.validate(flowModel);
