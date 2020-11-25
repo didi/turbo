@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 项目名称：optimus-prime
@@ -20,4 +21,13 @@ import java.util.List;
  */
 @Component
 public class UserTaskValidator extends ElementValidator {
+
+    @Override
+    protected void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {
+        List<String> outgoingList = flowElement.getOutgoing();
+
+        if (CollectionUtils.isEmpty(outgoingList)) {
+            throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_LACK_OUTGOING);
+        }
+    }
 }
