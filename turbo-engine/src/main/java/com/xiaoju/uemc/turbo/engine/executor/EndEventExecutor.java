@@ -19,7 +19,7 @@ import java.text.MessageFormat;
 public class EndEventExecutor extends ElementExecutor {
 
     @Override
-    protected void postExecute(RuntimeContext runtimeContext) throws Exception {
+    protected void postExecute(RuntimeContext runtimeContext) throws ProcessException {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
         currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());
         currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);
@@ -27,7 +27,7 @@ public class EndEventExecutor extends ElementExecutor {
     }
 
     @Override
-    protected void doRollback(RuntimeContext runtimeContext) throws Exception {
+    protected void doRollback(RuntimeContext runtimeContext) throws ProcessException {
         FlowElement flowElement = runtimeContext.getCurrentNodeModel();
         String nodeName = FlowModelUtil.getElementName(flowElement);
         LOGGER.warn("doRollback: unsupported element type as EndEvent.||flowInstanceId={}||nodeKey={}||nodeName={}||nodeType={}",
@@ -37,12 +37,12 @@ public class EndEventExecutor extends ElementExecutor {
     }
 
     @Override
-    protected void postRollback(RuntimeContext runtimeContext) throws Exception {
+    protected void postRollback(RuntimeContext runtimeContext) {
         //do nothing
     }
 
     @Override
-    protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception {
+    protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) {
         LOGGER.info("getExecuteExecutor: no executor after EndEvent.");
         return null;
     }

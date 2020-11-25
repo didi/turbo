@@ -2,6 +2,7 @@ package com.xiaoju.uemc.turbo.engine.engine.impl;
 
 import com.xiaoju.uemc.turbo.engine.dto.*;
 import com.xiaoju.uemc.turbo.engine.engine.ProcessEngine;
+import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.param.*;
 import com.xiaoju.uemc.turbo.engine.processor.DefinitionProcessor;
@@ -46,27 +47,27 @@ public class ProcessEngineImpl implements ProcessEngine {
     }
 
     @Override
-    public StartProcessDTO startProcess(StartProcessParam startProcessParam) throws Exception {
+    public StartProcessDTO startProcess(StartProcessParam startProcessParam) {
         return runtimeProcessor.startProcess(startProcessParam);
     }
 
     @Override
-    public CommitTaskDTO commitTask(CommitTaskParam commitTaskParam) throws Exception {
+    public CommitTaskDTO commitTask(CommitTaskParam commitTaskParam) {
         return runtimeProcessor.commit(commitTaskParam);
     }
 
     @Override
-    public RecallTaskDTO recallTask(RecallTaskParam recallTaskParam) throws Exception {
+    public RecallTaskDTO recallTask(RecallTaskParam recallTaskParam) {
         return runtimeProcessor.recall(recallTaskParam);
     }
 
     @Override
-    public TerminateDTO terminateProcess(String flowInstanceId) throws Exception {
+    public TerminateDTO terminateProcess(String flowInstanceId) {
         return runtimeProcessor.terminateProcess(flowInstanceId);
     }
 
     @Override
-    public NodeInstanceListDTO getHistoryUserTaskList(String flowInstanceId) throws Exception {
+    public NodeInstanceListDTO getHistoryUserTaskList(String flowInstanceId) throws ProcessException {
         return runtimeProcessor.getHistoryUserTaskList(flowInstanceId);
     }
 
@@ -76,7 +77,7 @@ public class ProcessEngineImpl implements ProcessEngine {
     }
 
     @Override
-    public List<InstanceData> getInstanceData(String flowInstanceId) throws Exception {
+    public List<InstanceData> getInstanceData(String flowInstanceId) {
         return runtimeProcessor.getInstanceData(flowInstanceId);
     }
 

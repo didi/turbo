@@ -9,6 +9,7 @@ import com.xiaoju.uemc.turbo.engine.bo.NodeInstanceBO;
 import com.xiaoju.uemc.turbo.engine.common.*;
 import com.xiaoju.uemc.turbo.engine.config.HookProperties;
 import com.xiaoju.uemc.turbo.engine.entity.InstanceDataPO;
+import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
@@ -44,7 +45,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
      */
     // TODO: 2019/12/16 common hook in preExecute
     @Override
-    protected void doExecute(RuntimeContext runtimeContext) throws Exception {
+    protected void doExecute(RuntimeContext runtimeContext) throws ProcessException {
         //1.get hook param
         FlowElement flowElement = runtimeContext.getCurrentNodeModel();
         String hookInfoParam = FlowModelUtil.getHookInfos(flowElement);
@@ -73,7 +74,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
         }
     }
 
-    private Map<String, InstanceData> getHookInfoValueMap(String flowInstanceId, String hookInfoParam) throws Exception {
+    private Map<String, InstanceData> getHookInfoValueMap(String flowInstanceId, String hookInfoParam) {
         //get hook config: url and timeout
         String hookUrl = hookProperties.getUrl();
         if (StringUtils.isBlank(hookUrl)) {
@@ -144,7 +145,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
     }
 
     @Override
-    protected void postExecute(RuntimeContext runtimeContext) throws Exception {
+    protected void postExecute(RuntimeContext runtimeContext) throws ProcessException {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
         currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());
         currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);
@@ -160,7 +161,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
      * @throws Exception
      */
     @Override
-    protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception {
+    protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws ProcessException {
         FlowElement nextNode = calculateNextNode(runtimeContext.getCurrentNodeModel(),
                 runtimeContext.getFlowElementMap(), runtimeContext.getInstanceDataMap());
 

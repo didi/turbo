@@ -21,19 +21,19 @@ public interface ProcessEngine {
 
     FlowModuleDTO getFlowModule(String flowModuleId, String flowDeployId);
 
-    StartProcessDTO startProcess(StartProcessParam startProcessParam) throws Exception;
+    StartProcessDTO startProcess(StartProcessParam startProcessParam);
 
-    CommitTaskDTO commitTask(CommitTaskParam commitTaskParam) throws Exception;
+    CommitTaskDTO commitTask(CommitTaskParam commitTaskParam);
 
-    RecallTaskDTO recallTask(RecallTaskParam recallTaskParam) throws Exception;
+    RecallTaskDTO recallTask(RecallTaskParam recallTaskParam);
 
-    TerminateDTO terminateProcess(String flowInstanceId) throws Exception;
+    TerminateDTO terminateProcess(String flowInstanceId);
 
     NodeInstanceListDTO getHistoryUserTaskList(String flowInstanceId) throws Exception;
 
     ElementInstanceListDTO getHistoryElementList(String flowInstanceId) throws Exception;
 
-    List<InstanceData> getInstanceData(String flowInstanceId) throws Exception;
+    List<InstanceData> getInstanceData(String flowInstanceId);
 
     NodeInstanceDTO getNodeInstance(String flowInstanceId, String nodeInstanceId) throws Exception;
 

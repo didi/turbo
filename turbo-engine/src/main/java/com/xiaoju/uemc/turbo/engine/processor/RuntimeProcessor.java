@@ -70,7 +70,7 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////startProcess////////////////////////////////////////
 
-    public StartProcessDTO startProcess(StartProcessParam startProcessParam) throws Exception {
+    public StartProcessDTO startProcess(StartProcessParam startProcessParam) {
         RuntimeContext runtimeContext = null;
         try {
             //1.param validate
@@ -96,7 +96,7 @@ public class RuntimeProcessor {
         }
     }
 
-    private FlowInfo getFlowInfo(StartProcessParam startProcessParam) throws Exception {
+    private FlowInfo getFlowInfo(StartProcessParam startProcessParam) throws ProcessException {
         if (StringUtils.isNotBlank(startProcessParam.getFlowDeployId())) {
             return getFlowInfoByFlowDeployId(startProcessParam.getFlowDeployId());
         } else {
@@ -127,7 +127,7 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////commit////////////////////////////////////////
 
-    public CommitTaskDTO commit(CommitTaskParam commitTaskParam) throws Exception {
+    public CommitTaskDTO commit(CommitTaskParam commitTaskParam) {
         RuntimeContext runtimeContext = null;
         try {
             //1.param validate
@@ -205,7 +205,7 @@ public class RuntimeProcessor {
      * @return recallTaskDTO: runtimeDTO, flowInstanceId + activeTaskInstance(nodeInstanceId,nodeKey,status) + dataMap
      * @throws Exception
      */
-    public RecallTaskDTO recall(RecallTaskParam recallTaskParam) throws Exception {
+    public RecallTaskDTO recall(RecallTaskParam recallTaskParam) {
         RuntimeContext runtimeContext = null;
         try {
             //1.param validate
@@ -272,7 +272,7 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////terminate////////////////////////////////////////
 
-    public TerminateDTO terminateProcess(String flowInstanceId) throws Exception {
+    public TerminateDTO terminateProcess(String flowInstanceId) {
         TerminateDTO terminateDTO;
         try {
             int flowInstanceStatus;
@@ -309,7 +309,7 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////getHistoryUserTaskList////////////////////////////////////////
 
-    public NodeInstanceListDTO getHistoryUserTaskList(String flowInstanceId) throws Exception {
+    public NodeInstanceListDTO getHistoryUserTaskList(String flowInstanceId) throws ProcessException {
 
         //1.get nodeInstanceList by flowInstanceId order by id desc
         List<NodeInstancePO> historyNodeInstanceList = getDescHistoryNodeInstanceList(flowInstanceId);
@@ -360,7 +360,7 @@ public class RuntimeProcessor {
         return historyListDTO;
     }
 
-    private Map<String, FlowElement> getFlowElementMap(String flowDeployId) throws Exception {
+    private Map<String, FlowElement> getFlowElementMap(String flowDeployId) throws ProcessException {
         FlowInfo flowInfo = getFlowInfoByFlowDeployId(flowDeployId);
         String flowModel = flowInfo.getFlowModel();
         return FlowModelUtil.getFlowElementMap(flowModel);
@@ -370,7 +370,7 @@ public class RuntimeProcessor {
         return status == NodeInstanceStatus.COMPLETED || status == NodeInstanceStatus.ACTIVE;
     }
 
-    private boolean isUserTask(String nodeKey, Map<String, FlowElement> flowElementMap) throws Exception {
+    private boolean isUserTask(String nodeKey, Map<String, FlowElement> flowElementMap) throws ProcessException {
         if (!flowElementMap.containsKey(nodeKey)) {
             LOGGER.warn("isUserTask: invalid nodeKey which is not in flowElementMap.||nodeKey={}||flowElementMap={}",
                     nodeKey, flowElementMap);
@@ -382,7 +382,7 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////getHistoryElementList////////////////////////////////////////
 
-    public ElementInstanceListDTO getHistoryElementList(String flowInstanceId) throws Exception {
+    public ElementInstanceListDTO getHistoryElementList(String flowInstanceId) throws ProcessException {
         //1.getHistoryNodeList
         List<NodeInstancePO> historyNodeInstanceList = getHistoryNodeInstanceList(flowInstanceId);
 
@@ -432,11 +432,11 @@ public class RuntimeProcessor {
         return elementInstanceListDTO;
     }
 
-    private List<NodeInstancePO> getHistoryNodeInstanceList(String flowInstanceId) throws Exception {
+    private List<NodeInstancePO> getHistoryNodeInstanceList(String flowInstanceId) {
         return nodeInstanceDAO.selectByFlowInstanceId(flowInstanceId);
     }
 
-    private List<NodeInstancePO> getDescHistoryNodeInstanceList(String flowInstanceId) throws Exception {
+    private List<NodeInstancePO> getDescHistoryNodeInstanceList(String flowInstanceId) {
         return nodeInstanceDAO.selectDescByFlowInstanceId(flowInstanceId);
     }
 
@@ -458,7 +458,7 @@ public class RuntimeProcessor {
     }
 
     ////////////////////////////////////////getInstanceData////////////////////////////////////////
-    public List<InstanceData> getInstanceData(String flowInstanceId) throws Exception {
+    public List<InstanceData> getInstanceData(String flowInstanceId) {
         InstanceDataPO instanceDataPO = instanceDataDAO.selectRecentOne(flowInstanceId);
 
         TypeReference<List<InstanceData>> typeReference = new TypeReference<List<InstanceData>>() {
@@ -473,7 +473,7 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////common////////////////////////////////////////
 
-    private FlowInfo getFlowInfoByFlowDeployId(String flowDeployId) throws Exception {
+    private FlowInfo getFlowInfoByFlowDeployId(String flowDeployId) throws ProcessException {
 
         FlowDeploymentPO flowDeploymentPO = flowDeploymentDAO.selectByDeployId(flowDeployId);
         if (flowDeploymentPO == null) {
@@ -486,7 +486,7 @@ public class RuntimeProcessor {
         return flowInfo;
     }
 
-    private FlowInfo getFlowInfoByFlowModuleId(String flowModuleId) throws Exception {
+    private FlowInfo getFlowInfoByFlowModuleId(String flowModuleId) throws ProcessException {
         //get from db directly
         FlowDeploymentPO flowDeploymentPO = flowDeploymentDAO.selectRecentByFlowModuleId(flowModuleId);
         if (flowDeploymentPO == null) {
@@ -503,7 +503,7 @@ public class RuntimeProcessor {
         return flowInfo;
     }
 
-    private FlowInstanceBO getFlowInstanceBO(String flowInstanceId) throws Exception {
+    private FlowInstanceBO getFlowInstanceBO(String flowInstanceId) throws ProcessException {
         //get from cache firstly
         String redisKey = RedisConstants.FLOW_INSTANCE + flowInstanceId;
         String flowInstanceStr = redisClient.get(redisKey);

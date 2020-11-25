@@ -40,7 +40,7 @@ public class ExecutorFactory {
     private ExclusiveGatewayExecutor exclusiveGatewayExecutor;
 
 
-    public ElementExecutor getElementExecutor(FlowElement flowElement) throws Exception {
+    public ElementExecutor getElementExecutor(FlowElement flowElement) throws ProcessException {
         int elementType = flowElement.getType();
         ElementExecutor elementExecutor = getElementExecutor(elementType);
 
