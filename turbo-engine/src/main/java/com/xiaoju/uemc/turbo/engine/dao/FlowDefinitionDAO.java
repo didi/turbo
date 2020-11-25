@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 public class FlowDefinitionDAO extends BaseDAO<FlowDefinitionMapper, FlowDefinitionPO> {
 
     /**
-     * Insert: insert flowDefinitionPO to database
+     * Insert: insert flowDefinitionPO, return -1 while insert failed.
      *
      * @param flowDefinitionPO
-     * @return int
+     * @return
      */
     public int insert(FlowDefinitionPO flowDefinitionPO) {
         try {
@@ -28,7 +28,7 @@ public class FlowDefinitionDAO extends BaseDAO<FlowDefinitionMapper, FlowDefinit
     }
 
     /**
-     * UpdateByModuleId: update flowDefinitionPO by flowModuleId from database
+     * UpdateByModuleId: update flowDefinitionPO by flowModuleId, return -1 while updateByModuleId failed.
      *
      * @param flowDefinitionPO
      * @return int
@@ -54,7 +54,7 @@ public class FlowDefinitionDAO extends BaseDAO<FlowDefinitionMapper, FlowDefinit
     }
 
     /**
-     * SelectByModuleId: query flowDefinitionPO by flowModuleId from database
+     * SelectByModuleId: query flowDefinitionPO by flowModuleId, return null while selectByModuleId failed.
      *
      * @param flowModuleId
      * @return flowDefinitionPO

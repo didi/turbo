@@ -32,4 +32,19 @@ public class FlowDeploymentMapperTest extends BaseTest {
         flowDeploymentPO = flowDeploymentMapper.selectByDeployId(flowDeployId);
         Assert.assertTrue(flowDeployId.equals(flowDeploymentPO.getFlowDeployId()));
     }
+
+    @Test
+    public void selectByModuleId() {
+        FlowDeploymentPO flowDeploymentPO = EntityBuilder.buildFlowDeploymentPO();
+        flowDeploymentPO.setStatus(FlowDeploymentStatus.DEPLOYED);
+        flowDeploymentMapper.insert(flowDeploymentPO);
+        FlowDeploymentPO flowDeploymentPONew = EntityBuilder.buildFlowDeploymentPO();
+        String flowModuleId1 = flowDeploymentPO.getFlowModuleId();
+        flowDeploymentPONew.setFlowDeployId("newtest_id");
+        flowDeploymentPONew.setFlowModuleId(flowModuleId1);
+        flowDeploymentPONew.setStatus(FlowDeploymentStatus.DEPLOYED);
+        flowDeploymentMapper.insert(flowDeploymentPONew);
+        FlowDeploymentPO flowDeploymentPORes = flowDeploymentMapper.selectByModuleId(flowModuleId1);
+        Assert.assertTrue(flowDeploymentPONew.getFlowDeployId().equals(flowDeploymentPORes.getFlowDeployId()));
+    }
 }
