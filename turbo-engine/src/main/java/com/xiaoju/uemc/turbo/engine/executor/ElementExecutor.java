@@ -16,7 +16,11 @@ import org.springframework.beans.BeanUtils;
 import java.util.Map;
 
 /**
- * abstract element executor
+ * The node level processor mainly uses the template design pattern, defines the algorithm
+ * skeleton of the process running, mainly decomposes the execution, submission and rollback
+ * operations into three steps: pre, do and post, and provides the default implementation.
+ *
+ * Other methods also provide a default implementation, and subclasses can easily override it.
  *
  * Created by Stefanie on 2019/12/1.
  */
@@ -52,10 +56,9 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         String flowInstanceId = runtimeContext.getFlowInstanceId();
         String nodeKey = runtimeContext.getCurrentNodeModel().getKey();
 
-        // get sourceInfo from runtimeContext's currentNodeInstance
+        //get sourceInfo
         String sourceNodeInstanceId = StringUtils.EMPTY;
         String sourceNodeKey = StringUtils.EMPTY;
-        // ddddd
         NodeInstanceBO sourceNodeInstance = runtimeContext.getCurrentNodeInstance();
         if (sourceNodeInstance != null) {
             // TODO: 2019/12/30 cache
@@ -77,46 +80,18 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         currentNodeInstance.setNodeKey(nodeKey);
         currentNodeInstance.setSourceNodeInstanceId(sourceNodeInstanceId);
         currentNodeInstance.setSourceNodeKey(sourceNodeKey);
-        // init status active
         currentNodeInstance.setStatus(NodeInstanceStatus.ACTIVE);
-        // first time set instance data id
         currentNodeInstance.setInstanceDataId(StringUtils.defaultString(runtimeContext.getInstanceDataId(), StringUtils.EMPTY));
-        // reset currentNodeInstance if exist
+
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
     }
 
-    /**
-     * do execute something you need
-     *
-     * we suggest subclass override it
-     *
-     * executes
-     * Executes the given command at some time in the future
-     * 
-     *
-     * @param runtimeContext
-     * @throws Exception
-     */
     protected void doExecute(RuntimeContext runtimeContext) throws Exception {
     }
 
-    /**
-     * post execute
-     * we suggest subclass override it
-     *
-     * @param runtimeContext
-     * @throws Exception
-     */
     protected void postExecute(RuntimeContext runtimeContext) throws Exception {
     }
 
-    /**
-     * get next unique execute executor and set current node model
-     *
-     * @param runtimeContext
-     * @return
-     * @throws Exception
-     */
     @Override
     protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception {
         Map<String, FlowElement> flowElementMap = runtimeContext.getFlowElementMap();
@@ -140,11 +115,6 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         }
     }
 
-    /**
-     * this function need subclass override, if not, it will throw unsupported exception
-     * @param runtimeContext
-     * @throws Exception
-     */
     protected void preCommit(RuntimeContext runtimeContext) throws Exception {
         LOGGER.warn("preCommit: unsupported element type.||flowInstanceId={}||elementType={}",
                 runtimeContext.getFlowInstanceId(), runtimeContext.getCurrentNodeModel().getType());

@@ -10,28 +10,17 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 /**
- * start node executor
- *
  * Created by Stefanie on 2019/12/1.
  */
 
 @Service
 public class StartEventExecutor extends ElementExecutor {
 
-    /**
-     * get currentNodeInstance and reset value, add it to list tail last
-     *
-     * @param runtimeContext
-     * @throws Exception
-     */
     @Override
     protected void postExecute(RuntimeContext runtimeContext) throws Exception {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
-        // second time set instanceDataId in case of change when doExecute
         currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());
-        // change status to complete last
         currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);
-        // add this node to processed nodeInstance list tail
         runtimeContext.getNodeInstanceList().add(currentNodeInstance);
     }
 
