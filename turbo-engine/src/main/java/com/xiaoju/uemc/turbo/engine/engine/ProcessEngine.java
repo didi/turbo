@@ -35,8 +35,6 @@ public interface ProcessEngine {
 
     List<InstanceData> getInstanceData(String flowInstanceId) throws Exception;
 
-    void updateData(String flowInstanceId, Map<String, Object> dataMap);
-
     NodeInstanceDTO getNodeInstance(String flowInstanceId, String nodeInstanceId) throws Exception;
 
 }

@@ -81,11 +81,6 @@ public class ProcessEngineImpl implements ProcessEngine {
     }
 
     @Override
-    public void updateData(String flowInstanceId, Map<String, Object> dataMap) {
-        // TODO: 2019/12/19
-    }
-
-    @Override
     public NodeInstanceDTO getNodeInstance(String flowInstanceId, String nodeInstanceId) throws Exception {
         return runtimeProcessor.getNodeInstance(flowInstanceId, nodeInstanceId);
     }

@@ -474,19 +474,7 @@ public class RuntimeProcessor {
     ////////////////////////////////////////common////////////////////////////////////////
 
     private FlowInfo getFlowInfoByFlowDeployId(String flowDeployId) throws Exception {
-//        //get from cache firstly
-//        String redisKey = RedisConstants.FLOW_INFO + flowDeployId;
-//        String flowInfoStr = redisClient.get(redisKey);
-//        if (StringUtils.isNotBlank(flowInfoStr)) {
-//            //TODO:临时逻辑,兼容redis中存的数据是+tenant/caller字段之前的老数据,到2020/10/25可下掉
-//            FlowInfo flowInfo = JSONObject.parseObject(flowInfoStr, FlowInfo.class);
-//            if (StringUtils.isNotBlank(flowInfo.getTenant()) && StringUtils.isNotBlank(flowInfo.getCaller())) {
-//                LOGGER.info("getFlowInfoByFlowDeployId from cache.||flowDeployId={}", flowDeployId);
-//                return flowInfo;
-//            }
-//        }
 
-        //get from db
         FlowDeploymentPO flowDeploymentPO = flowDeploymentDAO.selectByDeployId(flowDeployId);
         if (flowDeploymentPO == null) {
             LOGGER.warn("getFlowInfoByFlowDeployId failed.||flowDeployId={}", flowDeployId);
@@ -495,8 +483,6 @@ public class RuntimeProcessor {
         FlowInfo flowInfo = new FlowInfo();
         BeanUtils.copyProperties(flowDeploymentPO, flowInfo);
 
-        //set into cache
-//        redisClient.setex(redisKey, RedisConstants.FLOW_EXPIRED_SECOND, JSON.toJSONString(flowInfo));
         return flowInfo;
     }
 
