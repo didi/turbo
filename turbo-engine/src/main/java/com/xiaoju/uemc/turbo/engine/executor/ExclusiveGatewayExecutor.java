@@ -149,9 +149,10 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
     }
 
     /**
-     * get currentNodeInstance and reset value, add it to list tail last
+     * Reset the instance data ID to prevent data changes in the do phase,
+     * then set the status to complete and add it to the end of the execution node list
      *
-     * @param runtimeContext
+     * @param runtimeContext include flow info and runtime info
      * @throws Exception
      */
     @Override

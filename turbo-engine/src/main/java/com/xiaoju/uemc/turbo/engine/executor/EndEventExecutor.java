@@ -13,7 +13,10 @@ import org.springframework.stereotype.Service;
 import java.text.MessageFormat;
 
 /**
- * end node executor
+ * The end node executor is used to end the node execution.
+ * It does not actually do any operation. After the execution, it is set to the
+ * completion state and added to the end of the execution node list, marking
+ * the end of the process.
  *
  * Created by Stefanie on 2019/12/1.
  */
@@ -21,19 +24,17 @@ import java.text.MessageFormat;
 public class EndEventExecutor extends ElementExecutor {
 
     /**
-     * get currentNodeInstance and reset value, add it to list tail last
+     * Reset the instance data ID to prevent data changes in the do phase,
+     * then set the status to complete and add it to the end of the execution node list
      *
-     * @param runtimeContext
+     * @param runtimeContext include flow info and runtime info
      * @throws Exception
      */
     @Override
     protected void postExecute(RuntimeContext runtimeContext) throws Exception {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
-        // second time set instanceDataId in case of change when doExecute
         currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());
-        // change status to complete
         currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);
-        // add this node to processed nodeInstance list tail
         runtimeContext.getNodeInstanceList().add(currentNodeInstance);
     }
 

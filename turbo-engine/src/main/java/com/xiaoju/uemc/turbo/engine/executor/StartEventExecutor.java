@@ -10,12 +10,23 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 /**
+ * Start node executor is used to start node execution. It does not actually do any operation.
+ * After execution, it is set to complete status and added to the end of the execution node list
+ *
+ * Rollback to the start node is not allowed, otherwise an exception will be thrown
+ *
  * Created by Stefanie on 2019/12/1.
  */
-
 @Service
 public class StartEventExecutor extends ElementExecutor {
 
+    /**
+     * Reset the instance data ID to prevent data changes in the do phase,
+     * then set the status to complete and add it to the end of the execution node list
+     *
+     * @param runtimeContext include flow info and runtime info
+     * @throws Exception
+     */
     @Override
     protected void postExecute(RuntimeContext runtimeContext) throws Exception {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
