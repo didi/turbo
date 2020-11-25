@@ -1,26 +1,14 @@
 package com.xiaoju.uemc.turbo.engine.dto;
 
 import com.google.common.base.MoreObjects;
+import lombok.Data;
+import lombok.ToString;
 
 /**
  * Created by Stefanie on 2019/12/2.
  */
-public class UpdateFlowDTO {
+@Data
+@ToString(callSuper = true)
+public class UpdateFlowDTO extends CommonDTO {
 
-    boolean isSuccess;
-
-    public boolean isSuccess() {
-        return isSuccess;
-    }
-
-    public void setSuccess(boolean success) {
-        isSuccess = success;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("isSuccess", isSuccess)
-                .toString();
-    }
 }

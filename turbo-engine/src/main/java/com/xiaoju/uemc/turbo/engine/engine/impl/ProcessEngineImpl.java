@@ -26,31 +26,22 @@ public class ProcessEngineImpl implements ProcessEngine {
     private RuntimeProcessor runtimeProcessor;
 
     @Override
-    public CreateFlowDTO createFlow(CreateFlowParam createFlowParam) throws Exception {
-        ParamValidator.validate(createFlowParam);
+    public CreateFlowDTO createFlow(CreateFlowParam createFlowParam) {
         return definitionProcessor.create(createFlowParam);
     }
 
     @Override
-    public boolean updateFlow(UpdateFlowParam updateFlowParam) throws Exception {
-        ParamValidator.validate(updateFlowParam);
+    public UpdateFlowDTO updateFlow(UpdateFlowParam updateFlowParam) {
         return definitionProcessor.update(updateFlowParam);
     }
 
     @Override
-    public DeployFlowDTO deployFlow(DeployFlowParam deployFlowParam) throws Exception {
-        ParamValidator.validate(deployFlowParam);
+    public DeployFlowDTO deployFlow(DeployFlowParam deployFlowParam) {
         return definitionProcessor.deploy(deployFlowParam);
     }
 
     @Override
-    public FlowModuleDTO getFlowModule(String flowModuleId) throws Exception {
-        return getFlowModule(flowModuleId, null);
-    }
-
-    @Override
-    public FlowModuleDTO getFlowModule(String flowModuleId, String flowDeployId) throws Exception {
-        ParamValidator.validate(flowModuleId, flowDeployId);
+    public FlowModuleDTO getFlowModule(String flowModuleId, String flowDeployId) {
         return definitionProcessor.getFlowModule(flowModuleId, flowDeployId);
     }
 

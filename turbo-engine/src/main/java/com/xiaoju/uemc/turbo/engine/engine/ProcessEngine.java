@@ -13,15 +13,13 @@ import java.util.Map;
  */
 public interface ProcessEngine {
 
-    CreateFlowDTO createFlow(CreateFlowParam createFlowParam) throws Exception;
+    CreateFlowDTO createFlow(CreateFlowParam createFlowParam);
 
-    boolean updateFlow(UpdateFlowParam updateFlowParam) throws Exception;
+    UpdateFlowDTO updateFlow(UpdateFlowParam updateFlowParam);
 
-    DeployFlowDTO deployFlow(DeployFlowParam deployFlowParam) throws Exception;
+    DeployFlowDTO deployFlow(DeployFlowParam deployFlowParam);
 
-    FlowModuleDTO getFlowModule(String flowModuleId) throws Exception;
-
-    FlowModuleDTO getFlowModule(String flowModuleId, String flowDeployId) throws Exception;
+    FlowModuleDTO getFlowModule(String flowModuleId, String flowDeployId);
 
     StartProcessDTO startProcess(StartProcessParam startProcessParam) throws Exception;
 
