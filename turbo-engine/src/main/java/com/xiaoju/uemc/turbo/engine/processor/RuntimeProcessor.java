@@ -43,7 +43,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * RuntimeProcessor handle dynamic operation
+ *
+ * Runtime processor mainly provides the ability of process execution, including execution,
+ * commit, rollback, snapshot and so on, and improves the efficiency of model execution by
+ * caching necessary data
+ *
+ * Process execution depends on many specific node implementations inherited from RuntimeExecutor,
+ * such as the executors of start node, sequence flow, gateway node, user node, end node, etc
+ *
+ * The way to obtain these executors is to obtain the corresponding node executors through the
+ * type of each node defined in the process model, and complete the execution logic
+ * through the simple factory design pattern
  *
  * Created by Stefanie on 2019/12/1.
  */

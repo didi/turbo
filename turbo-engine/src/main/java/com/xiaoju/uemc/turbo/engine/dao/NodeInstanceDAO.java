@@ -18,10 +18,9 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
 
     /**
      * insert nodeInstancePO
-     * if error, this will not throw exption but return -1
      *
      * @param nodeInstancePO
-     * @return
+     * @return -1 while insert failed
      */
     public int insert(NodeInstancePO nodeInstancePO) {
         try {
@@ -33,8 +32,8 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
     }
 
     /**
-     * when nodeInstancePO id is null, batch insert them.
-     * when nodeInstancePO id is not null, update it status.
+     * when nodeInstancePO's id is null, batch insert.
+     * when nodeInstancePO's id is not null, update it status.
      *
      * @param nodeInstanceList
      * @return
@@ -51,7 +50,6 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
             if (nodeInstancePO.getId() == null) {
                 insertNodeInstanceList.add(nodeInstancePO);
             } else {
-                // because this node instance is exist
                 baseMapper.updateStatus(nodeInstancePO);
             }
         });
@@ -63,29 +61,16 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
         return baseMapper.batchInsert(insertNodeInstanceList.get(0).getFlowInstanceId(), insertNodeInstanceList);
     }
 
-    /**
-     * query NodeInstancePO by flowInstanceId and nodeInstanceId
-     * @param flowInstanceId
-     * @param nodeInstanceId
-     * @return
-     */
     public NodeInstancePO selectByNodeInstanceId(String flowInstanceId, String nodeInstanceId) {
         return baseMapper.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
     }
 
-    /**
-     * query NodeInstancePO by flowInstanceId, sourceNodeInstanceId and nodeKey
-     * @param flowInstanceId
-     * @param sourceNodeInstanceId
-     * @param nodeKey
-     * @return
-     */
     public NodeInstancePO selectBySourceInstanceId(String flowInstanceId, String sourceNodeInstanceId, String nodeKey) {
         return baseMapper.selectBySourceInstanceId(flowInstanceId, sourceNodeInstanceId, nodeKey);
     }
 
     /**
-     * select recent nodeInstancePO
+     * select recent nodeInstancePO order by id desc
      * @param flowInstanceId
      * @return
      */
@@ -94,7 +79,7 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
     }
 
     /**
-     * select recent active nodeInstancePO
+     * select recent active nodeInstancePO order by id desc
      * @param flowInstanceId
      * @return
      */
@@ -103,7 +88,7 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
     }
 
     /**
-     * select recent completed nodeInstancePO
+     * select recent completed nodeInstancePO order by id desc
      * @param flowInstanceId
      * @return
      */
@@ -112,7 +97,8 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
     }
 
     /**
-     * query recent active nodeInstancePO and check exist
+     * select recent active nodeInstancePO order by id desc
+     * If it doesn't exist, select recent completed nodeInstancePO order by id desc
      *
      * @param flowInstanceId
      * @return
@@ -126,18 +112,12 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
         return nodeInstancePO;
     }
 
-    /**
-     * query NodeInstancePOList by flowInstanceId
-     *
-     * @param flowInstanceId
-     * @return
-     */
     public List<NodeInstancePO> selectByFlowInstanceId(String flowInstanceId) {
         return baseMapper.selectByFlowInstanceId(flowInstanceId);
     }
 
     /**
-     * query desc NodeInstancePOList
+     * select nodeInstancePOList order by id desc
      *
      * @param flowInstanceId
      * @return
@@ -147,7 +127,7 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
     }
 
     /**
-     * update nodeInstancePO status
+     * update nodeInstancePO status by nodeInstanceId
      * @param nodeInstancePO
      * @param status
      */
@@ -155,27 +135,5 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
         nodeInstancePO.setStatus(status);
         nodeInstancePO.setModifyTime(new Date());
         baseMapper.updateStatus(nodeInstancePO);
-    }
-
-    /**
-     * ？？？
-     *
-     * @param nodeInstancePO
-     * @return
-     */
-    // TODO: 2019/12/15
-    public int insertOrUpdateStatus(NodeInstancePO nodeInstancePO) {
-        try {
-            return baseMapper.insert(nodeInstancePO);
-        } catch (Exception e1) {
-            LOGGER.error("insertOrUpdateStatus exception, insert failed.||nodeInstancePO={}", nodeInstancePO, e1);
-        }
-
-        try {
-            updateStatus(nodeInstancePO, nodeInstancePO.getStatus());
-        } catch (Exception e2) {
-            LOGGER.error("insertOrUpdateStatus exception, updateStatus failed.||nodeInstancePO={}", nodeInstancePO, e2);
-        }
-        return -1;
     }
 }

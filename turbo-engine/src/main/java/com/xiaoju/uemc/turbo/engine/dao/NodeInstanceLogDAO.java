@@ -14,10 +14,9 @@ public class NodeInstanceLogDAO extends BaseDAO<NodeInstanceLogMapper, NodeInsta
 
     /**
      * insert nodeInstanceLogPO
-     * if error, this will not throw exption but return -1
      *
      * @param nodeInstanceLogPO
-     * @return
+     * @return -1 while insert failed
      */
     public int insert(NodeInstanceLogPO nodeInstanceLogPO) {
         try {
@@ -29,7 +28,7 @@ public class NodeInstanceLogDAO extends BaseDAO<NodeInstanceLogMapper, NodeInsta
     }
 
     /**
-     * batch insert nodeInstanceLogList
+     * nodeInstanceLogList batch insert
      *
      * @param nodeInstanceLogList
      * @return

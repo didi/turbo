@@ -55,6 +55,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         // get sourceInfo from runtimeContext's currentNodeInstance
         String sourceNodeInstanceId = StringUtils.EMPTY;
         String sourceNodeKey = StringUtils.EMPTY;
+        // ddddd
         NodeInstanceBO sourceNodeInstance = runtimeContext.getCurrentNodeInstance();
         if (sourceNodeInstance != null) {
             // TODO: 2019/12/30 cache
@@ -85,8 +86,13 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     }
 
     /**
-     * do execute
+     * do execute something you need
+     *
      * we suggest subclass override it
+     *
+     * executes
+     * Executes the given command at some time in the future
+     * 
      *
      * @param runtimeContext
      * @throws Exception

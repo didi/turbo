@@ -10,21 +10,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class InstanceDataDAO extends BaseDAO<InstanceDataMapper, InstanceDataPO> {
 
-    /**
-     * select InstanceDataPO by flowInstanceId and instanceDataId
-     *
-     * we will use flowInstanceId when relate divide table
-     *
-     * @param flowInstanceId
-     * @param instanceDataId
-     * @return
-     */
     public InstanceDataPO select(String flowInstanceId, String instanceDataId) {
         return baseMapper.select(flowInstanceId, instanceDataId);
     }
 
     /**
-     * find most new InstanceDataPO by flowInstanceId
+     * select recent InstanceData order by id desc
      *
      * @param flowInstanceId
      * @return
@@ -35,10 +26,9 @@ public class InstanceDataDAO extends BaseDAO<InstanceDataMapper, InstanceDataPO>
 
     /**
      * insert instanceDataPO
-     * if error, this will not throw exption but return -1
      *
      * @param instanceDataPO
-     * @return
+     * @return -1 while insert failed
      */
     public int insert(InstanceDataPO instanceDataPO) {
         try {

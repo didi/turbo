@@ -12,12 +12,6 @@ import java.util.Date;
 @Service
 public class ProcessInstanceDAO extends BaseDAO<ProcessInstanceMapper, FlowInstancePO> {
 
-    /**
-     * select FlowInstancePO by flowInstanceId
-     *
-     * @param flowInstanceId
-     * @return
-     */
     public FlowInstancePO selectByFlowInstanceId(String flowInstanceId) {
         return baseMapper.selectByFlowInstanceId(flowInstanceId);
     }
@@ -26,7 +20,7 @@ public class ProcessInstanceDAO extends BaseDAO<ProcessInstanceMapper, FlowInsta
      * insert flowInstancePO
      *
      * @param flowInstancePO
-     * @return
+     * @return -1 while insert failed
      */
     public int insert(FlowInstancePO flowInstancePO) {
         try {
@@ -38,30 +32,12 @@ public class ProcessInstanceDAO extends BaseDAO<ProcessInstanceMapper, FlowInsta
         return -1;
     }
 
-    /**
-     * first, select FlowInstancePO by flowInstanceId
-     * second, update FlowInstancePO status to db
-     *
-     * @param flowInstanceId
-     * @param status
-     */
     public void updateStatus(String flowInstanceId, int status) {
         FlowInstancePO flowInstancePO = baseMapper.selectByFlowInstanceId(flowInstanceId);
         // NPE possible
         updateStatus(flowInstancePO, status);
-
-        // TODO avoid one time query
-//        FlowInstancePO flowInstancePO_copy = new FlowInstancePO();
-//        flowInstancePO_copy.setFlowInstanceId(flowInstanceId);
-//        updateStatus(flowInstancePO_copy, status);
     }
 
-    /**
-     * update flowInstancePO new status to db directly
-     *
-     * @param flowInstancePO
-     * @param status
-     */
     public void updateStatus(FlowInstancePO flowInstancePO, int status) {
         flowInstancePO.setStatus(status);
         flowInstancePO.setModifyTime(new Date());

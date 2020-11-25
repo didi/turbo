@@ -14,6 +14,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The default implementation of processing engine realizes all functions of operation process
+ * by the combination of DefinitionProcessor and RuntimeProcessor.
+ *
+ * Definition processor mainly provides some static operations of processes,
+ * such as process definition, process deployment, process model acquisition and so on
+ *
+ * Runtime processor mainly provides some dynamic operations of processes,
+ * such as process execution, commit, rollback, etc
+ *
  * Created by Stefanie on 2019/11/22.
  */
 @Service
