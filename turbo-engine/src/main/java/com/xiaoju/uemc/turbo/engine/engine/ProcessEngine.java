@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * The entrance of Turbo
+ *
  * The ProcessEngine mainly provides the ability of
  * "defining process, and executing process according to process definition",
  * and uses appearance design pattern, external exposure, creating process,
@@ -29,40 +31,40 @@ public interface ProcessEngine {
     FlowModuleDTO getFlowModule(String flowModuleId, String flowDeployId) throws Exception;
 
     /**
-     * Entry point for creating process instances
+     * Entrance to start a process
      *
-     * According to the specified process model and the data necessary for the execution,
-     * the ProcessEngine is executed from the start node, through the flow and calculation in the middle,
-     * and finally it is suspended at the user node or completed at the end node.
+     * According to the specified flow model with the necessary data for the execution,
+     * the ProcessEngine is executed from the StartEvent node, finally it is suspended at
+     * the UserTask node or completed at the EndEvent node.
      *
-     * @param startProcessParam Set the runtime data, module ID or deployment ID
+     * @param startProcessParam include the necessary data, flowModule ID or flowDeploy ID
      * @return StartProcessDTO include flowInstance ID, activeInstance, instance data and so on
      * @throws Exception
      */
     StartProcessDTO startProcess(StartProcessParam startProcessParam) throws Exception;
 
     /**
-     * Entry point for commiting user task
+     * Entrance to commit UserTask node
      *
-     * According to the specified process instance, node instance and the data necessary for the execution,
-     * the ProcessEngine starts from the current specified user node. After flow and calculation,
-     * it will be suspended at the user node or completed at the end node.
+     * According to the specified flow instance, node instance with the necessary data for the execution,
+     * the ProcessEngine starts from the current specified UserTask node. After flow and calculation,
+     * it will be suspended at the UserTask node or completed at the EndEvent node.
      *
-     * @param commitTaskParam Set the runtime data, flowInstance ID and nodeInstance ID
+     * @param commitTaskParam include the necessary data, flowInstance ID and nodeInstance ID
      * @return CommitTaskDTO include flowInstance ID, activeInstance, instance data and so on
      * @throws Exception
      */
     CommitTaskDTO commitTask(CommitTaskParam commitTaskParam) throws Exception;
 
     /**
-     * Entry point for rollbacking user task
+     * Entrance to rollback UserTask node
      *
-     * According to the specified process instance and node instance,
-     * the ProcessEngine will back off from the current specified user node,
+     * According to the specified flow instance and node instance,
+     * the ProcessEngine will back off from the current specified UserTask node,
      * according to the order of historical execution nodes, the ProcessEngine will suspend
-     * at the nearest user node or throw an exception at the start node.
+     * at the nearest UserTask node or throw an exception at the StartEvent node.
      *
-     * @param recallTaskParam Set flowInstance ID and nodeInstance ID
+     * @param recallTaskParam include flowInstance ID and nodeInstance ID
      * @return RecallTaskDTO include flowInstance ID, activeInstance, instance data and so on
      * @throws Exception
      */
@@ -71,7 +73,7 @@ public interface ProcessEngine {
     /**
      * Force termination of process instance.
      *
-     * If the current process instance has been completed, we will not do anything.
+     * If the current flow instance has been completed, we will not do anything.
      * Otherwise, set the status of the process instance to terminated
      *
      * @param flowInstanceId flowInstance ID
@@ -81,22 +83,23 @@ public interface ProcessEngine {
     TerminateDTO terminateProcess(String flowInstanceId) throws Exception;
 
     /**
-     * According to the process instance, the list of valid user nodes that have been executed in history is obtained,
-     * and the latest user nodes are put in the first place according to the database primary key.
+     * According to the flow instance, the list of valid UserTask nodes that have been executed
+     * in history is obtained, and the latest UserTask nodes are put in the first place
+     * according to the database primary key.
      *
-     * A valid user node is a completed or activated user node,
-     * excluding the rolled back revoked user node
+     * A valid UserTask node is a completed or active UserTask node, excluding the disabled
+     * UserTask node.
      *
      * @param flowInstanceId flowInstance ID
-     * @return NodeInstanceListDTO the list of user nodes executed in history
+     * @return NodeInstanceListDTO the list of UserTask nodes executed in history
      * @throws Exception
      */
     NodeInstanceListDTO getHistoryUserTaskList(String flowInstanceId) throws Exception;
 
     /**
-     * According to the process instance and execution order,
+     * According to the flow instance and execution order,
      * the node list of historical execution is obtained,
-     * which can be used to view the execution snapshot of a process instance
+     * which can be used to view the execution snapshot of a flow instance
      *
      * @param flowInstanceId flowInstance ID
      * @returnElementInstanceListDTO the list of nodes executed in history
@@ -116,7 +119,7 @@ public interface ProcessEngine {
     /**
      * According to the process instance, update the latest data information
      *
-     * empty implement up to new
+     * empty implement up to now
      *
      * @param flowInstanceId flowInstance ID
      * @param dataMap data info

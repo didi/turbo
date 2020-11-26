@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * control the whole flow module run
- *
  * Created by Stefanie on 2019/12/1.
  */
 @Service
@@ -91,7 +89,6 @@ public class FlowExecutor extends RuntimeExecutor {
         BeanUtils.copyProperties(runtimeContext, flowInstancePO);
         // generate flowInstanceId
         flowInstancePO.setFlowInstanceId(genId());
-        // init status is running
         flowInstancePO.setStatus(FlowInstanceStatus.RUNNING);
         Date currentTime = new Date();
         flowInstancePO.setCreateTime(currentTime);
@@ -121,26 +118,15 @@ public class FlowExecutor extends RuntimeExecutor {
 
         // generate instanceDataId
         instanceDataPO.setInstanceDataId(genId());
-        // set data
         instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataListStr(instanceDataMap));
 
         instanceDataPO.setNodeInstanceId(StringUtils.EMPTY);
         instanceDataPO.setNodeKey(StringUtils.EMPTY);
         instanceDataPO.setCreateTime(new Date());
-        // set type init status
         instanceDataPO.setType(InstanceDataType.INIT);
         return instanceDataPO;
     }
 
-    /**
-     * fill runtimeContext on execute
-     *
-     *
-     * @param runtimeContext
-     * @param flowInstanceId
-     * @param instanceDataId
-     * @throws Exception
-     */
     private void fillExecuteContext(RuntimeContext runtimeContext, String flowInstanceId, String instanceDataId) throws Exception {
         runtimeContext.setFlowInstanceId(flowInstanceId);
         runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.RUNNING);
@@ -167,12 +153,6 @@ public class FlowExecutor extends RuntimeExecutor {
         runtimeContext.setCurrentNodeModel(startEvent);
     }
 
-    /**
-     * control execute directions
-     *
-     * @param runtimeContext
-     * @throws Exception
-     */
     private void doExecute(RuntimeContext runtimeContext) throws Exception {
         RuntimeExecutor runtimeExecutor = getExecuteExecutor(runtimeContext);
         while (runtimeExecutor != null) {
@@ -209,12 +189,6 @@ public class FlowExecutor extends RuntimeExecutor {
 
     ////////////////////////////////////////commit////////////////////////////////////////
 
-    /**
-     * commit user task
-     *
-     * @param runtimeContext
-     * @throws Exception
-     */
     @Override
     public void commit(RuntimeContext runtimeContext) throws Exception {
         int processStatus = ProcessStatus.SUCCESS;
@@ -245,10 +219,9 @@ public class FlowExecutor extends RuntimeExecutor {
     private void preCommit(RuntimeContext runtimeContext) throws Exception {
         String flowInstanceId = runtimeContext.getFlowInstanceId();
         NodeInstanceBO suspendNodeInstance = runtimeContext.getSuspendNodeInstance();
-        // suspendNodeInstance only has nodeInstanceId up to now.
         String nodeInstanceId = suspendNodeInstance.getNodeInstanceId();
 
-        //1.get nodeInstancePO from db, but not fill to suspendNodeInstance
+        //1.get instanceData from db
         NodeInstancePO nodeInstancePO = nodeInstanceDAO.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
         if (nodeInstancePO == null) {
             LOGGER.warn("preCommit failed: cannot find nodeInstancePO from db.||flowInstanceId={}||nodeInstanceId={}",
@@ -273,7 +246,6 @@ public class FlowExecutor extends RuntimeExecutor {
         if (StringUtils.isBlank(instanceDataId)) {
             instanceDataMap = Maps.newHashMap();
         } else {
-            // get instanceDataPO from db in order to get now data and then merge commit data
             InstanceDataPO instanceDataPO = instanceDataDAO.select(flowInstanceId, instanceDataId);
             if (instanceDataPO == null) {
                 LOGGER.warn("preCommit failed: cannot find instanceDataPO from db." +
@@ -287,9 +259,8 @@ public class FlowExecutor extends RuntimeExecutor {
         Map<String, InstanceData> commitDataMap = runtimeContext.getInstanceDataMap();
         if (MapUtils.isNotEmpty(commitDataMap)) {
             instanceDataId = genId();
-            // merge
             instanceDataMap.putAll(commitDataMap);
-            // build commit type InstanceDataPO with all data
+
             InstanceDataPO commitInstanceDataPO = buildCommitInstanceData(runtimeContext, nodeInstanceId,
                     nodeInstancePO.getNodeKey(), instanceDataId, instanceDataMap);
             instanceDataDAO.insert(commitInstanceDataPO);
@@ -315,36 +286,19 @@ public class FlowExecutor extends RuntimeExecutor {
         return instanceDataPO;
     }
 
-    /**
-     * fill commit context by instanceDataId, instanceDataMap, suspendNodeInstance, currentNodeModel
-     *
-     * @param runtimeContext
-     * @param nodeInstancePO
-     * @param instanceDataId
-     * @param instanceDataMap
-     * @throws Exception
-     */
     private void fillCommitContext(RuntimeContext runtimeContext, NodeInstancePO nodeInstancePO, String instanceDataId,
                                    Map<String, InstanceData> instanceDataMap) throws Exception {
 
         runtimeContext.setInstanceDataId(instanceDataId);
         runtimeContext.setInstanceDataMap(instanceDataMap);
-        // suspendNodeInstance has all data up to now.
+
         updateSuspendNodeInstanceBO(runtimeContext.getSuspendNodeInstance(), nodeInstancePO, instanceDataId);
-        // set currentFlowModel by suspendNodeInstanceBO
+
         setCurrentFlowModel(runtimeContext);
-        // set empty list can avoid NPE
+
         runtimeContext.setNodeInstanceList(Lists.newArrayList());
     }
 
-    /**
-     * control commit directions
-     * so this will happen 1 commit and N execute possibly
-     * return null or throw exception can exit funtion
-     *
-     * @param runtimeContext
-     * @throws Exception
-     */
     private void doCommit(RuntimeContext runtimeContext) throws Exception {
         RuntimeExecutor runtimeExecutor = getExecuteExecutor(runtimeContext);
         runtimeExecutor.commit(runtimeContext);
@@ -360,7 +314,7 @@ public class FlowExecutor extends RuntimeExecutor {
         if (runtimeContext.getProcessStatus() == ProcessStatus.SUCCESS && runtimeContext.getCurrentNodeInstance() != null) {
             runtimeContext.setSuspendNodeInstance(runtimeContext.getCurrentNodeInstance());
         }
-        // save nodeInstanceList to db
+        //update FlowInstancePO to db
         saveNodeInstanceList(runtimeContext, NodeInstanceType.COMMIT);
 
         if (isCompleted(runtimeContext)) {
@@ -507,7 +461,7 @@ public class FlowExecutor extends RuntimeExecutor {
             runtimeContext.setSuspendNodeInstance(runtimeContext.getCurrentNodeInstance());
         }
 
-        // save nodeInstanceList to db
+        //update FlowInstancePO to db
         saveNodeInstanceList(runtimeContext, NodeInstanceType.ROLLBACK);
 
     }
@@ -527,13 +481,6 @@ public class FlowExecutor extends RuntimeExecutor {
         return suspendNodeInstanceBO;
     }
 
-    /**
-     * fill suspendNodeInstanceBO value with nodeInstancePO（from db）
-     *
-     * @param suspendNodeInstanceBO
-     * @param nodeInstancePO
-     * @param instanceDataId
-     */
     private void updateSuspendNodeInstanceBO(NodeInstanceBO suspendNodeInstanceBO, NodeInstancePO nodeInstancePO, String
             instanceDataId) {
         suspendNodeInstanceBO.setId(nodeInstancePO.getId());
@@ -558,20 +505,19 @@ public class FlowExecutor extends RuntimeExecutor {
 
     @Override
     protected boolean isCompleted(RuntimeContext runtimeContext) throws Exception {
-        // 1.judge flow instance status
         if (runtimeContext.getFlowInstanceStatus() == FlowInstanceStatus.COMPLETED) {
             return true;
         }
-        // 2.judge suspend node instance
+
         NodeInstanceBO suspendNodeInstance = runtimeContext.getSuspendNodeInstance();
         if (suspendNodeInstance == null) {
             return false;
         }
-        // 3.judge suspend node instance status
+
         if (suspendNodeInstance.getStatus() != NodeInstanceStatus.COMPLETED) {
             return false;
         }
-        // 4.judge nodeKey is endNode or not
+
         String nodeKey = suspendNodeInstance.getNodeKey();
         Map<String, FlowElement> flowElementMap = runtimeContext.getFlowElementMap();
         if (FlowModelUtil.getFlowElement(flowElementMap, nodeKey).getType() == FlowElementType.END_EVENT) {
@@ -600,16 +546,6 @@ public class FlowExecutor extends RuntimeExecutor {
 
     ////////////////////////////////////////common////////////////////////////////////////
 
-    /**
-     * save processNodeList
-     * nodeInstance is insert, if exist, use update
-     * nodeInstanceLog is all insert
-     *
-     * usually, it use in post execute, post commit or post rollback.
-     *
-     * @param runtimeContext
-     * @param nodeInstanceType nodeInstanceLogPO need this param
-     */
     private void saveNodeInstanceList(RuntimeContext runtimeContext, int nodeInstanceType) {
 
         List<NodeInstanceBO> processNodeList = runtimeContext.getNodeInstanceList();

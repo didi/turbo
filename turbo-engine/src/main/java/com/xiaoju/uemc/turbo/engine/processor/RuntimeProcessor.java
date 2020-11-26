@@ -135,7 +135,9 @@ public class RuntimeProcessor {
 
     private StartProcessDTO buildStartProcessDTO(RuntimeContext runtimeContext, ProcessException e) {
         StartProcessDTO startProcessDTO = new StartProcessDTO();
-        BeanUtils.copyProperties(runtimeContext, startProcessDTO);
+        if (runtimeContext != null) {
+            BeanUtils.copyProperties(runtimeContext, startProcessDTO);
+        }
         return (StartProcessDTO) fillRuntimeDTO(startProcessDTO, runtimeContext, e);
     }
 
@@ -611,7 +613,9 @@ public class RuntimeProcessor {
         activeNodeInstanceDTO.setModelKey(nodeInstanceBO.getNodeKey());
         FlowElement flowElement = runtimeContext.getFlowElementMap().get(nodeInstanceBO.getNodeKey());
         activeNodeInstanceDTO.setModelName(FlowModelUtil.getElementName(flowElement));
-        activeNodeInstanceDTO.setProperties(flowElement.getProperties());
+        if (flowElement != null) {
+            activeNodeInstanceDTO.setProperties(flowElement.getProperties());
+        }
 
         return activeNodeInstanceDTO;
     }

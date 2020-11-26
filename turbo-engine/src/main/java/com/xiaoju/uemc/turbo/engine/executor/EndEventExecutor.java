@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 import java.text.MessageFormat;
 
 /**
- * The end node executor is used to end the node execution.
+ * The EndEvent node executor is used to end the node execution.
  * It does not actually do any operation. After the execution, it is set to the
- * completion state and added to the end of the execution node list, marking
+ * completed state and added to the end of the execution node list, marking
  * the end of the process.
  *
  * Created by Stefanie on 2019/12/1.

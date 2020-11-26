@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 /**
- * Start node executor is used to start node execution. It does not actually do any operation.
- * After execution, it is set to complete status and added to the end of the execution node list
+ * StartEvent node executor is used to StartEvent node execution. It does not actually do any operation.
+ * After execution, it is set to completed status and added to the end of the execution node list
  *
  * Rollback to the start node is not allowed, otherwise an exception will be thrown
  *
