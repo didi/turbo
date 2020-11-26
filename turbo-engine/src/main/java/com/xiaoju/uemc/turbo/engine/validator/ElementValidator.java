@@ -39,10 +39,6 @@ public class ElementValidator {
         if (CollectionUtils.isEmpty(outgoingList)) {
             throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_LACK_OUTGOING);
         }
-
-        if (outgoingList.size() > 1) {
-            throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MUCH_OUTGOING);
-        }
     }
 
     protected void validator(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {

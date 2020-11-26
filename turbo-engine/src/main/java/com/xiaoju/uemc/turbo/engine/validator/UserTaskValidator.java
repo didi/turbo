@@ -22,12 +22,4 @@ import java.util.Map;
 @Component
 public class UserTaskValidator extends ElementValidator {
 
-    @Override
-    protected void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {
-        List<String> outgoingList = flowElement.getOutgoing();
-
-        if (CollectionUtils.isEmpty(outgoingList)) {
-            throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_LACK_OUTGOING);
-        }
-    }
 }
