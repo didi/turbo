@@ -5,9 +5,9 @@ import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 /**
  * Created by Stefanie on 2019/12/19.
  */
-public class TerminateDTO extends RuntimeDTO {
+public class TerminateResult extends RuntimeResult {
 
-    public TerminateDTO(ErrorEnum errorEnum) {
+    public TerminateResult(ErrorEnum errorEnum) {
         super(errorEnum);
     }
 }

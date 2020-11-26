@@ -1,6 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.dto;
 
 import com.google.common.base.MoreObjects;
+import com.xiaoju.uemc.turbo.engine.bo.NodeInstance;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 
@@ -9,18 +10,18 @@ import java.util.List;
 /**
  * Created by Stefanie on 2019/12/5.
  */
-public class RuntimeDTO extends CommonDTO {
+public class RuntimeResult extends CommonResult {
 
     private String flowInstanceId;
     private int status;
-    private NodeInstanceDTO activeTaskInstance;
+    private NodeInstance activeTaskInstance;
     private List<InstanceData> variables;
 
-    public RuntimeDTO() {
+    public RuntimeResult() {
         super();
     }
 
-    public RuntimeDTO(ErrorEnum errorEnum) {
+    public RuntimeResult(ErrorEnum errorEnum) {
         super(errorEnum);
     }
 
@@ -40,11 +41,11 @@ public class RuntimeDTO extends CommonDTO {
         this.status = status;
     }
 
-    public NodeInstanceDTO getActiveTaskInstance() {
+    public NodeInstance getActiveTaskInstance() {
         return activeTaskInstance;
     }
 
-    public void setActiveTaskInstance(NodeInstanceDTO activeTaskInstance) {
+    public void setActiveTaskInstance(NodeInstance activeTaskInstance) {
         this.activeTaskInstance = activeTaskInstance;
     }
 

@@ -8,16 +8,16 @@ import lombok.Data;
  * Created by Stefanie on 2019/12/8.
  */
 @Data
-public class CommonDTO {
+public class CommonResult {
 
     private int errCode;
     private String errMsg;
 
-    public CommonDTO() {
+    public CommonResult() {
         super();
     }
 
-    public CommonDTO(ErrorEnum errorEnum) {
+    public CommonResult(ErrorEnum errorEnum) {
         this.errCode = errorEnum.getErrNo();
         this.errMsg = errorEnum.getErrMsg();
     }

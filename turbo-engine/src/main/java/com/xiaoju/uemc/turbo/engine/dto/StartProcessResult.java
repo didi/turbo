@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 /**
  * Created by Stefanie on 2019/12/2.
  */
-public class StartProcessDTO extends RuntimeDTO {
+public class StartProcessResult extends RuntimeResult {
 
     private String flowDeployId;
     private String flowModuleId;

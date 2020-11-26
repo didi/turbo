@@ -1,13 +1,14 @@
-package com.xiaoju.uemc.turbo.engine.dto;
+package com.xiaoju.uemc.turbo.engine.bo;
 
 import com.google.common.base.MoreObjects;
+import com.xiaoju.uemc.turbo.engine.bo.ElementInstance;
 
 import java.util.Date;
 
 /**
  * Created by Stefanie on 2019/12/5.
  */
-public class NodeInstanceDTO extends ElementInstanceDTO {
+public class NodeInstance extends ElementInstance {
 
     private String nodeInstanceId;
     private Date createTime;

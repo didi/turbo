@@ -1,6 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.dto;
 
 import com.google.common.base.MoreObjects;
+import com.xiaoju.uemc.turbo.engine.bo.NodeInstance;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 
 import java.util.List;
@@ -8,19 +9,19 @@ import java.util.List;
 /**
  * Created by Stefanie on 2020/1/6.
  */
-public class NodeInstanceListDTO extends CommonDTO {
+public class NodeInstanceListResult extends CommonResult {
 
-    private List<NodeInstanceDTO> nodeInstanceDTOList;
+    private List<NodeInstance> nodeInstanceDTOList;
 
-    public NodeInstanceListDTO(ErrorEnum errorEnum) {
+    public NodeInstanceListResult(ErrorEnum errorEnum) {
         super(errorEnum);
     }
 
-    public List<NodeInstanceDTO> getNodeInstanceDTOList() {
+    public List<NodeInstance> getNodeInstanceDTOList() {
         return nodeInstanceDTOList;
     }
 
-    public void setNodeInstanceDTOList(List<NodeInstanceDTO> nodeInstanceDTOList) {
+    public void setNodeInstanceDTOList(List<NodeInstance> nodeInstanceDTOList) {
         this.nodeInstanceDTOList = nodeInstanceDTOList;
     }
 

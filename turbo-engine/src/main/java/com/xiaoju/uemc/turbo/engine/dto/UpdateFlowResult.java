@@ -9,6 +9,6 @@ import lombok.ToString;
  */
 @Data
 @ToString(callSuper = true)
-public class UpdateFlowDTO extends CommonDTO {
+public class UpdateFlowResult extends CommonResult {
 
 }

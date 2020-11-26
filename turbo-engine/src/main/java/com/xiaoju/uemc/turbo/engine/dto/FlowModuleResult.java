@@ -10,7 +10,7 @@ import java.util.Date;
  */
 @Data
 @ToString(callSuper = true)
-public class FlowModuleDTO extends CommonDTO {
+public class FlowModuleResult extends CommonResult {
     private String flowModuleId;
     private String flowName;
     private String flowKey;

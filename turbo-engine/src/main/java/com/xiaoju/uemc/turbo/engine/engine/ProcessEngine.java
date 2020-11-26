@@ -2,40 +2,36 @@ package com.xiaoju.uemc.turbo.engine.engine;
 
 
 import com.xiaoju.uemc.turbo.engine.dto.*;
-import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.param.*;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Stefanie on 2019/11/22.
  */
 public interface ProcessEngine {
 
-    CreateFlowDTO createFlow(CreateFlowParam createFlowParam);
+    CreateFlowResult createFlow(CreateFlowParam createFlowParam);
 
-    UpdateFlowDTO updateFlow(UpdateFlowParam updateFlowParam);
+    UpdateFlowResult updateFlow(UpdateFlowParam updateFlowParam);
 
-    DeployFlowDTO deployFlow(DeployFlowParam deployFlowParam);
+    DeployFlowResult deployFlow(DeployFlowParam deployFlowParam);
 
-    FlowModuleDTO getFlowModule(String flowModuleId, String flowDeployId);
+    FlowModuleResult getFlowModule(String flowModuleId, String flowDeployId);
 
-    StartProcessDTO startProcess(StartProcessParam startProcessParam);
+    StartProcessResult startProcess(StartProcessParam startProcessParam);
 
-    CommitTaskDTO commitTask(CommitTaskParam commitTaskParam);
+    CommitTaskResult commitTask(CommitTaskParam commitTaskParam);
 
-    RecallTaskDTO recallTask(RecallTaskParam recallTaskParam);
+    RecallTaskResult recallTask(RecallTaskParam recallTaskParam);
 
-    TerminateDTO terminateProcess(String flowInstanceId);
+    TerminateResult terminateProcess(String flowInstanceId);
 
-    NodeInstanceListDTO getHistoryUserTaskList(String flowInstanceId) throws Exception;
+    NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId) throws Exception;
 
-    ElementInstanceListDTO getHistoryElementList(String flowInstanceId) throws Exception;
+    ElementInstanceListResult getHistoryElementList(String flowInstanceId) throws Exception;
 
-    List<InstanceData> getInstanceData(String flowInstanceId);
+    InstanceDataResult getInstanceData(String flowInstanceId);
 
-    NodeInstanceDTO getNodeInstance(String flowInstanceId, String nodeInstanceId) throws Exception;
+    NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId) throws Exception;
 
 }
 
