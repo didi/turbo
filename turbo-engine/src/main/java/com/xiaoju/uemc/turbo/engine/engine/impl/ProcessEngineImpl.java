@@ -77,7 +77,7 @@ public class ProcessEngineImpl implements ProcessEngine {
     }
 
     @Override
-    public NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId) throws Exception {
+    public NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId) {
         return runtimeProcessor.getNodeInstance(flowInstanceId, nodeInstanceId);
     }
 }

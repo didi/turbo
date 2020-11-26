@@ -25,13 +25,13 @@ public interface ProcessEngine {
 
     TerminateResult terminateProcess(String flowInstanceId);
 
-    NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId) throws Exception;
+    NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId);
 
-    ElementInstanceListResult getHistoryElementList(String flowInstanceId) throws Exception;
+    ElementInstanceListResult getHistoryElementList(String flowInstanceId);
 
     InstanceDataResult getInstanceData(String flowInstanceId);
 
-    NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId) throws Exception;
+    NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId);
 
 }
 

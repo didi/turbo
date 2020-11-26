@@ -448,7 +448,7 @@ public class RuntimeProcessor {
         return nodeInstanceDAO.selectDescByFlowInstanceId(flowInstanceId);
     }
 
-    public NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId) throws Exception {
+    public NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId) {
         NodeInstanceResult nodeInstanceResult = new NodeInstanceResult();
         try {
             NodeInstancePO nodeInstancePO = nodeInstanceDAO.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
