@@ -12,6 +12,7 @@
     <modules>
         <module>turbo-engine</module>
         <module>turbo-api</module>
+        <module>turbo-demo</module>
     </modules>
 
     <properties>
