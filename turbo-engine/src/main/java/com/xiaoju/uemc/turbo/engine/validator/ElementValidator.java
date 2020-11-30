@@ -2,11 +2,12 @@ package com.xiaoju.uemc.turbo.engine.validator;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import com.alibaba.fastjson.JSON;
 import com.xiaoju.uemc.turbo.engine.common.Constants;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
-import com.xiaoju.uemc.turbo.engine.common.FlowElementType;
 import com.xiaoju.uemc.turbo.engine.exception.ModelException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
+import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,107 +18,45 @@ import java.util.Map;
 
 /**
  * 项目名称：optimus-prime
- * 类 名 称：ElementValidator
+ * 类 名 称：Element1Validator
  * 类 描 述：
  * 创建时间：2019/12/10 9:53 AM
  * 创 建 人：didiwangxing
  */
 public class ElementValidator {
 
-    protected static final Logger LOGGER = LoggerFactory.getLogger(FlowModelValidator.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(ElementValidator.class);
 
-    public static void validate(List<FlowElement> flowElementList) throws ModelException {
+    protected void checkIncoming(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {
+        List<String> incomingList = flowElement.getIncoming();
 
-        HashMap<String, FlowElement> flowElementMap = new HashMap<>();
-
-        for (FlowElement flowElement : flowElementList) {
-            flowElementMap.put(flowElement.getKey(), flowElement);
+        if (CollectionUtils.isEmpty(incomingList)) {
+            throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_LACK_INCOMING);
         }
-
-        for (FlowElement flowElement : flowElementList) {
-            int elementType = flowElement.getType();
-            String elementName = (String) flowElement.getProperties().getOrDefault("name", StringUtils.EMPTY);
-            String elementKey = flowElement.getKey();
-            switch (elementType) { // TODO fill
-                case FlowElementType.START_EVENT:
-                    // 不可有incoming
-                    if (flowElement.getIncoming() != null && flowElement.getIncoming().size() > 0) {
-//                    throw new ModelException(ErrorEnum.MODEL_INVALID.getErrNo(), "startNode should not have incoming");
-                        LOGGER.warn("startNode should not have incoming");
-                    }
-                    checkOutgoing(flowElement);
-                    break;
-                case FlowElementType.END_EVENT:
-                    // 不可有outgoing
-                    if (flowElement.getOutgoing() != null && flowElement.getOutgoing().size() > 0) {
-//                    throw new ModelException(ErrorEnum.MODEL_INVALID.getErrNo(), "endNode should not have outgoing");
-                        LOGGER.warn("endNode should not have outgoing");
-                    }
-                    break;
-                case FlowElementType.SEQUENCE_FLOW:
-                    checkOutgoing(flowElement);
-                    break;
-                case FlowElementType.USER_TASK:
-//                    checkOutgoing(flowElement);
-                    break;
-                case FlowElementType.SERVICE_TASK:
-                    checkOutgoing(flowElement);
-                    break;
-                case FlowElementType.EXCLUSIVE_GATEWAY:
-                    // 排他网关节点的outgoing不可以为空
-                    // 排他网关节点的outgoing最多可以一条"default"边，并且不可以有空边
-                    List<String> outgoing = flowElement.getOutgoing();
-                    if (CollectionUtils.isEmpty(outgoing)) {
-                        String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT,
-                                ErrorEnum.GATEWAY_NO_OUTGOING.getErrMsg(), elementName, elementKey);
-                        LOGGER.error(exceptionMsg);
-                        throw new ModelException(ErrorEnum.GATEWAY_NO_OUTGOING.getErrNo(), exceptionMsg);
-                    }
-                    int elseNum = 0;
-                    for (String k : outgoing) {
-                        FlowElement e = flowElementMap.get(k);
-                        Map<String, Object> properties = e.getProperties();
-                        String conditions = (String) properties.get("conditionsequenceflow");
-                        String isDefaultStr = (String) properties.getOrDefault("defaultConditions", "false");
-                        boolean isDefault = Boolean.valueOf(isDefaultStr.trim());
-                        if (StringUtils.isBlank(conditions) && !isDefault) {
-                            String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT,
-                                    ErrorEnum.GATEWAY_EMPTY_EDGE_OUTGOING.getErrMsg(), elementName, elementKey);
-                            LOGGER.error(exceptionMsg);
-                            throw new ModelException(ErrorEnum.GATEWAY_EMPTY_EDGE_OUTGOING.getErrNo(), exceptionMsg);
-                        }
-                        if (isDefault) {
-                            elseNum++;
-                        }
-                    }
-                    if (elseNum > 1) {
-                        String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT,
-                                ErrorEnum.GATEWAY_TOO_MANY_DEFAULT_EDGE.getErrMsg(), elementName, elementKey);
-                        LOGGER.error(exceptionMsg);
-                        throw new ModelException(ErrorEnum.GATEWAY_TOO_MANY_DEFAULT_EDGE.getErrNo(), exceptionMsg);
-                    }
-                    break;
-                default: {
-                    String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT,
-                            ErrorEnum.MODEL_UNKNOWN_ELEMENT_KEY.getErrMsg(), elementName, elementKey);
-                    LOGGER.error(exceptionMsg);
-                    throw new ModelException(ErrorEnum.MODEL_UNKNOWN_ELEMENT_KEY.getErrNo(), exceptionMsg);
-                }
-            }
-        }
-
     }
 
-    private static void checkOutgoing(FlowElement flowElement) throws ModelException {
-        String elementName = (String) flowElement.getProperties().getOrDefault("name", StringUtils.EMPTY);
-        String elementKey = flowElement.getKey();
-        // 非网关节点，只可以有一条outgoing
-        List<String> outgoing = flowElement.getOutgoing();
-        if (null == outgoing || outgoing.size() != 1) {
-            String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT,
-                    ErrorEnum.NORMAL_NODE_MUST_ONE_OUTGOING.getErrMsg(), elementName, elementKey);
-            LOGGER.error(exceptionMsg);
-            throw new ModelException(ErrorEnum.NORMAL_NODE_MUST_ONE_OUTGOING.getErrNo(), exceptionMsg);
+    protected void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {
+        List<String> outgoingList = flowElement.getOutgoing();
+
+        if (CollectionUtils.isEmpty(outgoingList)) {
+            throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_LACK_OUTGOING);
         }
+    }
+
+    protected void validator(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {
+        checkIncoming(flowElementMap, flowElement);
+        checkOutgoing(flowElementMap, flowElement);
+    }
+
+    protected void throwElementValidatorException(FlowElement flowElement, ErrorEnum errorEnum) throws ModelException {
+        String exceptionMsg = getElementValidatorExceptionMsg(flowElement, errorEnum);
+        LOGGER.warn(exceptionMsg);
+        throw new ModelException(errorEnum.getErrNo(), exceptionMsg);
+    }
+
+    protected String getElementValidatorExceptionMsg(FlowElement flowElement, ErrorEnum errorEnum) {
+        String elementName = FlowModelUtil.getElementName(flowElement);
+        String elementkey = flowElement.getKey();
+        return MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT, errorEnum, elementName, elementkey);
     }
 }

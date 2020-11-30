@@ -38,7 +38,7 @@ public class FlowExecutor extends RuntimeExecutor {
     ////////////////////////////////////////execute////////////////////////////////////////
 
     @Override
-    public void execute(RuntimeContext runtimeContext) throws Exception {
+    public void execute(RuntimeContext runtimeContext) throws ProcessException {
         int processStatus = ProcessStatus.SUCCESS;
         try {
             preExecute(runtimeContext);
@@ -62,7 +62,7 @@ public class FlowExecutor extends RuntimeExecutor {
      *
      * @throws Exception
      */
-    private void preExecute(RuntimeContext runtimeContext) throws Exception {
+    private void preExecute(RuntimeContext runtimeContext) throws ProcessException {
         //1.save FlowInstancePO into db
         FlowInstancePO flowInstancePO = saveFlowInstance(runtimeContext);
 
@@ -73,7 +73,7 @@ public class FlowExecutor extends RuntimeExecutor {
         fillExecuteContext(runtimeContext, flowInstancePO.getFlowInstanceId(), instanceDataId);
     }
 
-    private FlowInstancePO saveFlowInstance(RuntimeContext runtimeContext) throws Exception {
+    private FlowInstancePO saveFlowInstance(RuntimeContext runtimeContext) throws ProcessException {
         FlowInstancePO flowInstancePO = buildFlowInstancePO(runtimeContext);
         int result = processInstanceDAO.insert(flowInstancePO);
         if (result == 1) {
@@ -96,7 +96,7 @@ public class FlowExecutor extends RuntimeExecutor {
         return flowInstancePO;
     }
 
-    private String saveInstanceData(FlowInstancePO flowInstancePO, Map<String, InstanceData> instanceDataMap) throws Exception {
+    private String saveInstanceData(FlowInstancePO flowInstancePO, Map<String, InstanceData> instanceDataMap) throws ProcessException {
         if (MapUtils.isEmpty(instanceDataMap)) {
             return StringUtils.EMPTY;
         }
@@ -127,7 +127,7 @@ public class FlowExecutor extends RuntimeExecutor {
         return instanceDataPO;
     }
 
-    private void fillExecuteContext(RuntimeContext runtimeContext, String flowInstanceId, String instanceDataId) throws Exception {
+    private void fillExecuteContext(RuntimeContext runtimeContext, String flowInstanceId, String instanceDataId) throws ProcessException {
         runtimeContext.setFlowInstanceId(flowInstanceId);
         runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.RUNNING);
 
@@ -153,7 +153,7 @@ public class FlowExecutor extends RuntimeExecutor {
         runtimeContext.setCurrentNodeModel(startEvent);
     }
 
-    private void doExecute(RuntimeContext runtimeContext) throws Exception {
+    private void doExecute(RuntimeContext runtimeContext) throws ProcessException {
         RuntimeExecutor runtimeExecutor = getExecuteExecutor(runtimeContext);
         while (runtimeExecutor != null) {
             runtimeExecutor.execute(runtimeContext);
@@ -161,7 +161,7 @@ public class FlowExecutor extends RuntimeExecutor {
         }
     }
 
-    private void postExecute(RuntimeContext runtimeContext) throws Exception {
+    private void postExecute(RuntimeContext runtimeContext) {
 
         //1.update context with processStatus
         if (runtimeContext.getProcessStatus() == ProcessStatus.SUCCESS) {
@@ -180,8 +180,6 @@ public class FlowExecutor extends RuntimeExecutor {
 
             runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.COMPLETED);
 
-            //4.clear cache
-            redisClient.del(RedisConstants.FLOW_INSTANCE + runtimeContext.getFlowInstanceId());
             LOGGER.info("postExecute: flowInstance process completely.||flowInstanceId={}", runtimeContext.getFlowInstanceId());
         }
     }
@@ -190,7 +188,7 @@ public class FlowExecutor extends RuntimeExecutor {
     ////////////////////////////////////////commit////////////////////////////////////////
 
     @Override
-    public void commit(RuntimeContext runtimeContext) throws Exception {
+    public void commit(RuntimeContext runtimeContext) throws ProcessException {
         int processStatus = ProcessStatus.SUCCESS;
         try {
             preCommit(runtimeContext);
@@ -216,7 +214,7 @@ public class FlowExecutor extends RuntimeExecutor {
      *
      * @throws Exception
      */
-    private void preCommit(RuntimeContext runtimeContext) throws Exception {
+    private void preCommit(RuntimeContext runtimeContext) throws ProcessException {
         String flowInstanceId = runtimeContext.getFlowInstanceId();
         NodeInstanceBO suspendNodeInstance = runtimeContext.getSuspendNodeInstance();
         String nodeInstanceId = suspendNodeInstance.getNodeInstanceId();
@@ -287,7 +285,7 @@ public class FlowExecutor extends RuntimeExecutor {
     }
 
     private void fillCommitContext(RuntimeContext runtimeContext, NodeInstancePO nodeInstancePO, String instanceDataId,
-                                   Map<String, InstanceData> instanceDataMap) throws Exception {
+                                   Map<String, InstanceData> instanceDataMap) throws ProcessException {
 
         runtimeContext.setInstanceDataId(instanceDataId);
         runtimeContext.setInstanceDataMap(instanceDataMap);
@@ -299,7 +297,7 @@ public class FlowExecutor extends RuntimeExecutor {
         runtimeContext.setNodeInstanceList(Lists.newArrayList());
     }
 
-    private void doCommit(RuntimeContext runtimeContext) throws Exception {
+    private void doCommit(RuntimeContext runtimeContext) throws ProcessException {
         RuntimeExecutor runtimeExecutor = getExecuteExecutor(runtimeContext);
         runtimeExecutor.commit(runtimeContext);
 
@@ -310,7 +308,7 @@ public class FlowExecutor extends RuntimeExecutor {
         }
     }
 
-    private void postCommit(RuntimeContext runtimeContext) throws Exception {
+    private void postCommit(RuntimeContext runtimeContext) {
         if (runtimeContext.getProcessStatus() == ProcessStatus.SUCCESS && runtimeContext.getCurrentNodeInstance() != null) {
             runtimeContext.setSuspendNodeInstance(runtimeContext.getCurrentNodeInstance());
         }
@@ -323,8 +321,6 @@ public class FlowExecutor extends RuntimeExecutor {
             //update context
             runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.COMPLETED);
 
-            //clear cache
-            redisClient.del(RedisConstants.FLOW_INSTANCE + runtimeContext.getFlowInstanceId());
             LOGGER.info("postCommit: flowInstance process completely.||flowInstanceId={}", runtimeContext.getFlowInstanceId());
         }
     }
@@ -332,7 +328,7 @@ public class FlowExecutor extends RuntimeExecutor {
     ////////////////////////////////////////rollback////////////////////////////////////////
 
     @Override
-    public void rollback(RuntimeContext runtimeContext) throws Exception {
+    public void rollback(RuntimeContext runtimeContext) throws ProcessException {
         int processStatus = ProcessStatus.SUCCESS;
         try {
             preRollback(runtimeContext);
@@ -351,7 +347,7 @@ public class FlowExecutor extends RuntimeExecutor {
     }
 
     // TODO: 2019/12/15 reentrant
-    private void preRollback(RuntimeContext runtimeContext) throws Exception {
+    private void preRollback(RuntimeContext runtimeContext) throws ProcessException {
         String flowInstanceId = runtimeContext.getFlowInstanceId();
 
         //1.check node: only the latest enabled(ACTIVE or COMPLETED) nodeInstance can be recalled.
@@ -443,7 +439,7 @@ public class FlowExecutor extends RuntimeExecutor {
         return null;
     }
 
-    private void doRollback(RuntimeContext runtimeContext) throws Exception {
+    private void doRollback(RuntimeContext runtimeContext) throws ProcessException {
         RuntimeExecutor runtimeExecutor = getRollbackExecutor(runtimeContext);
         while (runtimeExecutor != null) {
             runtimeExecutor.rollback(runtimeContext);
@@ -451,7 +447,7 @@ public class FlowExecutor extends RuntimeExecutor {
         }
     }
 
-    private void postRollback(RuntimeContext runtimeContext) throws Exception {
+    private void postRollback(RuntimeContext runtimeContext) {
 
         if (runtimeContext.getProcessStatus() != ProcessStatus.SUCCESS) {
             LOGGER.warn("postRollback: ignore while process failed.||runtimeContext={}", runtimeContext);
@@ -466,7 +462,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
     }
 
-    private void fillRollbackContext(RuntimeContext runtimeContext, NodeInstancePO nodeInstancePO, Map<String, InstanceData> instanceDataMap) throws Exception {
+    private void fillRollbackContext(RuntimeContext runtimeContext, NodeInstancePO nodeInstancePO, Map<String, InstanceData> instanceDataMap) throws ProcessException {
         runtimeContext.setInstanceDataId(nodeInstancePO.getInstanceDataId());
         runtimeContext.setInstanceDataMap(instanceDataMap);
         runtimeContext.setNodeInstanceList(Lists.newArrayList());
@@ -492,7 +488,7 @@ public class FlowExecutor extends RuntimeExecutor {
     }
 
     //suspendNodeInstanceBO is necessary
-    private void setCurrentFlowModel(RuntimeContext runtimeContext) throws Exception {
+    private void setCurrentFlowModel(RuntimeContext runtimeContext) throws ProcessException {
         NodeInstanceBO suspendNodeInstanceBO = runtimeContext.getSuspendNodeInstance();
         FlowElement currentNodeModel = FlowModelUtil.getFlowElement(runtimeContext.getFlowElementMap(), suspendNodeInstanceBO.getNodeKey());
         if (currentNodeModel == null) {
@@ -504,7 +500,7 @@ public class FlowExecutor extends RuntimeExecutor {
     }
 
     @Override
-    protected boolean isCompleted(RuntimeContext runtimeContext) throws Exception {
+    protected boolean isCompleted(RuntimeContext runtimeContext) {
         if (runtimeContext.getFlowInstanceStatus() == FlowInstanceStatus.COMPLETED) {
             return true;
         }
@@ -527,16 +523,16 @@ public class FlowExecutor extends RuntimeExecutor {
     }
 
     @Override
-    protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception {
+    protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws ProcessException {
         return getElementExecutor(runtimeContext);
     }
 
     @Override
-    protected RuntimeExecutor getRollbackExecutor(RuntimeContext runtimeContext) throws Exception {
+    protected RuntimeExecutor getRollbackExecutor(RuntimeContext runtimeContext) throws ProcessException {
         return getElementExecutor(runtimeContext);
     }
 
-    private RuntimeExecutor getElementExecutor(RuntimeContext runtimeContext) throws Exception {
+    private RuntimeExecutor getElementExecutor(RuntimeContext runtimeContext) throws ProcessException {
         //if process completed, return null
         if (isCompleted(runtimeContext)) {
             return null;

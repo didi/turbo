@@ -3,9 +3,10 @@ package com.xiaoju.uemc.turbo.engine.processor;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import com.google.common.collect.Lists;
-import com.xiaoju.uemc.turbo.engine.dto.CommitTaskDTO;
-import com.xiaoju.uemc.turbo.engine.dto.RecallTaskDTO;
-import com.xiaoju.uemc.turbo.engine.dto.StartProcessDTO;
+import com.xiaoju.uemc.turbo.engine.dto.CommitTaskResult;
+import com.xiaoju.uemc.turbo.engine.dto.InstanceDataResult;
+import com.xiaoju.uemc.turbo.engine.dto.RecallTaskResult;
+import com.xiaoju.uemc.turbo.engine.dto.StartProcessResult;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.param.CommitTaskParam;
 import com.xiaoju.uemc.turbo.engine.param.RecallTaskParam;
@@ -36,7 +37,7 @@ public class RuntimeProcessorTest extends BaseTest {
     public void testStartProcess() {
         StartProcessParam startProcessParam = EntityBuilder.buildStartProcessParam("08ec9356-27e4-11ea-a4b4-5ef9e2914105");
         try {
-            StartProcessDTO startProcessDTO = runtimeProcessor.startProcess(startProcessParam);
+            StartProcessResult startProcessDTO = runtimeProcessor.startProcess(startProcessParam);
             LOGGER.info("testStartProcess.||startProcessDTO={}", startProcessDTO);
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,9 +60,9 @@ public class RuntimeProcessorTest extends BaseTest {
         commitTaskParam.setVariables(variables);
         try {
             System.out.println("\ncurrentStartTime:" + (new Date()));
-            CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+            CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
             System.out.println("\ncurrentEndTime:" + (new Date()));
-            LOGGER.info("testCommit.||commitTaskDTO={}", commitTaskDTO);
+            LOGGER.info("testCommit.||commitTaskResult={}", commitTaskResult);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,8 +77,8 @@ public class RuntimeProcessorTest extends BaseTest {
         String userTask4InstanceId = "a321982c-2bc9-11ea-9220-ae63b1c4eb76";
         RecallTaskParam recallTaskParam = EntityBuilder.buildRecallTaskParam(flowInstanceId, userTask1InstanceId);
         try {
-            RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
-            LOGGER.info("testCommit.||testRecall={}", recallTaskDTO);
+            RecallTaskResult recallTaskResult = runtimeProcessor.recall(recallTaskParam);
+            LOGGER.info("testCommit.||testRecall={}", recallTaskResult);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -87,8 +88,8 @@ public class RuntimeProcessorTest extends BaseTest {
     public void testGetInstanceData() {
         String flowInstanceId = "296d6b46-32a9-11ea-be8c-5ef9e2914105";
         try {
-            List<InstanceData> instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
-            LOGGER.info("testGetInstanceData.||instanceDataList={}", instanceDataList);
+            InstanceDataResult instanceData = runtimeProcessor.getInstanceData(flowInstanceId);
+            LOGGER.info("testGetInstanceData.||instanceData={}", instanceData);
         } catch (Exception e) {
             e.printStackTrace();
         }

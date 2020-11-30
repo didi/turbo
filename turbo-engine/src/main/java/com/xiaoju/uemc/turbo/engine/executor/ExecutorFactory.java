@@ -40,7 +40,7 @@ public class ExecutorFactory {
     private ExclusiveGatewayExecutor exclusiveGatewayExecutor;
 
 
-    public ElementExecutor getElementExecutor(FlowElement flowElement) throws Exception {
+    public ElementExecutor getElementExecutor(FlowElement flowElement) throws ProcessException {
         int elementType = flowElement.getType();
         ElementExecutor elementExecutor = getElementExecutor(elementType);
 
@@ -67,9 +67,6 @@ public class ExecutorFactory {
             }
             case FlowElementType.USER_TASK: {
                 return userTaskExecutor;
-            }
-            case FlowElementType.SERVICE_TASK: {
-                return serviceTaskExecutor;
             }
             case FlowElementType.EXCLUSIVE_GATEWAY: {
                 return exclusiveGatewayExecutor;

@@ -17,7 +17,7 @@ import java.util.Collections;
 public class StartEventExecutor extends ElementExecutor {
 
     @Override
-    protected void postExecute(RuntimeContext runtimeContext) throws Exception {
+    protected void postExecute(RuntimeContext runtimeContext) throws ProcessException {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
         currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());
         currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);
@@ -25,7 +25,7 @@ public class StartEventExecutor extends ElementExecutor {
     }
 
     @Override
-    protected void preRollback(RuntimeContext runtimeContext) throws Exception {
+    protected void preRollback(RuntimeContext runtimeContext) throws ProcessException {
         runtimeContext.setCurrentNodeInstance(runtimeContext.getSuspendNodeInstance());
         runtimeContext.setNodeInstanceList(Collections.emptyList());
 
@@ -35,7 +35,7 @@ public class StartEventExecutor extends ElementExecutor {
     }
 
     @Override
-    protected void postRollback(RuntimeContext runtimeContext) throws Exception {
+    protected void postRollback(RuntimeContext runtimeContext) throws ProcessException {
         //do nothing
     }
 }

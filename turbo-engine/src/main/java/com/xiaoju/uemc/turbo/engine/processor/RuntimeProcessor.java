@@ -8,9 +8,7 @@ import org.slf4j.Logger;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.xiaoju.uemc.modules.support.jedis.RedisUtils;
-import com.xiaoju.uemc.turbo.engine.bo.FlowInfo;
-import com.xiaoju.uemc.turbo.engine.bo.FlowInstanceBO;
-import com.xiaoju.uemc.turbo.engine.bo.NodeInstanceBO;
+import com.xiaoju.uemc.turbo.engine.bo.*;
 import com.xiaoju.uemc.turbo.engine.common.*;
 import com.xiaoju.uemc.turbo.engine.dao.FlowDeploymentDAO;
 import com.xiaoju.uemc.turbo.engine.dao.InstanceDataDAO;
@@ -70,7 +68,7 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////startProcess////////////////////////////////////////
 
-    public StartProcessDTO startProcess(StartProcessParam startProcessParam) throws Exception {
+    public StartProcessResult startProcess(StartProcessParam startProcessParam) {
         RuntimeContext runtimeContext = null;
         try {
             //1.param validate
@@ -96,7 +94,7 @@ public class RuntimeProcessor {
         }
     }
 
-    private FlowInfo getFlowInfo(StartProcessParam startProcessParam) throws Exception {
+    private FlowInfo getFlowInfo(StartProcessParam startProcessParam) throws ProcessException {
         if (StringUtils.isNotBlank(startProcessParam.getFlowDeployId())) {
             return getFlowInfoByFlowDeployId(startProcessParam.getFlowDeployId());
         } else {
@@ -113,21 +111,21 @@ public class RuntimeProcessor {
         return buildRuntimeContext(flowInfo, variables);
     }
 
-    private StartProcessDTO buildStartProcessDTO(RuntimeContext runtimeContext) {
-        StartProcessDTO startProcessDTO = new StartProcessDTO();
+    private StartProcessResult buildStartProcessDTO(RuntimeContext runtimeContext) {
+        StartProcessResult startProcessDTO = new StartProcessResult();
         BeanUtils.copyProperties(runtimeContext, startProcessDTO);
-        return (StartProcessDTO) fillRuntimeDTO(startProcessDTO, runtimeContext);
+        return (StartProcessResult) fillRuntimeDTO(startProcessDTO, runtimeContext);
     }
 
-    private StartProcessDTO buildStartProcessDTO(RuntimeContext runtimeContext, ProcessException e) {
-        StartProcessDTO startProcessDTO = new StartProcessDTO();
+    private StartProcessResult buildStartProcessDTO(RuntimeContext runtimeContext, ProcessException e) {
+        StartProcessResult startProcessDTO = new StartProcessResult();
         BeanUtils.copyProperties(runtimeContext, startProcessDTO);
-        return (StartProcessDTO) fillRuntimeDTO(startProcessDTO, runtimeContext, e);
+        return (StartProcessResult) fillRuntimeDTO(startProcessDTO, runtimeContext, e);
     }
 
     ////////////////////////////////////////commit////////////////////////////////////////
 
-    public CommitTaskDTO commit(CommitTaskParam commitTaskParam) throws Exception {
+    public CommitTaskResult commit(CommitTaskParam commitTaskParam) {
         RuntimeContext runtimeContext = null;
         try {
             //1.param validate
@@ -143,7 +141,7 @@ public class RuntimeProcessor {
             //3.check status
             if (flowInstanceBO.getStatus() == FlowInstanceStatus.TERMINATED) {
                 LOGGER.warn("commit failed: flowInstance has been completed.||commitTaskParam={}", commitTaskParam);
-                throw new ProcessException(ErrorEnum.TERMINATE_CANNOT_COMMIT);
+                throw new ProcessException(ErrorEnum.COMMIT_REJECTRD);
             }
             if (flowInstanceBO.getStatus() == FlowInstanceStatus.COMPLETED) {
                 LOGGER.warn("commit: reentrant process.||commitTaskParam={}", commitTaskParam);
@@ -186,14 +184,14 @@ public class RuntimeProcessor {
         return runtimeContext;
     }
 
-    private CommitTaskDTO buildCommitTaskDTO(RuntimeContext runtimeContext) {
-        CommitTaskDTO commitTaskDTO = new CommitTaskDTO();
-        return (CommitTaskDTO) fillRuntimeDTO(commitTaskDTO, runtimeContext);
+    private CommitTaskResult buildCommitTaskDTO(RuntimeContext runtimeContext) {
+        CommitTaskResult commitTaskResult = new CommitTaskResult();
+        return (CommitTaskResult) fillRuntimeDTO(commitTaskResult, runtimeContext);
     }
 
-    private CommitTaskDTO buildCommitTaskDTO(RuntimeContext runtimeContext, ProcessException e) {
-        CommitTaskDTO commitTaskDTO = new CommitTaskDTO();
-        return (CommitTaskDTO) fillRuntimeDTO(commitTaskDTO, runtimeContext, e);
+    private CommitTaskResult buildCommitTaskDTO(RuntimeContext runtimeContext, ProcessException e) {
+        CommitTaskResult commitTaskResult = new CommitTaskResult();
+        return (CommitTaskResult) fillRuntimeDTO(commitTaskResult, runtimeContext, e);
     }
 
     ////////////////////////////////////////recall////////////////////////////////////////
@@ -205,7 +203,7 @@ public class RuntimeProcessor {
      * @return recallTaskDTO: runtimeDTO, flowInstanceId + activeTaskInstance(nodeInstanceId,nodeKey,status) + dataMap
      * @throws Exception
      */
-    public RecallTaskDTO recall(RecallTaskParam recallTaskParam) throws Exception {
+    public RecallTaskResult recall(RecallTaskParam recallTaskParam) {
         RuntimeContext runtimeContext = null;
         try {
             //1.param validate
@@ -221,7 +219,7 @@ public class RuntimeProcessor {
             //3.check status
             if (flowInstanceBO.getStatus() != FlowInstanceStatus.RUNNING) {
                 LOGGER.warn("recall failed: invalid status to recall.||recallTaskParam={}||status={}", recallTaskParam, flowInstanceBO.getStatus());
-                throw new ProcessException(ErrorEnum.FLOW_INSTANCE_CANNOT_ROLLBACK);
+                throw new ProcessException(ErrorEnum.ROLLBACK_REJECTRD);
             }
             String flowDeployId = flowInstanceBO.getFlowDeployId();
 
@@ -260,20 +258,20 @@ public class RuntimeProcessor {
         return runtimeContext;
     }
 
-    private RecallTaskDTO buildRecallTaskDTO(RuntimeContext runtimeContext) {
-        RecallTaskDTO recallTaskDTO = new RecallTaskDTO();
-        return (RecallTaskDTO) fillRuntimeDTO(recallTaskDTO, runtimeContext);
+    private RecallTaskResult buildRecallTaskDTO(RuntimeContext runtimeContext) {
+        RecallTaskResult recallTaskResult = new RecallTaskResult();
+        return (RecallTaskResult) fillRuntimeDTO(recallTaskResult, runtimeContext);
     }
 
-    private RecallTaskDTO buildRecallTaskDTO(RuntimeContext runtimeContext, ProcessException e) {
-        RecallTaskDTO recallTaskDTO = new RecallTaskDTO();
-        return (RecallTaskDTO) fillRuntimeDTO(recallTaskDTO, runtimeContext, e);
+    private RecallTaskResult buildRecallTaskDTO(RuntimeContext runtimeContext, ProcessException e) {
+        RecallTaskResult recallTaskResult = new RecallTaskResult();
+        return (RecallTaskResult) fillRuntimeDTO(recallTaskResult, runtimeContext, e);
     }
 
     ////////////////////////////////////////terminate////////////////////////////////////////
 
-    public TerminateDTO terminateProcess(String flowInstanceId) throws Exception {
-        TerminateDTO terminateDTO;
+    public TerminateResult terminateProcess(String flowInstanceId) {
+        TerminateResult terminateDTO;
         try {
             int flowInstanceStatus;
 
@@ -286,12 +284,12 @@ public class RuntimeProcessor {
                 flowInstanceStatus = FlowInstanceStatus.TERMINATED;
             }
 
-            terminateDTO = new TerminateDTO(ErrorEnum.SUCCESS);
+            terminateDTO = new TerminateResult(ErrorEnum.SUCCESS);
             terminateDTO.setFlowInstanceId(flowInstanceId);
             terminateDTO.setStatus(flowInstanceStatus);
         } catch (Exception e) {
             LOGGER.error("terminateProcess exception.||flowInstanceId={}, ", flowInstanceId, e);
-            terminateDTO = new TerminateDTO(ErrorEnum.SYSTEM_ERROR);
+            terminateDTO = new TerminateResult(ErrorEnum.SYSTEM_ERROR);
             terminateDTO.setFlowInstanceId(flowInstanceId);
         } finally {
             //the status is unknown while exception occurs, clear it as well
@@ -301,66 +299,72 @@ public class RuntimeProcessor {
     }
 
     ////////////////////////////////////////updateInstanceData////////////////////////////////////////
-    public CommonDTO updateInstanceData(String flowInstanceId, Map<String, InstanceData> dataMap) throws Exception {
+    public CommonResult updateInstanceData(String flowInstanceId, Map<String, InstanceData> dataMap) throws Exception {
         InstanceDataPO instanceDataPO = instanceDataDAO.selectRecentOne(flowInstanceId);
-        CommonDTO commonDTO = new CommonDTO(ErrorEnum.SUCCESS);
-        return commonDTO;
+        CommonResult commonResult = new CommonResult(ErrorEnum.SUCCESS);
+        return commonResult;
     }
 
     ////////////////////////////////////////getHistoryUserTaskList////////////////////////////////////////
 
-    public NodeInstanceListDTO getHistoryUserTaskList(String flowInstanceId) throws Exception {
+    public NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId) {
 
         //1.get nodeInstanceList by flowInstanceId order by id desc
         List<NodeInstancePO> historyNodeInstanceList = getDescHistoryNodeInstanceList(flowInstanceId);
 
         //2.init dto
-        NodeInstanceListDTO historyListDTO = new NodeInstanceListDTO(ErrorEnum.SUCCESS);
+        NodeInstanceListResult historyListDTO = new NodeInstanceListResult(ErrorEnum.SUCCESS);
         historyListDTO.setNodeInstanceDTOList(Lists.newArrayList());
-        if (CollectionUtils.isEmpty(historyNodeInstanceList)) {
-            LOGGER.warn("getHistoryUserTaskList: historyNodeInstanceList is empty.||flowInstanceId={}", flowInstanceId);
-            return historyListDTO;
+
+        try {
+
+            if (CollectionUtils.isEmpty(historyNodeInstanceList)) {
+                LOGGER.warn("getHistoryUserTaskList: historyNodeInstanceList is empty.||flowInstanceId={}", flowInstanceId);
+                return historyListDTO;
+            }
+
+            //3.get flow info
+            String flowDeployId = historyNodeInstanceList.get(0).getFlowDeployId();
+            Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
+
+            //4.pick out userTask and build dto
+            List<NodeInstance> userTaskDTOList = historyListDTO.getNodeInstanceDTOList();//empty list
+
+            for (NodeInstancePO nodeInstancePO : historyNodeInstanceList) {
+                //ignore noneffective nodeInstance
+                if (!isEffectiveNodeInstance(nodeInstancePO.getStatus())) {
+                    continue;
+                }
+
+                //ignore un-userTask instance
+                if (!isUserTask(nodeInstancePO.getNodeKey(), flowElementMap)) {
+                    continue;
+                }
+
+                //build effective userTask instance DTO
+                NodeInstance nodeInstanceDTO = new NodeInstance();
+                //set instanceId & status
+                BeanUtils.copyProperties(nodeInstancePO, nodeInstanceDTO);
+
+                //set ElementModel info
+                FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
+                nodeInstanceDTO.setModelKey(flowElement.getKey());
+                nodeInstanceDTO.setModelName(FlowModelUtil.getElementName(flowElement));
+                if (MapUtils.isNotEmpty(flowElement.getProperties())) {
+                    nodeInstanceDTO.setProperties(flowElement.getProperties());
+                } else {
+                    nodeInstanceDTO.setProperties(Maps.newHashMap());
+                }
+                userTaskDTOList.add(nodeInstanceDTO);
+            }
+        } catch (ProcessException e) {
+            historyListDTO.setErrCode(e.getErrNo());
+            historyListDTO.setErrMsg(e.getErrMsg());
         }
-
-        //3.get flow info
-        String flowDeployId = historyNodeInstanceList.get(0).getFlowDeployId();
-        Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
-
-        //4.pick out userTask and build dto
-        List<NodeInstanceDTO> userTaskDTOList = historyListDTO.getNodeInstanceDTOList();//empty list
-
-        for (NodeInstancePO nodeInstancePO : historyNodeInstanceList) {
-            //ignore noneffective nodeInstance
-            if (!isEffectiveNodeInstance(nodeInstancePO.getStatus())) {
-                continue;
-            }
-
-            //ignore un-userTask instance
-            if (!isUserTask(nodeInstancePO.getNodeKey(), flowElementMap)) {
-                continue;
-            }
-
-            //build effective userTask instance DTO
-            NodeInstanceDTO nodeInstanceDTO = new NodeInstanceDTO();
-            //set instanceId & status
-            BeanUtils.copyProperties(nodeInstancePO, nodeInstanceDTO);
-
-            //set ElementModel info
-            FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
-            nodeInstanceDTO.setModelKey(flowElement.getKey());
-            nodeInstanceDTO.setModelName(FlowModelUtil.getElementName(flowElement));
-            if (MapUtils.isNotEmpty(flowElement.getProperties())) {
-                nodeInstanceDTO.setProperties(flowElement.getProperties());
-            } else {
-                nodeInstanceDTO.setProperties(Maps.newHashMap());
-            }
-            userTaskDTOList.add(nodeInstanceDTO);
-        }
-
         return historyListDTO;
     }
 
-    private Map<String, FlowElement> getFlowElementMap(String flowDeployId) throws Exception {
+    private Map<String, FlowElement> getFlowElementMap(String flowDeployId) throws ProcessException {
         FlowInfo flowInfo = getFlowInfoByFlowDeployId(flowDeployId);
         String flowModel = flowInfo.getFlowModel();
         return FlowModelUtil.getFlowElementMap(flowModel);
@@ -370,7 +374,7 @@ public class RuntimeProcessor {
         return status == NodeInstanceStatus.COMPLETED || status == NodeInstanceStatus.ACTIVE;
     }
 
-    private boolean isUserTask(String nodeKey, Map<String, FlowElement> flowElementMap) throws Exception {
+    private boolean isUserTask(String nodeKey, Map<String, FlowElement> flowElementMap) throws ProcessException {
         if (!flowElementMap.containsKey(nodeKey)) {
             LOGGER.warn("isUserTask: invalid nodeKey which is not in flowElementMap.||nodeKey={}||flowElementMap={}",
                     nodeKey, flowElementMap);
@@ -382,111 +386,116 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////getHistoryElementList////////////////////////////////////////
 
-    public ElementInstanceListDTO getHistoryElementList(String flowInstanceId) throws Exception {
+    public ElementInstanceListResult getHistoryElementList(String flowInstanceId) {
         //1.getHistoryNodeList
         List<NodeInstancePO> historyNodeInstanceList = getHistoryNodeInstanceList(flowInstanceId);
 
         //2.init DTO
-        ElementInstanceListDTO elementInstanceListDTO = new ElementInstanceListDTO(ErrorEnum.SUCCESS);
-        elementInstanceListDTO.setElementInstanceDTOList(Lists.newArrayList());
+        ElementInstanceListResult elementInstanceListResult = new ElementInstanceListResult(ErrorEnum.SUCCESS);
+        elementInstanceListResult.setElementInstanceList(Lists.newArrayList());
 
-        if (CollectionUtils.isEmpty(historyNodeInstanceList)) {
-            LOGGER.warn("getHistoryElementList: historyNodeInstanceList is empty.||flowInstanceId={}", flowInstanceId);
-            return elementInstanceListDTO;
-        }
-
-        //3.get flow info
-        String flowDeployId = historyNodeInstanceList.get(0).getFlowDeployId();
-        Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
-
-        //4.calculate elementInstanceMap: key=elementKey, value(lasted)=ElementInstanceDTO(elementKey, status)
-        List<ElementInstanceDTO> elementInstanceDTOList = elementInstanceListDTO.getElementInstanceDTOList();
-        for (NodeInstancePO nodeInstancePO : historyNodeInstanceList) {
-            String nodeKey = nodeInstancePO.getNodeKey();
-            String sourceNodeKey = nodeInstancePO.getSourceNodeKey();
-            int nodeStatus = nodeInstancePO.getStatus();
-
-            //4.1 build the source sequenceFlow instance DTO
-            if (StringUtils.isNotBlank(sourceNodeKey)) {
-                FlowElement sourceFlowElement = FlowModelUtil.getSequenceFlow(flowElementMap, sourceNodeKey, nodeKey);
-                if (sourceFlowElement == null) {
-                    LOGGER.error("getHistoryElementList failed: sourceFlowElement is null."
-                            + "||nodeKey={}||sourceNodeKey={}||flowElementMap={}", nodeKey, sourceNodeKey, flowElementMap);
-                    throw new ProcessException(ErrorEnum.MODEL_UNKNOWN_ELEMENT_KEY);
-                }
-
-                //build ElementInstanceDTO
-                int sourceSequenceFlowStatus = nodeStatus;
-                if (nodeStatus == NodeInstanceStatus.ACTIVE) {
-                    sourceSequenceFlowStatus = NodeInstanceStatus.COMPLETED;
-                }
-                ElementInstanceDTO sequenceFlowInstanceDTO = new ElementInstanceDTO(sourceFlowElement.getKey(), sourceSequenceFlowStatus);
-                elementInstanceDTOList.add(sequenceFlowInstanceDTO);
+        try {
+            if (CollectionUtils.isEmpty(historyNodeInstanceList)) {
+                LOGGER.warn("getHistoryElementList: historyNodeInstanceList is empty.||flowInstanceId={}", flowInstanceId);
+                return elementInstanceListResult;
             }
 
-            //4.2 build nodeInstance DTO
-            ElementInstanceDTO nodeInstanceDTO = new ElementInstanceDTO(nodeKey, nodeStatus);
-            elementInstanceDTOList.add(nodeInstanceDTO);
-        }
+            //3.get flow info
+            String flowDeployId = historyNodeInstanceList.get(0).getFlowDeployId();
+            Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
 
-        return elementInstanceListDTO;
+            //4.calculate elementInstanceMap: key=elementKey, value(lasted)=ElementInstance(elementKey, status)
+            List<ElementInstance> elementInstanceList = elementInstanceListResult.getElementInstanceList();
+            for (NodeInstancePO nodeInstancePO : historyNodeInstanceList) {
+                String nodeKey = nodeInstancePO.getNodeKey();
+                String sourceNodeKey = nodeInstancePO.getSourceNodeKey();
+                int nodeStatus = nodeInstancePO.getStatus();
+
+                //4.1 build the source sequenceFlow instance DTO
+                if (StringUtils.isNotBlank(sourceNodeKey)) {
+                    FlowElement sourceFlowElement = FlowModelUtil.getSequenceFlow(flowElementMap, sourceNodeKey, nodeKey);
+                    if (sourceFlowElement == null) {
+                        LOGGER.error("getHistoryElementList failed: sourceFlowElement is null."
+                                + "||nodeKey={}||sourceNodeKey={}||flowElementMap={}", nodeKey, sourceNodeKey, flowElementMap);
+                        throw new ProcessException(ErrorEnum.MODEL_UNKNOWN_ELEMENT_KEY);
+                    }
+
+                    //build ElementInstance
+                    int sourceSequenceFlowStatus = nodeStatus;
+                    if (nodeStatus == NodeInstanceStatus.ACTIVE) {
+                        sourceSequenceFlowStatus = NodeInstanceStatus.COMPLETED;
+                    }
+                    ElementInstance sequenceFlowInstanceDTO = new ElementInstance(sourceFlowElement.getKey(), sourceSequenceFlowStatus);
+                    elementInstanceList.add(sequenceFlowInstanceDTO);
+                }
+
+                //4.2 build nodeInstance DTO
+                ElementInstance nodeInstanceDTO = new ElementInstance(nodeKey, nodeStatus);
+                elementInstanceList.add(nodeInstanceDTO);
+            }
+        } catch (ProcessException e) {
+            elementInstanceListResult.setErrCode(e.getErrNo());
+            elementInstanceListResult.setErrMsg(e.getErrMsg());
+        }
+        return elementInstanceListResult;
     }
 
-    private List<NodeInstancePO> getHistoryNodeInstanceList(String flowInstanceId) throws Exception {
+    private List<NodeInstancePO> getHistoryNodeInstanceList(String flowInstanceId) {
         return nodeInstanceDAO.selectByFlowInstanceId(flowInstanceId);
     }
 
-    private List<NodeInstancePO> getDescHistoryNodeInstanceList(String flowInstanceId) throws Exception {
+    private List<NodeInstancePO> getDescHistoryNodeInstanceList(String flowInstanceId) {
         return nodeInstanceDAO.selectDescByFlowInstanceId(flowInstanceId);
     }
 
-    public NodeInstanceDTO getNodeInstance(String flowInstanceId, String nodeInstanceId) throws Exception {
-        NodeInstancePO nodeInstancePO = nodeInstanceDAO.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
-        String flowDeployId = nodeInstancePO.getFlowDeployId();
-        Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
-        NodeInstanceDTO nodeInstanceDTO = new NodeInstanceDTO();
-        BeanUtils.copyProperties(nodeInstancePO, nodeInstanceDTO);
-        FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
-        nodeInstanceDTO.setModelKey(flowElement.getKey());
-        nodeInstanceDTO.setModelName(FlowModelUtil.getElementName(flowElement));
-        if (MapUtils.isNotEmpty(flowElement.getProperties())) {
-            nodeInstanceDTO.setProperties(flowElement.getProperties());
-        } else {
-            nodeInstanceDTO.setProperties(Maps.newHashMap());
+    public NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId) {
+        NodeInstanceResult nodeInstanceResult = new NodeInstanceResult();
+        try {
+            NodeInstancePO nodeInstancePO = nodeInstanceDAO.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
+            String flowDeployId = nodeInstancePO.getFlowDeployId();
+            Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
+            NodeInstance nodeInstanceDTO = new NodeInstance();
+            BeanUtils.copyProperties(nodeInstancePO, nodeInstanceDTO);
+            FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
+            nodeInstanceDTO.setModelKey(flowElement.getKey());
+            nodeInstanceDTO.setModelName(FlowModelUtil.getElementName(flowElement));
+            if (MapUtils.isNotEmpty(flowElement.getProperties())) {
+                nodeInstanceDTO.setProperties(flowElement.getProperties());
+            } else {
+                nodeInstanceDTO.setProperties(Maps.newHashMap());
+            }
+            nodeInstanceResult.setNodeInstance(nodeInstanceDTO);
+            nodeInstanceResult.setErrCode(ErrorEnum.SUCCESS.getErrNo());
+            nodeInstanceResult.setErrMsg(ErrorEnum.SUCCESS.getErrMsg());
+        } catch (ProcessException e) {
+            nodeInstanceResult.setErrCode(e.getErrNo());
+            nodeInstanceResult.setErrMsg(e.getErrMsg());
         }
-        return nodeInstanceDTO;
+        return nodeInstanceResult;
     }
 
     ////////////////////////////////////////getInstanceData////////////////////////////////////////
-    public List<InstanceData> getInstanceData(String flowInstanceId) throws Exception {
+    public InstanceDataResult getInstanceData(String flowInstanceId) {
         InstanceDataPO instanceDataPO = instanceDataDAO.selectRecentOne(flowInstanceId);
 
         TypeReference<List<InstanceData>> typeReference = new TypeReference<List<InstanceData>>() {
         };
         List<InstanceData> instanceDataList = JSONObject.parseObject(instanceDataPO.getInstanceData(), typeReference);
         if (CollectionUtils.isEmpty(instanceDataList)) {
-            return Lists.newArrayList();
+            instanceDataList =  Lists.newArrayList();
         }
 
-        return instanceDataList;
+        InstanceDataResult instanceDataResult = new InstanceDataResult();
+        instanceDataResult.setVariables(instanceDataList);
+        instanceDataResult.setErrCode(ErrorEnum.SUCCESS.getErrNo());
+        instanceDataResult.setErrMsg(ErrorEnum.SUCCESS.getErrMsg());
+        return instanceDataResult;
     }
 
     ////////////////////////////////////////common////////////////////////////////////////
 
-    private FlowInfo getFlowInfoByFlowDeployId(String flowDeployId) throws Exception {
-//        //get from cache firstly
-//        String redisKey = RedisConstants.FLOW_INFO + flowDeployId;
-//        String flowInfoStr = redisClient.get(redisKey);
-//        if (StringUtils.isNotBlank(flowInfoStr)) {
-//            //TODO:临时逻辑,兼容redis中存的数据是+tenant/caller字段之前的老数据,到2020/10/25可下掉
-//            FlowInfo flowInfo = JSONObject.parseObject(flowInfoStr, FlowInfo.class);
-//            if (StringUtils.isNotBlank(flowInfo.getTenant()) && StringUtils.isNotBlank(flowInfo.getCaller())) {
-//                LOGGER.info("getFlowInfoByFlowDeployId from cache.||flowDeployId={}", flowDeployId);
-//                return flowInfo;
-//            }
-//        }
+    private FlowInfo getFlowInfoByFlowDeployId(String flowDeployId) throws ProcessException {
 
-        //get from db
         FlowDeploymentPO flowDeploymentPO = flowDeploymentDAO.selectByDeployId(flowDeployId);
         if (flowDeploymentPO == null) {
             LOGGER.warn("getFlowInfoByFlowDeployId failed.||flowDeployId={}", flowDeployId);
@@ -495,12 +504,10 @@ public class RuntimeProcessor {
         FlowInfo flowInfo = new FlowInfo();
         BeanUtils.copyProperties(flowDeploymentPO, flowInfo);
 
-        //set into cache
-//        redisClient.setex(redisKey, RedisConstants.FLOW_EXPIRED_SECOND, JSON.toJSONString(flowInfo));
         return flowInfo;
     }
 
-    private FlowInfo getFlowInfoByFlowModuleId(String flowModuleId) throws Exception {
+    private FlowInfo getFlowInfoByFlowModuleId(String flowModuleId) throws ProcessException {
         //get from db directly
         FlowDeploymentPO flowDeploymentPO = flowDeploymentDAO.selectRecentByFlowModuleId(flowModuleId);
         if (flowDeploymentPO == null) {
@@ -517,7 +524,7 @@ public class RuntimeProcessor {
         return flowInfo;
     }
 
-    private FlowInstanceBO getFlowInstanceBO(String flowInstanceId) throws Exception {
+    private FlowInstanceBO getFlowInstanceBO(String flowInstanceId) throws ProcessException {
         //get from cache firstly
         String redisKey = RedisConstants.FLOW_INSTANCE + flowInstanceId;
         String flowInstanceStr = redisClient.get(redisKey);
@@ -555,36 +562,36 @@ public class RuntimeProcessor {
         return runtimeContext;
     }
 
-    private RuntimeDTO fillRuntimeDTO(RuntimeDTO runtimeDTO, RuntimeContext runtimeContext) {
+    private RuntimeResult fillRuntimeDTO(RuntimeResult runtimeResult, RuntimeContext runtimeContext) {
         if (runtimeContext.getProcessStatus() == ProcessStatus.SUCCESS) {
-            return fillRuntimeDTO(runtimeDTO, runtimeContext, ErrorEnum.SUCCESS);
+            return fillRuntimeDTO(runtimeResult, runtimeContext, ErrorEnum.SUCCESS);
         }
-        return fillRuntimeDTO(runtimeDTO, runtimeContext, ErrorEnum.FAILED);
+        return fillRuntimeDTO(runtimeResult, runtimeContext, ErrorEnum.FAILED);
     }
 
-    private RuntimeDTO fillRuntimeDTO(RuntimeDTO runtimeDTO, RuntimeContext runtimeContext, ErrorEnum errorEnum) {
-        return fillRuntimeDTO(runtimeDTO, runtimeContext, errorEnum.getErrNo(), errorEnum.getErrMsg());
+    private RuntimeResult fillRuntimeDTO(RuntimeResult runtimeResult, RuntimeContext runtimeContext, ErrorEnum errorEnum) {
+        return fillRuntimeDTO(runtimeResult, runtimeContext, errorEnum.getErrNo(), errorEnum.getErrMsg());
     }
 
-    private RuntimeDTO fillRuntimeDTO(RuntimeDTO runtimeDTO, RuntimeContext runtimeContext, ProcessException e) {
-        return fillRuntimeDTO(runtimeDTO, runtimeContext, e.getErrNo(), e.getErrMsg());
+    private RuntimeResult fillRuntimeDTO(RuntimeResult runtimeResult, RuntimeContext runtimeContext, ProcessException e) {
+        return fillRuntimeDTO(runtimeResult, runtimeContext, e.getErrNo(), e.getErrMsg());
     }
 
-    private RuntimeDTO fillRuntimeDTO(RuntimeDTO runtimeDTO, RuntimeContext runtimeContext, int errNo, String errMsg) {
-        runtimeDTO.setErrCode(errNo);
-        runtimeDTO.setErrMsg(errMsg);
+    private RuntimeResult fillRuntimeDTO(RuntimeResult runtimeResult, RuntimeContext runtimeContext, int errNo, String errMsg) {
+        runtimeResult.setErrCode(errNo);
+        runtimeResult.setErrMsg(errMsg);
 
         if (runtimeContext != null) {
-            runtimeDTO.setFlowInstanceId(runtimeContext.getFlowInstanceId());
-            runtimeDTO.setStatus(runtimeContext.getFlowInstanceStatus());
-            runtimeDTO.setActiveTaskInstance(buildActiveTaskInstanceDTO(runtimeContext.getSuspendNodeInstance(), runtimeContext));
-            runtimeDTO.setVariables(InstanceDataUtil.getInstanceDataList(runtimeContext.getInstanceDataMap()));
+            runtimeResult.setFlowInstanceId(runtimeContext.getFlowInstanceId());
+            runtimeResult.setStatus(runtimeContext.getFlowInstanceStatus());
+            runtimeResult.setActiveTaskInstance(buildActiveTaskInstanceDTO(runtimeContext.getSuspendNodeInstance(), runtimeContext));
+            runtimeResult.setVariables(InstanceDataUtil.getInstanceDataList(runtimeContext.getInstanceDataMap()));
         }
-        return runtimeDTO;
+        return runtimeResult;
     }
 
-    private NodeInstanceDTO buildActiveTaskInstanceDTO(NodeInstanceBO nodeInstanceBO, RuntimeContext runtimeContext) {
-        NodeInstanceDTO activeNodeInstanceDTO = new NodeInstanceDTO();
+    private NodeInstance buildActiveTaskInstanceDTO(NodeInstanceBO nodeInstanceBO, RuntimeContext runtimeContext) {
+        NodeInstance activeNodeInstanceDTO = new NodeInstance();
         BeanUtils.copyProperties(nodeInstanceBO, activeNodeInstanceDTO);
         activeNodeInstanceDTO.setModelKey(nodeInstanceBO.getNodeKey());
         FlowElement flowElement = runtimeContext.getFlowElementMap().get(nodeInstanceBO.getNodeKey());

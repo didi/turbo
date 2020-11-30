@@ -2,44 +2,36 @@ package com.xiaoju.uemc.turbo.engine.engine;
 
 
 import com.xiaoju.uemc.turbo.engine.dto.*;
-import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.param.*;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Stefanie on 2019/11/22.
  */
 public interface ProcessEngine {
 
-    CreateFlowDTO createFlow(CreateFlowParam createFlowParam) throws Exception;
+    CreateFlowResult createFlow(CreateFlowParam createFlowParam);
 
-    boolean updateFlow(UpdateFlowParam updateFlowParam) throws Exception;
+    UpdateFlowResult updateFlow(UpdateFlowParam updateFlowParam);
 
-    DeployFlowDTO deployFlow(DeployFlowParam deployFlowParam) throws Exception;
+    DeployFlowResult deployFlow(DeployFlowParam deployFlowParam);
 
-    FlowModuleDTO getFlowModule(String flowModuleId) throws Exception;
+    FlowModuleResult getFlowModule(String flowModuleId, String flowDeployId);
 
-    FlowModuleDTO getFlowModule(String flowModuleId, String flowDeployId) throws Exception;
+    StartProcessResult startProcess(StartProcessParam startProcessParam);
 
-    StartProcessDTO startProcess(StartProcessParam startProcessParam) throws Exception;
+    CommitTaskResult commitTask(CommitTaskParam commitTaskParam);
 
-    CommitTaskDTO commitTask(CommitTaskParam commitTaskParam) throws Exception;
+    RecallTaskResult recallTask(RecallTaskParam recallTaskParam);
 
-    RecallTaskDTO recallTask(RecallTaskParam recallTaskParam) throws Exception;
+    TerminateResult terminateProcess(String flowInstanceId);
 
-    TerminateDTO terminateProcess(String flowInstanceId) throws Exception;
+    NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId);
 
-    NodeInstanceListDTO getHistoryUserTaskList(String flowInstanceId) throws Exception;
+    ElementInstanceListResult getHistoryElementList(String flowInstanceId);
 
-    ElementInstanceListDTO getHistoryElementList(String flowInstanceId) throws Exception;
+    InstanceDataResult getInstanceData(String flowInstanceId);
 
-    List<InstanceData> getInstanceData(String flowInstanceId) throws Exception;
-
-    void updateData(String flowInstanceId, Map<String, Object> dataMap);
-
-    NodeInstanceDTO getNodeInstance(String flowInstanceId, String nodeInstanceId) throws Exception;
+    NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId);
 
 }
 

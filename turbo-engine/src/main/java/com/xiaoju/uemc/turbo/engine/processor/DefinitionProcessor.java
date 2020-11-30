@@ -9,23 +9,24 @@ import com.xiaoju.uemc.turbo.engine.common.FlowDeploymentStatus;
 import com.xiaoju.uemc.turbo.engine.common.FlowModuleEnum;
 import com.xiaoju.uemc.turbo.engine.dao.FlowDefinitionDAO;
 import com.xiaoju.uemc.turbo.engine.dao.FlowDeploymentDAO;
-import com.xiaoju.uemc.turbo.engine.dto.CreateFlowDTO;
-import com.xiaoju.uemc.turbo.engine.dto.DeployFlowDTO;
-import com.xiaoju.uemc.turbo.engine.dto.FlowModuleDTO;
+import com.xiaoju.uemc.turbo.engine.dto.*;
 import com.xiaoju.uemc.turbo.engine.entity.FlowDefinitionPO;
 import com.xiaoju.uemc.turbo.engine.entity.FlowDeploymentPO;
+import com.xiaoju.uemc.turbo.engine.exception.BaseException;
 import com.xiaoju.uemc.turbo.engine.exception.ParamException;
+import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.param.CreateFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.DeployFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.UpdateFlowParam;
 import com.xiaoju.uemc.turbo.engine.util.IdGenerator;
 import com.xiaoju.uemc.turbo.engine.util.StrongUuidGenerator;
 import com.xiaoju.uemc.turbo.engine.validator.ModelValidator;
+import com.xiaoju.uemc.turbo.engine.validator.ParamValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 /**
@@ -38,102 +39,149 @@ public class DefinitionProcessor {
 
     private static final IdGenerator idGenerator = StrongUuidGenerator.getInstance();
 
-    @Autowired
-    FlowDefinitionDAO flowDefinitionDAO;
+    @Resource
+    private ModelValidator modelValidator;
 
-    @Autowired
-    FlowDeploymentDAO flowDeploymentDAO;
+    @Resource
+    private FlowDefinitionDAO flowDefinitionDAO;
 
-    public CreateFlowDTO create(CreateFlowParam createFlowParam) throws Exception {
-        FlowDefinitionPO flowDefinitionPO = new FlowDefinitionPO();
-        BeanUtils.copyProperties(createFlowParam, flowDefinitionPO);
-        String flowModuleId = idGenerator.getNextId();
-        flowDefinitionPO.setFlowModuleId(flowModuleId);
-        flowDefinitionPO.setStatus(FlowDefinitionStatus.INIT);
-        flowDefinitionPO.setCreateTime(new Date());
-        flowDefinitionPO.setModifyTime(new Date());
-        int rows = flowDefinitionDAO.insert(flowDefinitionPO);
-        if (rows <= 0) {
-            throw new ParamException(ErrorEnum.DEFINITION_INSERT_INVALID);
+    @Resource
+    private FlowDeploymentDAO flowDeploymentDAO;
+
+    public CreateFlowResult create(CreateFlowParam createFlowParam) {
+        CreateFlowResult createFlowResult = new CreateFlowResult();
+        try {
+            ParamValidator.validate(createFlowParam);
+
+            FlowDefinitionPO flowDefinitionPO = new FlowDefinitionPO();
+            BeanUtils.copyProperties(createFlowParam, flowDefinitionPO);
+            String flowModuleId = idGenerator.getNextId();
+            flowDefinitionPO.setFlowModuleId(flowModuleId);
+            flowDefinitionPO.setStatus(FlowDefinitionStatus.INIT);
+            flowDefinitionPO.setCreateTime(new Date());
+            flowDefinitionPO.setModifyTime(new Date());
+
+            int rows = flowDefinitionDAO.insert(flowDefinitionPO);
+            if (rows <= 0) {
+                throw new ParamException(ErrorEnum.DEFINITION_INSERT_INVALID);
+            }
+
+            BeanUtils.copyProperties(flowDefinitionPO, createFlowResult);
+            fillCommonDTO(createFlowResult, ErrorEnum.SUCCESS);
+        } catch (ProcessException pe) {
+            fillCommonDTO(createFlowResult, pe.getErrNo(), pe.getErrMsg());
         }
-        CreateFlowDTO createFlowDTO = new CreateFlowDTO();
-        BeanUtils.copyProperties(flowDefinitionPO, createFlowDTO);
-        return createFlowDTO;
+        return createFlowResult;
     }
 
-    // TODO: 2019/12/2  Attention: update tenantId in FlowDeployment while update tenantId // why？？？
-    public boolean update(UpdateFlowParam updateFlowParam) throws ParamException {
-        FlowDefinitionPO flowDefinitionPO = new FlowDefinitionPO();
-        BeanUtils.copyProperties(updateFlowParam, flowDefinitionPO);
-        flowDefinitionPO.setStatus(FlowDefinitionStatus.EDITING);
-        flowDefinitionPO.setModifyTime(new Date());
-        int rows = flowDefinitionDAO.updateByModuleId(flowDefinitionPO);
-        if (rows <= 0) {
-            throw new ParamException(ErrorEnum.DEFINITION_UPDATE_INVALID);
+    public UpdateFlowResult update(UpdateFlowParam updateFlowParam) {
+        UpdateFlowResult updateFlowResult = new UpdateFlowResult();
+        try {
+            ParamValidator.validate(updateFlowParam);
+
+            FlowDefinitionPO flowDefinitionPO = new FlowDefinitionPO();
+            BeanUtils.copyProperties(updateFlowParam, flowDefinitionPO);
+            flowDefinitionPO.setStatus(FlowDefinitionStatus.EDITING);
+            flowDefinitionPO.setModifyTime(new Date());
+
+            int rows = flowDefinitionDAO.updateByModuleId(flowDefinitionPO);
+            if (rows <= 0) {
+                throw new ProcessException(ErrorEnum.DEFINITION_UPDATE_INVALID);
+            }
+            fillCommonDTO(updateFlowResult, ErrorEnum.SUCCESS);
+        } catch (ProcessException pe) {
+            fillCommonDTO(updateFlowResult, pe.getErrNo(), pe.getErrMsg());
         }
-        return true;
+        return updateFlowResult;
     }
 
-    public DeployFlowDTO deploy(DeployFlowParam deployFlowParam) throws Exception {
-        FlowDefinitionPO flowDefinitionPO = flowDefinitionDAO.selectByModuleId(deployFlowParam.getFlowModuleId());
-        if (null == flowDefinitionPO) {
-            throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModule is not exist");
-        }
+    public DeployFlowResult deploy(DeployFlowParam deployFlowParam) {
+        DeployFlowResult deployFlowResult = new DeployFlowResult();
+        try {
+            ParamValidator.validate(deployFlowParam);
 
-        Integer status = flowDefinitionPO.getStatus();
-        if (status != FlowDefinitionStatus.EDITING) {
-            throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModule is not editing status");
-        }
+            FlowDefinitionPO flowDefinitionPO = flowDefinitionDAO.selectByModuleId(deployFlowParam.getFlowModuleId());
+            if (null == flowDefinitionPO) {
+                throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModule is not exist");
+            }
 
-        String flowModel = flowDefinitionPO.getFlowModel();
-        ModelValidator.validate(flowModel);
-        FlowDeploymentPO flowDeploymentPO = new FlowDeploymentPO();
-        BeanUtils.copyProperties(flowDefinitionPO, flowDeploymentPO);
-        String flowDeployId = idGenerator.getNextId();
-        flowDeploymentPO.setFlowDeployId(flowDeployId);
-        flowDeploymentPO.setStatus(FlowDeploymentStatus.DEPLOYED);
-        int rows = flowDeploymentDAO.insert(flowDeploymentPO);
-        if (rows <= 0) {
-            throw new ParamException(ErrorEnum.DEFINITION_INSERT_INVALID);
+            Integer status = flowDefinitionPO.getStatus();
+            if (status != FlowDefinitionStatus.EDITING) {
+                throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModule is not editing status");
+            }
+
+            String flowModel = flowDefinitionPO.getFlowModel();
+            modelValidator.validate(flowModel);
+
+            FlowDeploymentPO flowDeploymentPO = new FlowDeploymentPO();
+            BeanUtils.copyProperties(flowDefinitionPO, flowDeploymentPO);
+            String flowDeployId = idGenerator.getNextId();
+            flowDeploymentPO.setFlowDeployId(flowDeployId);
+            flowDeploymentPO.setStatus(FlowDeploymentStatus.DEPLOYED);
+
+            int rows = flowDeploymentDAO.insert(flowDeploymentPO);
+            if (rows <= 0) {
+                throw new ProcessException(ErrorEnum.DEFINITION_INSERT_INVALID);
+            }
+
+            BeanUtils.copyProperties(flowDeploymentPO, deployFlowResult);
+            fillCommonDTO(deployFlowResult, ErrorEnum.SUCCESS);
+        } catch (BaseException be) {
+            fillCommonDTO(deployFlowResult, be.getErrNo(), be.getErrMsg());
         }
-        DeployFlowDTO deployFlowDTO = new DeployFlowDTO();
-        BeanUtils.copyProperties(flowDeploymentPO, deployFlowDTO);
-        return deployFlowDTO;
+        return deployFlowResult;
     }
 
-    public FlowModuleDTO getFlowModule(String flowModuleId, String flowDeployId) {
-        if (StringUtils.isNotBlank(flowDeployId)) {
-            return getFlowModuleByFlowDeployId(flowDeployId);
-        } else {
-            return getFlowModuleByFlowModuleId(flowModuleId);
+    public FlowModuleResult getFlowModule(String flowModuleId, String flowDeployId) {
+        FlowModuleResult flowModuleResult = new FlowModuleResult();
+        try {
+            ParamValidator.validate(flowModuleId, flowDeployId);
+            if (StringUtils.isNotBlank(flowDeployId)) {
+                flowModuleResult = getFlowModuleByFlowDeployId(flowDeployId);
+            } else {
+                flowModuleResult = getFlowModuleByFlowModuleId(flowModuleId);
+            }
+            fillCommonDTO(flowModuleResult, ErrorEnum.SUCCESS);
+        } catch (ProcessException pe) {
+            fillCommonDTO(flowModuleResult, pe.getErrNo(), pe.getErrMsg());
         }
+        return flowModuleResult;
     }
 
-    private FlowModuleDTO getFlowModuleByFlowModuleId(String flowModuleId) {
+    private FlowModuleResult getFlowModuleByFlowModuleId(String flowModuleId) throws ParamException {
         FlowDefinitionPO flowDefinitionPO = flowDefinitionDAO.selectByModuleId(flowModuleId);
         if (flowDefinitionPO == null) {
-            LOGGER.warn("getFlowModuleByFlowModuleId failed: flowDefinitionPO is null.||flowModuleId={}", flowModuleId);
-            return null;
+            LOGGER.warn("getFlowModuleByFlowModuleId failed: can not find flowDefinitionPO.||flowModuleId={}", flowModuleId);
+            throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDefinitionPO is not exist");
         }
-        FlowModuleDTO flowModuleDTO = new FlowModuleDTO();
-        BeanUtils.copyProperties(flowDefinitionPO, flowModuleDTO);
+        FlowModuleResult flowModuleResult = new FlowModuleResult();
+        BeanUtils.copyProperties(flowDefinitionPO, flowModuleResult);
         Integer status = FlowModuleEnum.getStatusByDefinitionStatus(flowDefinitionPO.getStatus());
-        flowModuleDTO.setStatus(status);
-        LOGGER.info("getFlowModuleByFlowModuleId||flowModuleId={}||FlowModuleDTO={}", flowModuleId, JSON.toJSONString(flowModuleDTO));
-        return flowModuleDTO;
+        flowModuleResult.setStatus(status);
+        LOGGER.info("getFlowModuleByFlowModuleId||flowModuleId={}||FlowModuleResult={}", flowModuleId, JSON.toJSONString(flowModuleResult));
+        return flowModuleResult;
     }
 
-    private FlowModuleDTO getFlowModuleByFlowDeployId(String flowDeployId) {
+    private FlowModuleResult getFlowModuleByFlowDeployId(String flowDeployId) throws ParamException {
         FlowDeploymentPO flowDeploymentPO = flowDeploymentDAO.selectByDeployId(flowDeployId);
         if (flowDeploymentPO == null) {
-            LOGGER.warn("getFlowModuleByFlowDeployId failed: flowDeploymentPO is null.||flowDeployId={}", flowDeployId);
-            return null;
+            LOGGER.warn("getFlowModuleByFlowDeployId failed: can not find flowDefinitionPO.||flowDeployId={}", flowDeployId);
+            throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDefinitionPO is not exist");
         }
-        FlowModuleDTO flowModuleDTO = new FlowModuleDTO();
-        BeanUtils.copyProperties(flowDeploymentPO, flowModuleDTO);
+        FlowModuleResult flowModuleResult = new FlowModuleResult();
+        BeanUtils.copyProperties(flowDeploymentPO, flowModuleResult);
         Integer status = FlowModuleEnum.getStatusByDeploymentStatus(flowDeploymentPO.getStatus());
-        flowModuleDTO.setStatus(status);
-        LOGGER.info("getFlowModuleByFlowDeployId||flowDeployId={}||response={}", flowDeployId, JSON.toJSONString(flowModuleDTO));
-        return flowModuleDTO;
+        flowModuleResult.setStatus(status);
+        LOGGER.info("getFlowModuleByFlowDeployId||flowDeployId={}||response={}", flowDeployId, JSON.toJSONString(flowModuleResult));
+        return flowModuleResult;
+    }
+
+    private void fillCommonDTO(CommonResult commonResult, ErrorEnum errorEnum) {
+        fillCommonDTO(commonResult, errorEnum.getErrNo(), errorEnum.getErrMsg());
+    }
+
+    private void fillCommonDTO(CommonResult commonResult, int errNo, String errMsg) {
+        commonResult.setErrCode(errNo);
+        commonResult.setErrMsg(errMsg);
     }
 }
