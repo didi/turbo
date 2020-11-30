@@ -5,11 +5,11 @@ import org.slf4j.Logger;
 import com.google.common.collect.Lists;
 import com.xiaoju.uemc.turbo.engine.dto.CommitTaskResult;
 import com.xiaoju.uemc.turbo.engine.dto.InstanceDataListResult;
-import com.xiaoju.uemc.turbo.engine.dto.RecallTaskResult;
+import com.xiaoju.uemc.turbo.engine.dto.RollbackTaskResult;
 import com.xiaoju.uemc.turbo.engine.dto.StartProcessResult;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.param.CommitTaskParam;
-import com.xiaoju.uemc.turbo.engine.param.RecallTaskParam;
+import com.xiaoju.uemc.turbo.engine.param.RollbackTaskParam;
 import com.xiaoju.uemc.turbo.engine.param.StartProcessParam;
 import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
@@ -75,10 +75,10 @@ public class RuntimeProcessorTest extends BaseTest {
         String userTask2InstanceId = "b9b61c1b-2d73-11ea-9415-ae4f86b932f6";
         String userTask3InstanceId = "1e02de27-2bc4-11ea-8b8f-ae63b1c4eb76";
         String userTask4InstanceId = "a321982c-2bc9-11ea-9220-ae63b1c4eb76";
-        RecallTaskParam recallTaskParam = EntityBuilder.buildRecallTaskParam(flowInstanceId, userTask1InstanceId);
+        RollbackTaskParam rollbackTaskParam = EntityBuilder.buildRecallTaskParam(flowInstanceId, userTask1InstanceId);
         try {
-            RecallTaskResult recallTaskResult = runtimeProcessor.recall(recallTaskParam);
-            LOGGER.info("testCommit.||testRecall={}", recallTaskResult);
+            RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
+            LOGGER.info("testCommit.||testRecall={}", rollbackTaskResult);
         } catch (Exception e) {
             e.printStackTrace();
         }

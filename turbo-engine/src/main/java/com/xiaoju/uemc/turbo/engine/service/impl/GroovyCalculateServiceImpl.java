@@ -2,12 +2,12 @@ package com.xiaoju.uemc.turbo.engine.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.didiglobal.reportlogger.LoggerFactory;
-import com.didiglobal.reportlogger.ReportLogger;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.service.CalculateService;
 import com.xiaoju.uemc.turbo.engine.util.GroovyUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Service
 public class GroovyCalculateServiceImpl implements CalculateService {
 
-    protected static final ReportLogger LOGGER = LoggerFactory.getLogger(GroovyCalculateServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroovyCalculateServiceImpl.class);
 
     @Override
     public Boolean calculate(String expression, Map<String, Object> dataMap) throws ProcessException {

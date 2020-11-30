@@ -3,6 +3,7 @@ package com.xiaoju.uemc.turbo.engine.processor;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.xiaoju.uemc.turbo.engine.param.RollbackTaskParam;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import com.google.common.collect.Lists;
@@ -25,7 +26,6 @@ import com.xiaoju.uemc.turbo.engine.executor.FlowExecutor;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.param.CommitTaskParam;
-import com.xiaoju.uemc.turbo.engine.param.RecallTaskParam;
 import com.xiaoju.uemc.turbo.engine.param.StartProcessParam;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
 import com.xiaoju.uemc.turbo.engine.util.InstanceDataUtil;
@@ -199,26 +199,26 @@ public class RuntimeProcessor {
     /**
      * Recall: rollback node process from param.taskInstance to the last taskInstance to suspend
      *
-     * @param recallTaskParam: flowInstanceId + taskInstanceId(nodeInstanceId)
+     * @param rollbackTaskParam: flowInstanceId + taskInstanceId(nodeInstanceId)
      * @return recallTaskDTO: runtimeDTO, flowInstanceId + activeTaskInstance(nodeInstanceId,nodeKey,status) + dataMap
      * @throws Exception
      */
-    public RecallTaskResult recall(RecallTaskParam recallTaskParam) {
+    public RollbackTaskResult rollback(RollbackTaskParam rollbackTaskParam) {
         RuntimeContext runtimeContext = null;
         try {
             //1.param validate
-            ParamValidator.validate(recallTaskParam);
+            ParamValidator.validate(rollbackTaskParam);
 
             //2.get flowInstance
-            FlowInstanceBO flowInstanceBO = getFlowInstanceBO(recallTaskParam.getFlowInstanceId());
+            FlowInstanceBO flowInstanceBO = getFlowInstanceBO(rollbackTaskParam.getFlowInstanceId());
             if (flowInstanceBO == null) {
-                LOGGER.warn("recall failed: flowInstanceBO is null.||flowInstanceId={}", recallTaskParam.getFlowInstanceId());
+                LOGGER.warn("recall failed: flowInstanceBO is null.||flowInstanceId={}", rollbackTaskParam.getFlowInstanceId());
                 throw new ProcessException(ErrorEnum.GET_FLOW_INSTANCE_FAILED);
             }
 
             //3.check status
             if (flowInstanceBO.getStatus() != FlowInstanceStatus.RUNNING) {
-                LOGGER.warn("recall failed: invalid status to recall.||recallTaskParam={}||status={}", recallTaskParam, flowInstanceBO.getStatus());
+                LOGGER.warn("recall failed: invalid status to recall.||rollbackTaskParam={}||status={}", rollbackTaskParam, flowInstanceBO.getStatus());
                 throw new ProcessException(ErrorEnum.ROLLBACK_REJECTRD);
             }
             String flowDeployId = flowInstanceBO.getFlowDeployId();
@@ -227,45 +227,45 @@ public class RuntimeProcessor {
             FlowInfo flowInfo = getFlowInfoByFlowDeployId(flowDeployId);
 
             //5.init runtimeContext
-            runtimeContext = buildRecallContext(recallTaskParam, flowInfo, flowInstanceBO.getStatus());
+            runtimeContext = buildRollbackContext(rollbackTaskParam, flowInfo, flowInstanceBO.getStatus());
 
             //6.process
             flowExecutor.rollback(runtimeContext);
 
             //7.build result
-            return buildRecallTaskDTO(runtimeContext);
+            return buildRollbackTaskDTO(runtimeContext);
         } catch (ProcessException e) {
             if (!ErrorEnum.isSuccess(e.getErrNo())) {
-                LOGGER.warn("recall ProcessException.||recallTaskParam={}||runtimeContext={}, ", recallTaskParam, runtimeContext, e);
+                LOGGER.warn("recall ProcessException.||rollbackTaskParam={}||runtimeContext={}, ", rollbackTaskParam, runtimeContext, e);
             }
-            return buildRecallTaskDTO(runtimeContext, e);
+            return buildRollbackTaskDTO(runtimeContext, e);
         }
     }
 
-    private RuntimeContext buildRecallContext(RecallTaskParam recallTaskParam, FlowInfo flowInfo, int flowInstanceStatus) {
+    private RuntimeContext buildRollbackContext(RollbackTaskParam rollbackTaskParam, FlowInfo flowInfo, int flowInstanceStatus) {
         //1. set flow info
         RuntimeContext runtimeContext = buildRuntimeContext(flowInfo);
 
         //2. init flowInstance with flowInstanceId
-        runtimeContext.setFlowInstanceId(recallTaskParam.getFlowInstanceId());
+        runtimeContext.setFlowInstanceId(rollbackTaskParam.getFlowInstanceId());
         runtimeContext.setFlowInstanceStatus(flowInstanceStatus);
 
         //3. set suspendNodeInstance with taskInstance in param
         NodeInstanceBO suspendNodeInstance = new NodeInstanceBO();
-        suspendNodeInstance.setNodeInstanceId(recallTaskParam.getTaskInstanceId());
+        suspendNodeInstance.setNodeInstanceId(rollbackTaskParam.getTaskInstanceId());
         runtimeContext.setSuspendNodeInstance(suspendNodeInstance);
 
         return runtimeContext;
     }
 
-    private RecallTaskResult buildRecallTaskDTO(RuntimeContext runtimeContext) {
-        RecallTaskResult recallTaskResult = new RecallTaskResult();
-        return (RecallTaskResult) fillRuntimeDTO(recallTaskResult, runtimeContext);
+    private RollbackTaskResult buildRollbackTaskDTO(RuntimeContext runtimeContext) {
+        RollbackTaskResult rollbackTaskResult = new RollbackTaskResult();
+        return (RollbackTaskResult) fillRuntimeDTO(rollbackTaskResult, runtimeContext);
     }
 
-    private RecallTaskResult buildRecallTaskDTO(RuntimeContext runtimeContext, ProcessException e) {
-        RecallTaskResult recallTaskResult = new RecallTaskResult();
-        return (RecallTaskResult) fillRuntimeDTO(recallTaskResult, runtimeContext, e);
+    private RollbackTaskResult buildRollbackTaskDTO(RuntimeContext runtimeContext, ProcessException e) {
+        RollbackTaskResult rollbackTaskResult = new RollbackTaskResult();
+        return (RollbackTaskResult) fillRuntimeDTO(rollbackTaskResult, runtimeContext, e);
     }
 
     ////////////////////////////////////////terminate////////////////////////////////////////

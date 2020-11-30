@@ -21,7 +21,7 @@ public interface ProcessEngine {
 
     CommitTaskResult commitTask(CommitTaskParam commitTaskParam);
 
-    RecallTaskResult recallTask(RecallTaskParam recallTaskParam);
+    RollbackTaskResult rollbackTask(RollbackTaskParam rollbackTaskParam);
 
     TerminateResult terminateProcess(String flowInstanceId);
 

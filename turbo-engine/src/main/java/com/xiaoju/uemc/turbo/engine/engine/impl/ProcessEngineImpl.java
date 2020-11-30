@@ -52,8 +52,8 @@ public class ProcessEngineImpl implements ProcessEngine {
     }
 
     @Override
-    public RecallTaskResult recallTask(RecallTaskParam recallTaskParam) {
-        return runtimeProcessor.recall(recallTaskParam);
+    public RollbackTaskResult rollbackTask(RollbackTaskParam rollbackTaskParam) {
+        return runtimeProcessor.rollback(rollbackTaskParam);
     }
 
     @Override

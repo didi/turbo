@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 /**
  * Created by Stefanie on 2019/12/2.
  */
-public class RecallTaskParam extends RuntimeTaskParam {
+public class RollbackTaskParam extends RuntimeTaskParam {
 
     @Override
     public String toString() {
