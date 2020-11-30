@@ -39,7 +39,7 @@ public enum ErrorEnum {
     COMMIT_FAILED(4001, "Commit task failed"),
     ROLLBACK_FAILED(4002, "Rollback task failed"),
     COMMIT_REJECTRD(4003, "Commit rejected, flow is terminate"),
-    ROLLBACK_REJECTRD(4004, "Rollback rejected, non-running flowInstance rollback"),
+    ROLLBACK_REJECTRD(4004, "Rollback rejected, non-running flowInstance to rollback"),
     NO_NODE_TO_ROLLBACK(4005, "No node to rollback"),
     NO_USER_TASK_TO_ROLLBACK(4006, "No userTask to rollback"),
     GET_FLOW_DEPLOYMENT_FAILED(4007, "Get flowDeployment failed"),

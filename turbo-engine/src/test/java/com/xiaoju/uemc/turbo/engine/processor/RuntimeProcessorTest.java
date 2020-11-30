@@ -15,6 +15,7 @@ import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
 import org.junit.Test;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -89,9 +90,19 @@ public class RuntimeProcessorTest extends BaseTest {
         try {
             List<InstanceData> instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
             LOGGER.info("testGetInstanceData.||instanceDataList={}", instanceDataList);
-        } catch (Exception e) {
+
+            System.out.println(System.currentTimeMillis() / 1000);
+            /*com.alibaba.fastjson.JSONArray list = new com.alibaba.fastjson.JSONArray();for (int i = 0; i < driverViolationRecordsList.size(); i++) { com.alibaba.fastjson.JSONObject ls = driverViolationRecordsList.getJSONObject(i);com.alibaba.fastjson.JSONObject j = new com.alibaba.fastjson.JSONObject();j.put("degree",ls.get("degree"));j.put("fine",String.format("%.2f",ls.get("fine")/100));j.put("violationLocation",ls.get("violationLocation"));java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");String dateString = formatter.format(ls.get("violationOccurTime"));j.put("violationOccurTime",dateString);list.add(j);if (i==driverViolationRecordsList.size()-1) { return list; } }
+            "com.alibaba.fastjson.JSONArray list = new com.alibaba.fastjson.JSONArray();for (int i = 0; i < driverViolationRecordsList.size(); i++) { com.alibaba.fastjson.JSONObject ls = driverViolationRecordsList.getJSONObject(i);com.alibaba.fastjson.JSONObject j = new com.alibaba.fastjson.JSONObject();j.put(\"degree\",ls.get(\"degree\"));j.put(\"fine\",String.format(\"%.2f\",ls.get(\"fine\")/100));j.put(\"violationLocation\",ls.get(\"violationLocation\"));java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(\"yyyy-MM-dd HH:mm:ss\");String dateString = formatter.format(ls.get(\"violationOccurTime\"));j.put(\"violationOccurTime\",dateString);list.add(j);if (i==driverViolationRecordsList.size()-1) { return list; } }"
+        */} catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    @Test
+    public void test() {
+
     }
 
 }

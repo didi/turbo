@@ -20,22 +20,58 @@ public class EndEventValidatorTest extends BaseTest {
 
     @Resource EndEventValidator endEventValidator;
 
+    /**
+     * Test endEvent's checkIncoming, while incoming is normal.
+     *
+     */
     @Test
-    public void checkOutgoing() {
+    public void checkIncomingAcess() {
+        FlowElement endEvent = EntityBuilder.buildEndEvent();
+        Map<String, FlowElement> map = new HashMap<>();
+        map.put(endEvent.getKey(), endEvent);
+        try {
+            endEventValidator.checkIncoming(map, endEvent);
+        } catch (ModelException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Test endEvent's checkIncoming, while incoming is null.
+     *
+     */
+    @Test
+    public void checkWithoutIncoming() {
+        FlowElement endEventInvalid = EntityBuilder.buildEndEvent();
+        endEventInvalid.setIncoming(null);
+        Map<String, FlowElement> map = new HashMap<>();
+        map.put(endEventInvalid.getKey(), endEventInvalid);
+        try {
+            endEventValidator.checkIncoming(map, endEventInvalid);
+        } catch (ModelException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Test endEvent's checkOutgoing, while outgoing is normal.
+     *
+     */
+    @Test
+    public void checkOutgoingAccess() {
         FlowElement endEvent = EntityBuilder.buildEndEvent();
         Map<String, FlowElement> map = new HashMap<>();
         map.put(endEvent.getKey(), endEvent);
         endEventValidator.checkOutgoing(map, endEvent);
     }
 
-
     /**
+     * Test endEvent's checkOutgoing, while outgoing is not null.
      *
-     *  ELEMENT_TOO_MUCH_OUTGOING
      */
-
     @Test
-    public void checkOutgoingInvalid() {
+    public void checkOutgoingIsNotNull() {
         FlowElement endEventInvalid = EntityBuilder.buildEndEvent();
         List<String> setOutgoing = new ArrayList<>();
         setOutgoing.add("sequenceFlow2");

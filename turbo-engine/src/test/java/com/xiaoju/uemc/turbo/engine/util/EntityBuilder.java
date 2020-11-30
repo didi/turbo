@@ -263,7 +263,7 @@ public class EntityBuilder {
         startEvent.setOutgoing(seOutgoings);
         return startEvent;
     }
-    public static FlowElement buildStartEventInvalid() {
+    /*public static FlowElement buildStartEventInvalid() {
         StartEvent startEvent = new StartEvent();
         startEvent.setKey("startEvent1");
         startEvent.setType(FlowElementType.START_EVENT);
@@ -274,7 +274,7 @@ public class EntityBuilder {
         setIncomings.add("sequenceFlow2");
         startEvent.setIncoming(seOutgoings);
         return startEvent;
-    }
+    }*/
 
     public static FlowElement buildEndEvent() {
         EndEvent endEvent = new EndEvent();
@@ -301,7 +301,7 @@ public class EntityBuilder {
         return sequenceFlow;
     }
 
-    public static FlowElement buildSequenceFlowInvalid1() {
+    /*public static FlowElement buildSequenceFlowInvalid1() {
         FlowElement sequenceFlow = new SequenceFlow();
         sequenceFlow.setKey("sequenceFlow5");
         sequenceFlow.setType(FlowElementType.SEQUENCE_FLOW);
@@ -309,7 +309,7 @@ public class EntityBuilder {
         sfIncomings.add("userTask2");
         sequenceFlow.setIncoming(sfIncomings);
         return sequenceFlow;
-    }
+    }*/
 
     public static ExclusiveGateway buildExclusiveGateway() {
         ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
@@ -364,6 +364,21 @@ public class EntityBuilder {
         map.put("conditionsequenceflow", "${(orderId<1)}");
         sequenceFlow.setProperties(map);
         return sequenceFlow;
+    }
+
+    public static FlowElement buildUserTask() {
+        FlowElement userTask = new UserTask();
+        userTask.setKey("userTask");
+        userTask.setType(FlowElementType.USER_TASK);
+
+        List<String> utIncomings = new ArrayList<>();
+        utIncomings.add("sequenceFlow");
+        userTask.setIncoming(utIncomings);
+
+        List<String> utOutgoings = new ArrayList<>();
+        utOutgoings.add("sequenceFlow1");
+        userTask.setOutgoing(utOutgoings);
+        return userTask;
     }
 
 
@@ -437,7 +452,7 @@ public class EntityBuilder {
         updateFlowParam.setFlowKey(flowKey);
         updateFlowParam.setFlowName(flowName);
         updateFlowParam.setRemark(remark);
-        updateFlowParam.setFlowModel(buildModelString());
+        updateFlowParam.setFlowModel(buildModelStringAccess());
         return updateFlowParam;
     }
     public static DeployFlowParam buildDeployFlowParm() {
@@ -475,6 +490,203 @@ public class EntityBuilder {
 //        JSONObject model = JSON.parseObject(str);
 //        return model.toJSONString();
 //    }
+    public static String buildModelStringAccess() {
+        FlowModel flowModel = new FlowModel();
+        List<FlowElement> flowElementList = Lists.newArrayList();
+        //startEvent1
+        StartEvent startEvent = new StartEvent();
+        startEvent.setKey("startEvent1");
+        startEvent.setType(FlowElementType.START_EVENT);
+        List<String> seOutgoings = new ArrayList<>();
+        seOutgoings.add("sequenceFlow1");
+        startEvent.setOutgoing(seOutgoings);
+        flowElementList.add(startEvent);
+
+        //sequenceFlow1
+        SequenceFlow sequenceFlow1 = new SequenceFlow();
+        sequenceFlow1.setKey("sequenceFlow1");
+        sequenceFlow1.setType(FlowElementType.SEQUENCE_FLOW);
+        List<String> sfIncomings = new ArrayList<>();
+        sfIncomings.add("startEvent1");
+        sequenceFlow1.setIncoming(sfIncomings);
+        List<String> sfOutgoings = new ArrayList<>();
+        sfOutgoings.add("userTask1");
+        sequenceFlow1.setOutgoing(sfOutgoings);
+        flowElementList.add(sequenceFlow1);
+
+        //userTask1
+        UserTask userTask = new UserTask();
+        userTask.setKey("userTask1");
+        userTask.setType(FlowElementType.USER_TASK);
+
+        List<String> utIncomings = new ArrayList<>();
+        utIncomings.add("sequenceFlow1");
+        userTask.setIncoming(utIncomings);
+
+        List<String> utOutgoings = new ArrayList<>();
+        utOutgoings.add("sequenceFlow2");
+        userTask.setOutgoing(utOutgoings);
+
+        flowElementList.add(userTask);
+
+        //sequenceFlow2
+        SequenceFlow sequenceFlow2 = new SequenceFlow();
+        sequenceFlow2.setKey("sequenceFlow2");
+        sequenceFlow2.setType(FlowElementType.SEQUENCE_FLOW);
+
+        List<String> sfIncomings2 = new ArrayList<>();
+        sfIncomings2.add("userTask1");
+        sequenceFlow2.setIncoming(sfIncomings2);
+
+        List<String> sfOutgoings2 = new ArrayList<>();
+        sfOutgoings2.add("exclusiveGateway1");
+        sequenceFlow2.setOutgoing(sfOutgoings2);
+
+        flowElementList.add(sequenceFlow2);
+
+        //exclusiveGateway1
+        ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
+        exclusiveGateway.setKey("exclusiveGateway1");
+        exclusiveGateway.setType(FlowElementType.EXCLUSIVE_GATEWAY);
+
+        Map<String, Object> properties = Maps.newHashMap();
+        properties.put(Constants.ELEMENT_PROPERTIES.HOOK_INFO_IDS, "[1,2]");
+        exclusiveGateway.setProperties(properties);
+
+        List<String> egIncomings = new ArrayList<>();
+        egIncomings.add("sequenceFlow2");
+        exclusiveGateway.setIncoming(egIncomings);
+
+        List<String> egOutgoings = new ArrayList<>();
+        egOutgoings.add("sequenceFlow3");
+        egOutgoings.add("sequenceFlow4");
+        exclusiveGateway.setOutgoing(egOutgoings);
+
+        flowElementList.add(exclusiveGateway);
+
+        //sequenceFlow3
+        SequenceFlow sequenceFlow3 = new SequenceFlow();
+        sequenceFlow3.setKey("sequenceFlow3");
+        sequenceFlow3.setType(FlowElementType.SEQUENCE_FLOW);
+        Map<String, Object> sFproperties3 = Maps.newHashMap();
+        sFproperties3.put(Constants.ELEMENT_PROPERTIES.CONDITION, "a>1&&b==1");
+        sequenceFlow3.setProperties(sFproperties3);
+
+        List<String> sfIncomings3 = new ArrayList<>();
+        sfIncomings3.add("exclusiveGateway1");
+        sequenceFlow3.setIncoming(sfIncomings3);
+
+        List<String> sfOutgoings3 = new ArrayList<>();
+        sfOutgoings3.add("userTask2");
+        sequenceFlow3.setOutgoing(sfOutgoings3);
+
+        flowElementList.add(sequenceFlow3);
+
+        //sequenceFlow4
+        SequenceFlow sequenceFlow4 = new SequenceFlow();
+        sequenceFlow4.setKey("sequenceFlow4");
+        sequenceFlow4.setType(FlowElementType.SEQUENCE_FLOW);
+
+        Map<String, Object> sFproperties4 = Maps.newHashMap();
+        sFproperties4.put(Constants.ELEMENT_PROPERTIES.DEFAULT_CONDITION, "true");
+        sequenceFlow4.setProperties(sFproperties4);
+
+
+        List<String> sfIncomings4 = new ArrayList<>();
+        sfIncomings4.add("exclusiveGateway1");
+        sequenceFlow4.setIncoming(sfIncomings4);
+
+        List<String> sfOutgoings4 = new ArrayList<>();
+        sfOutgoings4.add("userTask3");
+        sequenceFlow4.setOutgoing(sfOutgoings4);
+
+        flowElementList.add(sequenceFlow4);
+
+        //userTask2
+        UserTask userTask2 = new UserTask();
+        userTask2.setKey("userTask2");
+        userTask2.setType(FlowElementType.USER_TASK);
+
+        List<String> utIncomings2 = new ArrayList<>();
+        utIncomings2.add("sequenceFlow3");
+        userTask2.setIncoming(utIncomings2);
+
+        List<String> utOutgoings2 = new ArrayList<>();
+        utOutgoings2.add("sequenceFlow5");
+        userTask2.setOutgoing(utOutgoings2);
+
+        flowElementList.add(userTask2);
+
+        //userTask3
+        UserTask userTask3 = new UserTask();
+        userTask3.setKey("userTask3");
+        userTask3.setType(FlowElementType.USER_TASK);
+
+        List<String> utIncomings3 = new ArrayList<>();
+        utIncomings3.add("sequenceFlow4");
+        userTask3.setIncoming(utIncomings3);
+
+        List<String> utOutgoings3 = new ArrayList<>();
+        utOutgoings3.add("sequenceFlow6");
+        userTask3.setOutgoing(utOutgoings3);
+
+        flowElementList.add(userTask3);
+
+        //sequenceFlow5
+        SequenceFlow sequenceFlow5 = new SequenceFlow();
+        sequenceFlow5.setKey("sequenceFlow5");
+        sequenceFlow5.setType(FlowElementType.SEQUENCE_FLOW);
+
+        List<String> sfIncomings5 = new ArrayList<>();
+        sfIncomings5.add("userTask2");
+        sequenceFlow5.setIncoming(sfIncomings5);
+
+        List<String> sfOutgoings5 = new ArrayList<>();
+        sfOutgoings5.add("endEvent1");
+        sequenceFlow5.setOutgoing(sfOutgoings5);
+
+        flowElementList.add(sequenceFlow5);
+
+        //sequenceFlow6
+        SequenceFlow sequenceFlow6 = new SequenceFlow();
+        sequenceFlow6.setKey("sequenceFlow6");
+        sequenceFlow6.setType(FlowElementType.SEQUENCE_FLOW);
+
+        List<String> sfIncomings6 = new ArrayList<>();
+        sfIncomings6.add("userTask3");
+        sequenceFlow6.setIncoming(sfIncomings6);
+
+        List<String> sfOutgoings6 = new ArrayList<>();
+        sfOutgoings6.add("endEvent2");
+        sequenceFlow6.setOutgoing(sfOutgoings6);
+
+        flowElementList.add(sequenceFlow6);
+
+        //endEvent1
+        EndEvent endEven1 = new EndEvent();
+        endEven1.setKey("endEvent1");
+        endEven1.setType(FlowElementType.END_EVENT);
+
+        List<String> eeIncomings1 = new ArrayList<>();
+        eeIncomings1.add("sequenceFlow5");
+        endEven1.setIncoming(eeIncomings1);
+
+        flowElementList.add(endEven1);
+
+        //endEvent2
+        EndEvent endEvent2 = new EndEvent();
+        endEvent2.setKey("endEvent2");
+        endEvent2.setType(FlowElementType.END_EVENT);
+
+        List<String> eeIncomings2 = new ArrayList<>();
+        eeIncomings2.add("sequenceFlow6");
+        endEvent2.setIncoming(eeIncomings2);
+
+        flowElementList.add(endEvent2);
+        flowModel.setFlowElementList(flowElementList);
+        String flowModelStr = JSON.toJSONString(flowModel);
+        return flowModelStr;
+    }
 
     public static String buildModelString() {
         FlowModel flowModel = new FlowModel();
