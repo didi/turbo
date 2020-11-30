@@ -1,10 +1,10 @@
 package com.xiaoju.uemc.turbo.engine.validator;
 
 import com.xiaoju.uemc.turbo.engine.exception.ModelException;
-import com.xiaoju.uemc.turbo.engine.model.EndEvent;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -29,10 +29,14 @@ public class EndEventValidatorTest extends BaseTest {
         FlowElement endEvent = EntityBuilder.buildEndEvent();
         Map<String, FlowElement> map = new HashMap<>();
         map.put(endEvent.getKey(), endEvent);
+        boolean access = false;
         try {
             endEventValidator.checkIncoming(map, endEvent);
+            access = true;
+            Assert.assertTrue(access == true);
         } catch (ModelException e) {
             e.printStackTrace();
+            Assert.assertTrue(access == true);
         }
     }
 
@@ -47,10 +51,14 @@ public class EndEventValidatorTest extends BaseTest {
         endEventInvalid.setIncoming(null);
         Map<String, FlowElement> map = new HashMap<>();
         map.put(endEventInvalid.getKey(), endEventInvalid);
+        boolean access = false;
         try {
             endEventValidator.checkIncoming(map, endEventInvalid);
+            access = true;
+            Assert.assertTrue(access == false);
         } catch (ModelException e) {
             e.printStackTrace();
+            Assert.assertTrue(access == false);
         }
     }
 

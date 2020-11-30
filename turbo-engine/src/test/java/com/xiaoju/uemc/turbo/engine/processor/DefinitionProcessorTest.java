@@ -17,10 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-
-import static org.junit.Assert.*;
 
 public class DefinitionProcessorTest extends BaseTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefinitionProcessor.class);

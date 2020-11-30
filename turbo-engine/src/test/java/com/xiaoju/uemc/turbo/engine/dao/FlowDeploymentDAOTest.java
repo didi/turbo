@@ -1,6 +1,5 @@
 package com.xiaoju.uemc.turbo.engine.dao;
 
-import com.xiaoju.uemc.turbo.engine.entity.FlowDefinitionPO;
 import com.xiaoju.uemc.turbo.engine.entity.FlowDeploymentPO;
 import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
@@ -9,7 +8,6 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 
-import static org.junit.Assert.*;
 
 public class FlowDeploymentDAOTest extends BaseTest {
 

@@ -6,15 +6,10 @@ import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
 import org.junit.Assert;
 import org.junit.Test;
-
 import javax.annotation.Resource;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
 
 public class ExclusiveGatewayValidatorTest extends BaseTest {
 
