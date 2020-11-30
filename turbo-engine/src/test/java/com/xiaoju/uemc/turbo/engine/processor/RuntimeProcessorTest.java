@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import com.google.common.collect.Lists;
 import com.xiaoju.uemc.turbo.engine.dto.CommitTaskResult;
-import com.xiaoju.uemc.turbo.engine.dto.InstanceDataResult;
+import com.xiaoju.uemc.turbo.engine.dto.InstanceDataListResult;
 import com.xiaoju.uemc.turbo.engine.dto.RecallTaskResult;
 import com.xiaoju.uemc.turbo.engine.dto.StartProcessResult;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
@@ -88,7 +88,7 @@ public class RuntimeProcessorTest extends BaseTest {
     public void testGetInstanceData() {
         String flowInstanceId = "296d6b46-32a9-11ea-be8c-5ef9e2914105";
         try {
-            InstanceDataResult instanceData = runtimeProcessor.getInstanceData(flowInstanceId);
+            InstanceDataListResult instanceData = runtimeProcessor.getInstanceData(flowInstanceId);
             LOGGER.info("testGetInstanceData.||instanceData={}", instanceData);
         } catch (Exception e) {
             e.printStackTrace();

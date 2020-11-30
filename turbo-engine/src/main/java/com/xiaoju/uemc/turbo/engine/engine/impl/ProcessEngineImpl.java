@@ -72,7 +72,7 @@ public class ProcessEngineImpl implements ProcessEngine {
     }
 
     @Override
-    public InstanceDataResult getInstanceData(String flowInstanceId) {
+    public InstanceDataListResult getInstanceData(String flowInstanceId) {
         return runtimeProcessor.getInstanceData(flowInstanceId);
     }
 

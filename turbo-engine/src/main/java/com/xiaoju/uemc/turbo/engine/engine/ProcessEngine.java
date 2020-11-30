@@ -29,7 +29,7 @@ public interface ProcessEngine {
 
     ElementInstanceListResult getHistoryElementList(String flowInstanceId);
 
-    InstanceDataResult getInstanceData(String flowInstanceId);
+    InstanceDataListResult getInstanceData(String flowInstanceId);
 
     NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId);
 

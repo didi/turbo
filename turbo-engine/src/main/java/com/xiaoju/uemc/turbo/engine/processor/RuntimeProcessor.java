@@ -475,7 +475,7 @@ public class RuntimeProcessor {
     }
 
     ////////////////////////////////////////getInstanceData////////////////////////////////////////
-    public InstanceDataResult getInstanceData(String flowInstanceId) {
+    public InstanceDataListResult getInstanceData(String flowInstanceId) {
         InstanceDataPO instanceDataPO = instanceDataDAO.selectRecentOne(flowInstanceId);
 
         TypeReference<List<InstanceData>> typeReference = new TypeReference<List<InstanceData>>() {
@@ -485,11 +485,11 @@ public class RuntimeProcessor {
             instanceDataList =  Lists.newArrayList();
         }
 
-        InstanceDataResult instanceDataResult = new InstanceDataResult();
-        instanceDataResult.setVariables(instanceDataList);
-        instanceDataResult.setErrCode(ErrorEnum.SUCCESS.getErrNo());
-        instanceDataResult.setErrMsg(ErrorEnum.SUCCESS.getErrMsg());
-        return instanceDataResult;
+        InstanceDataListResult instanceDataListResult = new InstanceDataListResult();
+        instanceDataListResult.setVariables(instanceDataList);
+        instanceDataListResult.setErrCode(ErrorEnum.SUCCESS.getErrNo());
+        instanceDataListResult.setErrMsg(ErrorEnum.SUCCESS.getErrMsg());
+        return instanceDataListResult;
     }
 
     ////////////////////////////////////////common////////////////////////////////////////
