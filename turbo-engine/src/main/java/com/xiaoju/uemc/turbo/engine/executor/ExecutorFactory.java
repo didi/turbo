@@ -34,9 +34,6 @@ public class ExecutorFactory {
     private UserTaskExecutor userTaskExecutor;
 
     @Resource
-    private ServiceTaskExecutor serviceTaskExecutor;
-
-    @Resource
     private ExclusiveGatewayExecutor exclusiveGatewayExecutor;
 
 
