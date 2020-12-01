@@ -2,6 +2,7 @@ package com.xiaoju.uemc.turbo.engine.dto;
 
 import com.xiaoju.uemc.turbo.engine.bo.NodeInstance;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * 项目名称：turbo
@@ -11,6 +12,7 @@ import lombok.Data;
  * 创 建 人：didiwangxing
  */
 @Data
+@ToString(callSuper = true)
 public class NodeInstanceResult extends CommonResult {
     private NodeInstance nodeInstance;
 }
