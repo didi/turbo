@@ -1,6 +1,5 @@
-package com.xiaoju.uemc.turbo.engine.dto;
+package com.xiaoju.uemc.turbo.engine.result;
 
-import com.google.common.base.MoreObjects;
 import lombok.Data;
 import lombok.ToString;
 
@@ -9,6 +8,7 @@ import lombok.ToString;
  */
 @Data
 @ToString(callSuper = true)
-public class CreateFlowResult extends CommonResult {
+public class DeployFlowResult extends CommonResult {
     String flowModuleId;
+    String flowDeployId;
 }

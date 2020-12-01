@@ -43,7 +43,7 @@ public abstract class RuntimeExecutor {
 
     public abstract void rollback(RuntimeContext runtimeContext) throws ProcessException;
 
-    protected abstract boolean isCompleted(RuntimeContext runtimeContext);
+    protected abstract boolean isCompleted(RuntimeContext runtimeContext) throws ProcessException;
 
     protected abstract RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws ProcessException;
 

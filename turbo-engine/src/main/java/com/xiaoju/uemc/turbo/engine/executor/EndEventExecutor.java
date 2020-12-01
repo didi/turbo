@@ -37,7 +37,7 @@ public class EndEventExecutor extends ElementExecutor {
     }
 
     @Override
-    protected void postRollback(RuntimeContext runtimeContext) {
+    protected void postRollback(RuntimeContext runtimeContext) throws ProcessException {
         //do nothing
     }
 

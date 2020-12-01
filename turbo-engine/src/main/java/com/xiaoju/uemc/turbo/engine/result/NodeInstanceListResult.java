@@ -1,4 +1,4 @@
-package com.xiaoju.uemc.turbo.engine.dto;
+package com.xiaoju.uemc.turbo.engine.result;
 
 import com.xiaoju.uemc.turbo.engine.bo.NodeInstance;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @ToString(callSuper = true)
 public class NodeInstanceListResult extends CommonResult {
-    private List<NodeInstance> nodeInstanceDTOList;
+    private List<NodeInstance> nodeInstanceList;
 
     public NodeInstanceListResult(ErrorEnum errorEnum) {
         super(errorEnum);

@@ -1,4 +1,4 @@
-package com.xiaoju.uemc.turbo.engine.dto;
+package com.xiaoju.uemc.turbo.engine.result;
 
 import com.xiaoju.uemc.turbo.engine.bo.NodeInstance;
 import lombok.Data;

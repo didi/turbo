@@ -1,4 +1,4 @@
-package com.xiaoju.uemc.turbo.engine.dto;
+package com.xiaoju.uemc.turbo.engine.result;
 
 import lombok.Data;
 import lombok.ToString;
@@ -8,5 +8,5 @@ import lombok.ToString;
  */
 @Data
 @ToString(callSuper = true)
-public class CommitTaskResult extends RuntimeResult {
+public class RollbackTaskResult extends RuntimeResult {
 }

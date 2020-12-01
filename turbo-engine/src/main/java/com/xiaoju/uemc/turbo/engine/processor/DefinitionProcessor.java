@@ -1,6 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.processor;
 
 import com.alibaba.fastjson.JSON;
+import com.xiaoju.uemc.turbo.engine.exception.BusinessException;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
@@ -9,7 +10,7 @@ import com.xiaoju.uemc.turbo.engine.common.FlowDeploymentStatus;
 import com.xiaoju.uemc.turbo.engine.common.FlowModuleEnum;
 import com.xiaoju.uemc.turbo.engine.dao.FlowDefinitionDAO;
 import com.xiaoju.uemc.turbo.engine.dao.FlowDeploymentDAO;
-import com.xiaoju.uemc.turbo.engine.dto.*;
+import com.xiaoju.uemc.turbo.engine.result.*;
 import com.xiaoju.uemc.turbo.engine.entity.FlowDefinitionPO;
 import com.xiaoju.uemc.turbo.engine.entity.FlowDeploymentPO;
 import com.xiaoju.uemc.turbo.engine.exception.BaseException;
@@ -58,18 +59,20 @@ public class DefinitionProcessor {
             String flowModuleId = idGenerator.getNextId();
             flowDefinitionPO.setFlowModuleId(flowModuleId);
             flowDefinitionPO.setStatus(FlowDefinitionStatus.INIT);
-            flowDefinitionPO.setCreateTime(new Date());
-            flowDefinitionPO.setModifyTime(new Date());
+            Date date = new Date();
+            flowDefinitionPO.setCreateTime(date);
+            flowDefinitionPO.setModifyTime(date);
 
             int rows = flowDefinitionDAO.insert(flowDefinitionPO);
-            if (rows <= 0) {
-                throw new ParamException(ErrorEnum.DEFINITION_INSERT_INVALID);
+            if (rows != 1) {
+                LOGGER.warn("create flow failed: insert to db failed.||createFlowParam={}", createFlowParam);
+                throw new BusinessException(ErrorEnum.DEFINITION_INSERT_INVALID);
             }
 
             BeanUtils.copyProperties(flowDefinitionPO, createFlowResult);
-            fillCommonDTO(createFlowResult, ErrorEnum.SUCCESS);
-        } catch (ProcessException pe) {
-            fillCommonDTO(createFlowResult, pe.getErrNo(), pe.getErrMsg());
+            fillCommonResult(createFlowResult, ErrorEnum.SUCCESS);
+        } catch (BaseException pe) {
+            fillCommonResult(createFlowResult, pe.getErrNo(), pe.getErrMsg());
         }
         return createFlowResult;
     }
@@ -85,12 +88,13 @@ public class DefinitionProcessor {
             flowDefinitionPO.setModifyTime(new Date());
 
             int rows = flowDefinitionDAO.updateByModuleId(flowDefinitionPO);
-            if (rows <= 0) {
+            if (rows != 1) {
+                LOGGER.warn("update flow failed: update to db failed.||updateFlowParam={}", updateFlowParam);
                 throw new ProcessException(ErrorEnum.DEFINITION_UPDATE_INVALID);
             }
-            fillCommonDTO(updateFlowResult, ErrorEnum.SUCCESS);
+            fillCommonResult(updateFlowResult, ErrorEnum.SUCCESS);
         } catch (ProcessException pe) {
-            fillCommonDTO(updateFlowResult, pe.getErrNo(), pe.getErrMsg());
+            fillCommonResult(updateFlowResult, pe.getErrNo(), pe.getErrMsg());
         }
         return updateFlowResult;
     }
@@ -102,11 +106,13 @@ public class DefinitionProcessor {
 
             FlowDefinitionPO flowDefinitionPO = flowDefinitionDAO.selectByModuleId(deployFlowParam.getFlowModuleId());
             if (null == flowDefinitionPO) {
+                LOGGER.warn("deploy flow failed: flowModule is not exist.||deployFlowParam={}", deployFlowParam);
                 throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModule is not exist");
             }
 
             Integer status = flowDefinitionPO.getStatus();
             if (status != FlowDefinitionStatus.EDITING) {
+                LOGGER.warn("deploy flow failed: flowModule is not editing status.||deployFlowParam={}", deployFlowParam);
                 throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModule is not editing status");
             }
 
@@ -120,14 +126,15 @@ public class DefinitionProcessor {
             flowDeploymentPO.setStatus(FlowDeploymentStatus.DEPLOYED);
 
             int rows = flowDeploymentDAO.insert(flowDeploymentPO);
-            if (rows <= 0) {
+            if (rows != 1) {
+                LOGGER.warn("deploy flow failed: insert to db failed.||deployFlowParam={}", deployFlowParam);
                 throw new ProcessException(ErrorEnum.DEFINITION_INSERT_INVALID);
             }
 
             BeanUtils.copyProperties(flowDeploymentPO, deployFlowResult);
-            fillCommonDTO(deployFlowResult, ErrorEnum.SUCCESS);
+            fillCommonResult(deployFlowResult, ErrorEnum.SUCCESS);
         } catch (BaseException be) {
-            fillCommonDTO(deployFlowResult, be.getErrNo(), be.getErrMsg());
+            fillCommonResult(deployFlowResult, be.getErrNo(), be.getErrMsg());
         }
         return deployFlowResult;
     }
@@ -141,9 +148,9 @@ public class DefinitionProcessor {
             } else {
                 flowModuleResult = getFlowModuleByFlowModuleId(flowModuleId);
             }
-            fillCommonDTO(flowModuleResult, ErrorEnum.SUCCESS);
+            fillCommonResult(flowModuleResult, ErrorEnum.SUCCESS);
         } catch (ProcessException pe) {
-            fillCommonDTO(flowModuleResult, pe.getErrNo(), pe.getErrMsg());
+            fillCommonResult(flowModuleResult, pe.getErrNo(), pe.getErrMsg());
         }
         return flowModuleResult;
     }
@@ -176,11 +183,11 @@ public class DefinitionProcessor {
         return flowModuleResult;
     }
 
-    private void fillCommonDTO(CommonResult commonResult, ErrorEnum errorEnum) {
-        fillCommonDTO(commonResult, errorEnum.getErrNo(), errorEnum.getErrMsg());
+    private void fillCommonResult(CommonResult commonResult, ErrorEnum errorEnum) {
+        fillCommonResult(commonResult, errorEnum.getErrNo(), errorEnum.getErrMsg());
     }
 
-    private void fillCommonDTO(CommonResult commonResult, int errNo, String errMsg) {
+    private void fillCommonResult(CommonResult commonResult, int errNo, String errMsg) {
         commonResult.setErrCode(errNo);
         commonResult.setErrMsg(errMsg);
     }

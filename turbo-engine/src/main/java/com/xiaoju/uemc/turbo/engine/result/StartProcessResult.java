@@ -1,4 +1,4 @@
-package com.xiaoju.uemc.turbo.engine.dto;
+package com.xiaoju.uemc.turbo.engine.result;
 
 import lombok.Data;
 import lombok.ToString;

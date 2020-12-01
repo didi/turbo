@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
  */
 public enum FlowModuleEnum {
 
-    DEFAULT(FlowDefinitionStatus.DEFAULT, FlowDeploymentStatus.DEFAULT, FlowModuleDTOStatus.DEFAULT),
-    INIT(FlowDefinitionStatus.INIT, null, FlowModuleDTOStatus.EDITING),
-    EDITING(FlowDefinitionStatus.EDITING, null, FlowModuleDTOStatus.EDITING),
-    DEPLOYED(null, FlowDeploymentStatus.DEPLOYED, FlowModuleDTOStatus.EDITING),
-    DISABLED(FlowDefinitionStatus.DISABLED, FlowDeploymentStatus.DISABLED, FlowModuleDTOStatus.DISABLED);
+    DEFAULT(FlowDefinitionStatus.DEFAULT, FlowDeploymentStatus.DEFAULT, FlowModuleStatus.DEFAULT),
+    INIT(FlowDefinitionStatus.INIT, null, FlowModuleStatus.EDITING),
+    EDITING(FlowDefinitionStatus.EDITING, null, FlowModuleStatus.EDITING),
+    DEPLOYED(null, FlowDeploymentStatus.DEPLOYED, FlowModuleStatus.EDITING),
+    DISABLED(FlowDefinitionStatus.DISABLED, FlowDeploymentStatus.DISABLED, FlowModuleStatus.DISABLED);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowModuleEnum.class);
 

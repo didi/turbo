@@ -1,7 +1,6 @@
-package com.xiaoju.uemc.turbo.engine.dto;
+package com.xiaoju.uemc.turbo.engine.result;
 
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
 

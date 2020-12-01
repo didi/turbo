@@ -1,6 +1,5 @@
 package com.xiaoju.uemc.turbo.engine.executor;
 
-import com.alibaba.fastjson.JSONObject;
 import com.xiaoju.uemc.turbo.engine.bo.NodeInstanceBO;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.common.FlowElementType;
@@ -12,14 +11,13 @@ import com.xiaoju.uemc.turbo.engine.exception.ReentrantException;
 import com.xiaoju.uemc.turbo.engine.exception.SuspendException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
-import com.xiaoju.uemc.turbo.engine.service.CalculateService;
+import com.xiaoju.uemc.turbo.engine.util.ExpressionCalculator;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
 import com.xiaoju.uemc.turbo.engine.util.InstanceDataUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import javax.annotation.Resource;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +27,7 @@ import java.util.Map;
 public abstract class ElementExecutor extends RuntimeExecutor {
 
     @Resource
-    CalculateService calculateService;
+    protected ExpressionCalculator expressionCalculator;
 
     @Override
     public void execute(RuntimeContext runtimeContext) throws ProcessException {
@@ -257,7 +255,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         return false;
     }
 
-    protected   FlowElement getUniqueNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap) {
+    protected FlowElement getUniqueNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap) {
         List<String> outgoingKeyList = currentFlowElement.getOutgoing();
         String nextElementKey = outgoingKeyList.get(0);
         FlowElement nextFlowElement = FlowModelUtil.getFlowElement(flowElementMap, nextElementKey);
@@ -277,7 +275,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         return nextFlowElement;
     }
 
-    protected FlowElement calculateOutgoing(FlowElement flowElement, Map<String, FlowElement> flowElementMap,
+    private FlowElement calculateOutgoing(FlowElement flowElement, Map<String, FlowElement> flowElementMap,
                                                  Map<String, InstanceData> instanceDataMap) throws ProcessException {
         FlowElement defaultElement = null;
 
@@ -307,6 +305,6 @@ public abstract class ElementExecutor extends RuntimeExecutor {
 
     protected boolean processCondition(String expression, Map<String, InstanceData> instanceDataMap) throws ProcessException {
         Map<String, Object> dataMap = InstanceDataUtil.parseInstanceDataMap(instanceDataMap);
-        return calculateService.calculate(expression, dataMap);
+        return expressionCalculator.calculate(expression, dataMap);
     }
 }
