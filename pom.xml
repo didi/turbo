@@ -58,16 +58,6 @@
             <version>2.5.7</version>
         </dependency>
         <dependency>
-            <groupId>com.xiaoju.metric</groupId>
-            <artifactId>metric</artifactId>
-            <version>1.5-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.xiaoju.uemc</groupId>
-            <artifactId>common-support</artifactId>
-            <version>1.0.91-SNAPSHOT</version>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.4</version>
