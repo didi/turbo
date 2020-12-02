@@ -103,9 +103,17 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     @Override
     public void commit(RuntimeContext runtimeContext) throws ProcessException {
         preCommit(runtimeContext);
-        doCommit(runtimeContext);
-        postCommit(runtimeContext);
+
+        try {
+            doCommit(runtimeContext);
+        } catch (SuspendException se) {
+            LOGGER.warn("SuspendException.");
+            throw se;
+        } finally {
+            postCommit(runtimeContext);
+        }
     }
+
 
     protected void preCommit(RuntimeContext runtimeContext) throws ProcessException {
         LOGGER.warn("preCommit: unsupported element type.||flowInstanceId={}||elementType={}",
@@ -113,10 +121,10 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         throw new ProcessException(ErrorEnum.UNSUPPORTED_ELEMENT_TYPE);
     }
 
-    protected void doCommit(RuntimeContext runtimeContext) {
+    protected void doCommit(RuntimeContext runtimeContext) throws ProcessException {
     }
 
-    protected void postCommit(RuntimeContext runtimeContext) {
+    protected void postCommit(RuntimeContext runtimeContext) throws ProcessException {
     }
 
     @Override
@@ -234,7 +242,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     }
 
     @Override
-    protected boolean isCompleted(RuntimeContext runtimeContext) {
+    protected boolean isCompleted(RuntimeContext runtimeContext) throws ProcessException{
         NodeInstanceBO nodeInstance = runtimeContext.getCurrentNodeInstance();
         //case 1.startEvent
         if (nodeInstance == null) {

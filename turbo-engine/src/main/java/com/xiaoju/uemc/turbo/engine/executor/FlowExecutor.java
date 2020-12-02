@@ -161,7 +161,7 @@ public class FlowExecutor extends RuntimeExecutor {
         }
     }
 
-    private void postExecute(RuntimeContext runtimeContext) {
+    private void postExecute(RuntimeContext runtimeContext) throws ProcessException {
 
         //1.update context with processStatus
         if (runtimeContext.getProcessStatus() == ProcessStatus.SUCCESS) {
@@ -308,7 +308,7 @@ public class FlowExecutor extends RuntimeExecutor {
         }
     }
 
-    private void postCommit(RuntimeContext runtimeContext) {
+    private void postCommit(RuntimeContext runtimeContext) throws ProcessException {
         if (runtimeContext.getProcessStatus() == ProcessStatus.SUCCESS && runtimeContext.getCurrentNodeInstance() != null) {
             runtimeContext.setSuspendNodeInstance(runtimeContext.getCurrentNodeInstance());
         }
@@ -500,7 +500,7 @@ public class FlowExecutor extends RuntimeExecutor {
     }
 
     @Override
-    protected boolean isCompleted(RuntimeContext runtimeContext) {
+    protected boolean isCompleted(RuntimeContext runtimeContext) throws ProcessException{
         if (runtimeContext.getFlowInstanceStatus() == FlowInstanceStatus.COMPLETED) {
             return true;
         }
