@@ -58,7 +58,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
         Map<String, InstanceData> hookInfoValueMap = getHookInfoValueMap(runtimeContext.getFlowInstanceId(), hookInfoParam);
         LOGGER.info("doExecute getHookInfoValueMap.||hookInfoValueMap={}", hookInfoValueMap);
         if (MapUtils.isEmpty(hookInfoValueMap)) {
-            LOGGER.info("doExecute: hookInfoValueMap is empty.||flowInstanceId={}||hookInfoParam={}||nodeKey={}",
+            LOGGER.warn("doExecute: hookInfoValueMap is empty.||flowInstanceId={}||hookInfoParam={}||nodeKey={}",
                     runtimeContext.getFlowInstanceId(), hookInfoParam, flowElement.getKey());
             return;
         }
@@ -78,7 +78,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
         //get hook config: url and timeout
         String hookUrl = hookProperties.getUrl();
         if (StringUtils.isBlank(hookUrl)) {
-            LOGGER.warn("getHookInfoValueMap: cannot find hookConfig.||flowInstanceId={}", flowInstanceId);
+            LOGGER.info("getHookInfoValueMap: cannot find hookConfig.||flowInstanceId={}", flowInstanceId);
             return MapUtils.EMPTY_MAP;
         }
 

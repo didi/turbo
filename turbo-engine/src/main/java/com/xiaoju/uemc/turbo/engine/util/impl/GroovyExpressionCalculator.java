@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * 项目名称：turbo
- * 类 名 称：ExpressionCalculator
+ * 类 名 称：GroovyExpressionCalculator
  * 类 描 述：
  * 创建时间：2020/11/11 5:14 PM
  * 创 建 人：didiwangxing
@@ -40,11 +40,11 @@ public class GroovyExpressionCalculator implements ExpressionCalculator {
                 throw new ProcessException(ErrorEnum.GROOVY_CALCULATE_FAILED.getErrNo(), "expression is not instanceof bool.");
             }
         } catch (Throwable t) {
-            LOGGER.error("calculate exception failed.||message={}||expression={}||dataMap={}, ", t.getMessage(), expression, dataMap, t);
+            LOGGER.error("calculate expression failed.||message={}||expression={}||dataMap={}, ", t.getMessage(), expression, dataMap, t);
             String groovyExFormat = "{0}: expression={1}";
             throw new ProcessException(ErrorEnum.GROOVY_CALCULATE_FAILED, MessageFormat.format(groovyExFormat, t.getMessage(), expression));
         } finally {
-            LOGGER.info("calculate exception.||expression={}||dataMap={}||result={}", expression, JSONObject.toJSONString(dataMap), result);
+            LOGGER.info("calculate expression.||expression={}||dataMap={}||result={}", expression, JSONObject.toJSONString(dataMap), result);
         }
     }
 }

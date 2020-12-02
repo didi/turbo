@@ -20,8 +20,7 @@ public class EndEventValidator extends ElementValidator {
         List<String> outgoing = flowElement.getOutgoing();
 
         if (CollectionUtils.isNotEmpty(outgoing)) {
-            String exceptionMsg = getElementValidatorExceptionMsg(flowElement, ErrorEnum.ELEMENT_TOO_MUCH_OUTGOING);
-            LOGGER.warn(exceptionMsg);
+            recordElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MUCH_OUTGOING);
         }
     }
 }

@@ -53,7 +53,7 @@ public class FlowModelValidator {
         for (FlowElement flowElement : flowElementList) {
 
             ElementValidator elementValidator = elementValidatorFactory.getElementValidator(flowElement);
-            elementValidator.validator(flowElementMap, flowElement);
+            elementValidator.validate(flowElementMap, flowElement);
 
             if (FlowElementType.START_EVENT == flowElement.getType()) {
                 startEventCount++;

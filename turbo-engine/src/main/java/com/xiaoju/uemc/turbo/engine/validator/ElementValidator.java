@@ -33,7 +33,7 @@ public class ElementValidator {
         }
     }
 
-    protected void validator(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws DefinitionException {
+    protected void validate(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws DefinitionException {
         checkIncoming(flowElementMap, flowElement);
         checkOutgoing(flowElementMap, flowElement);
     }
@@ -44,7 +44,12 @@ public class ElementValidator {
         throw new DefinitionException(errorEnum.getErrNo(), exceptionMsg);
     }
 
-    protected String getElementValidatorExceptionMsg(FlowElement flowElement, ErrorEnum errorEnum) {
+    protected void recordElementValidatorException(FlowElement flowElement, ErrorEnum errorEnum) {
+        String exceptionMsg = getElementValidatorExceptionMsg(flowElement, errorEnum);
+        LOGGER.warn(exceptionMsg);
+    }
+
+    private String getElementValidatorExceptionMsg(FlowElement flowElement, ErrorEnum errorEnum) {
         String elementName = FlowModelUtil.getElementName(flowElement);
         String elementKey = flowElement.getKey();
         return MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT, errorEnum, elementName, elementKey);

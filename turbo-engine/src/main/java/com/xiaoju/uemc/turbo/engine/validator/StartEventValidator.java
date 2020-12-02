@@ -20,8 +20,7 @@ public class StartEventValidator extends ElementValidator {
         List<String> incoming = flowElement.getIncoming();
 
         if (CollectionUtils.isNotEmpty(incoming)) {
-            String exceptionMsg = getElementValidatorExceptionMsg(flowElement, ErrorEnum.ELEMENT_TOO_MUCH_INCOMING);
-            LOGGER.warn(exceptionMsg);
+            recordElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MUCH_INCOMING);
         }
     }
 }
