@@ -69,8 +69,8 @@ public class DefinitionProcessor {
 
             BeanUtils.copyProperties(flowDefinitionPO, createFlowResult);
             fillCommonResult(createFlowResult, ErrorEnum.SUCCESS);
-        } catch (TurboException pe) {
-            fillCommonResult(createFlowResult, pe.getErrNo(), pe.getErrMsg());
+        } catch (TurboException te) {
+            fillCommonResult(createFlowResult, te);
         }
         return createFlowResult;
     }
@@ -91,8 +91,8 @@ public class DefinitionProcessor {
                 throw new DefinitionException(ErrorEnum.DEFINITION_UPDATE_INVALID);
             }
             fillCommonResult(updateFlowResult, ErrorEnum.SUCCESS);
-        } catch (TurboException pe) {
-            fillCommonResult(updateFlowResult, pe.getErrNo(), pe.getErrMsg());
+        } catch (TurboException te) {
+            fillCommonResult(updateFlowResult, te);
         }
         return updateFlowResult;
     }
@@ -131,8 +131,8 @@ public class DefinitionProcessor {
 
             BeanUtils.copyProperties(flowDeploymentPO, deployFlowResult);
             fillCommonResult(deployFlowResult, ErrorEnum.SUCCESS);
-        } catch (TurboException be) {
-            fillCommonResult(deployFlowResult, be.getErrNo(), be.getErrMsg());
+        } catch (TurboException te) {
+            fillCommonResult(deployFlowResult, te);
         }
         return deployFlowResult;
     }
@@ -149,8 +149,8 @@ public class DefinitionProcessor {
                 flowModuleResult = getFlowModuleByFlowModuleId(flowModuleId);
             }
             fillCommonResult(flowModuleResult, ErrorEnum.SUCCESS);
-        } catch (TurboException pe) {
-            fillCommonResult(flowModuleResult, pe.getErrNo(), pe.getErrMsg());
+        } catch (TurboException te) {
+            fillCommonResult(flowModuleResult, te);
         }
         return flowModuleResult;
     }
@@ -185,6 +185,10 @@ public class DefinitionProcessor {
 
     private void fillCommonResult(CommonResult commonResult, ErrorEnum errorEnum) {
         fillCommonResult(commonResult, errorEnum.getErrNo(), errorEnum.getErrMsg());
+    }
+
+    private void fillCommonResult(CommonResult commonResult, TurboException turboException) {
+        fillCommonResult(commonResult, turboException.getErrNo(), turboException.getErrMsg());
     }
 
     private void fillCommonResult(CommonResult commonResult, int errNo, String errMsg) {

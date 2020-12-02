@@ -346,11 +346,10 @@ public class FlowExecutor extends RuntimeExecutor {
         }
     }
 
-    // TODO: 2019/12/15 reentrant
     private void preRollback(RuntimeContext runtimeContext) throws ProcessException {
         String flowInstanceId = runtimeContext.getFlowInstanceId();
 
-        //1.check node: only the latest enabled(ACTIVE or COMPLETED) nodeInstance can be recalled.
+        //1.check node: only the latest enabled(ACTIVE or COMPLETED) nodeInstance can be rollbacked.
         String suspendNodeInstanceId = runtimeContext.getSuspendNodeInstance().getNodeInstanceId();
         NodeInstancePO rollbackNodeInstancePO = getActiveUserTaskForRollback(flowInstanceId, suspendNodeInstanceId,
                 runtimeContext.getFlowElementMap());

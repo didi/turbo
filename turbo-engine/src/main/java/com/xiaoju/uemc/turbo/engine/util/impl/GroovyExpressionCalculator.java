@@ -40,11 +40,11 @@ public class GroovyExpressionCalculator implements ExpressionCalculator {
                 throw new ProcessException(ErrorEnum.GROOVY_CALCULATE_FAILED.getErrNo(), "expression is not instanceof bool.");
             }
         } catch (Throwable t) {
-            LOGGER.error("processCondition exception.||message={}||expression={}||dataMap={}, ", t.getMessage(), expression, dataMap, t);
+            LOGGER.error("calculate exception failed.||message={}||expression={}||dataMap={}, ", t.getMessage(), expression, dataMap, t);
             String groovyExFormat = "{0}: expression={1}";
             throw new ProcessException(ErrorEnum.GROOVY_CALCULATE_FAILED, MessageFormat.format(groovyExFormat, t.getMessage(), expression));
         } finally {
-            LOGGER.info("processCondition.||expression={}||dataMap={}||result={}", expression, JSONObject.toJSONString(dataMap), result);
+            LOGGER.info("calculate exception.||expression={}||dataMap={}||result={}", expression, JSONObject.toJSONString(dataMap), result);
         }
     }
 }

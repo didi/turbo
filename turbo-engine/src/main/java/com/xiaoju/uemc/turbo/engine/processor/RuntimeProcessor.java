@@ -64,9 +64,6 @@ public class RuntimeProcessor {
     @Resource
     private FlowExecutor flowExecutor;
 
-
-    private final RedisUtils redisClient = RedisUtils.getInstance();
-
     ////////////////////////////////////////startProcess////////////////////////////////////////
 
     public StartProcessResult startProcess(StartProcessParam startProcessParam) {
@@ -195,7 +192,7 @@ public class RuntimeProcessor {
         return (CommitTaskResult) fillRuntimeResult(commitTaskResult, runtimeContext, e);
     }
 
-    ////////////////////////////////////////recall////////////////////////////////////////
+    ////////////////////////////////////////rollback////////////////////////////////////////
 
     /**
      * Rollback: rollback node process from param.taskInstance to the last taskInstance to suspend
@@ -293,8 +290,6 @@ public class RuntimeProcessor {
             terminateResult = new TerminateResult(ErrorEnum.SYSTEM_ERROR);
             terminateResult.setFlowInstanceId(flowInstanceId);
         } finally {
-            //the status is unknown while exception occurs, clear it as well
-            redisClient.del(RedisConstants.FLOW_INSTANCE + flowInstanceId);
         }
         return terminateResult;
     }
@@ -519,21 +514,10 @@ public class RuntimeProcessor {
         FlowInfo flowInfo = new FlowInfo();
         BeanUtils.copyProperties(flowDeploymentPO, flowInfo);
 
-        //set into cache
-        redisClient.setex(RedisConstants.FLOW_INFO + flowInfo.getFlowDeployId(), RedisConstants.FLOW_EXPIRED_SECOND,
-                JSON.toJSONString(flowInfo));
         return flowInfo;
     }
 
     private FlowInstanceBO getFlowInstanceBO(String flowInstanceId) throws ProcessException {
-        //get from cache firstly
-        String redisKey = RedisConstants.FLOW_INSTANCE + flowInstanceId;
-        String flowInstanceStr = redisClient.get(redisKey);
-        if (StringUtils.isNotBlank(flowInstanceStr)) {
-            LOGGER.info("getFlowInstanceBO from cache.||flowInstanceId={}||flowInstanceStr={}", flowInstanceId, flowInstanceStr);
-            return JSONObject.parseObject(flowInstanceStr, FlowInstanceBO.class);
-        }
-
         //get from db
         FlowInstancePO flowInstancePO = processInstanceDAO.selectByFlowInstanceId(flowInstanceId);
         if (flowInstancePO == null) {
@@ -543,9 +527,6 @@ public class RuntimeProcessor {
         FlowInstanceBO flowInstanceBO = new FlowInstanceBO();
         BeanUtils.copyProperties(flowInstancePO, flowInstanceBO);
 
-        //set into cache
-        redisClient.setex(RedisConstants.FLOW_INSTANCE + flowInstanceBO.getFlowInstanceId(),
-                RedisConstants.FLOW_INSTANCE_EXPIRED_SECOND, JSON.toJSONString(flowInstanceBO));
         return flowInstanceBO;
     }
 
