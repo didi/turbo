@@ -1,5 +1,6 @@
 package com.xiaoju.uemc.turbo.engine.result;
 
+import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import lombok.Data;
 import lombok.ToString;
@@ -17,4 +18,8 @@ import java.util.List;
 @ToString(callSuper = true)
 public class InstanceDataListResult extends CommonResult {
     private List<InstanceData> variables;
+
+    public InstanceDataListResult(ErrorEnum errorEnum) {
+        super(errorEnum);
+    }
 }

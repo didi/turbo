@@ -1,39 +1,37 @@
 package com.xiaoju.uemc.turbo.engine.processor;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
-import com.xiaoju.uemc.turbo.engine.exception.TurboException;
-import com.xiaoju.uemc.turbo.engine.param.RollbackTaskParam;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.xiaoju.uemc.modules.support.jedis.RedisUtils;
 import com.xiaoju.uemc.turbo.engine.bo.*;
 import com.xiaoju.uemc.turbo.engine.common.*;
 import com.xiaoju.uemc.turbo.engine.dao.FlowDeploymentDAO;
 import com.xiaoju.uemc.turbo.engine.dao.InstanceDataDAO;
 import com.xiaoju.uemc.turbo.engine.dao.NodeInstanceDAO;
 import com.xiaoju.uemc.turbo.engine.dao.ProcessInstanceDAO;
-import com.xiaoju.uemc.turbo.engine.result.*;
 import com.xiaoju.uemc.turbo.engine.entity.FlowDeploymentPO;
 import com.xiaoju.uemc.turbo.engine.entity.FlowInstancePO;
 import com.xiaoju.uemc.turbo.engine.entity.InstanceDataPO;
 import com.xiaoju.uemc.turbo.engine.entity.NodeInstancePO;
 import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.exception.ReentrantException;
+import com.xiaoju.uemc.turbo.engine.exception.TurboException;
 import com.xiaoju.uemc.turbo.engine.executor.FlowExecutor;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.param.CommitTaskParam;
+import com.xiaoju.uemc.turbo.engine.param.RollbackTaskParam;
 import com.xiaoju.uemc.turbo.engine.param.StartProcessParam;
+import com.xiaoju.uemc.turbo.engine.result.*;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
 import com.xiaoju.uemc.turbo.engine.util.InstanceDataUtil;
 import com.xiaoju.uemc.turbo.engine.validator.ParamValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -481,10 +479,8 @@ public class RuntimeProcessor {
             instanceDataList =  Lists.newArrayList();
         }
 
-        InstanceDataListResult instanceDataListResult = new InstanceDataListResult();
+        InstanceDataListResult instanceDataListResult = new InstanceDataListResult(ErrorEnum.SUCCESS);
         instanceDataListResult.setVariables(instanceDataList);
-        instanceDataListResult.setErrCode(ErrorEnum.SUCCESS.getErrNo());
-        instanceDataListResult.setErrMsg(ErrorEnum.SUCCESS.getErrMsg());
         return instanceDataListResult;
     }
 
