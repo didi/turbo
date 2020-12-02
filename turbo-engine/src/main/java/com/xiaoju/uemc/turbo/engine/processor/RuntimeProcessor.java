@@ -197,10 +197,10 @@ public class RuntimeProcessor {
     ////////////////////////////////////////recall////////////////////////////////////////
 
     /**
-     * Recall: rollback node process from param.taskInstance to the last taskInstance to suspend
+     * Rollback: rollback node process from param.taskInstance to the last taskInstance to suspend
      *
      * @param rollbackTaskParam: flowInstanceId + taskInstanceId(nodeInstanceId)
-     * @return recallTaskDTO: runtimeDTO, flowInstanceId + activeTaskInstance(nodeInstanceId,nodeKey,status) + dataMap
+     * @return rollbackTaskResult: runtimeResult, flowInstanceId + activeTaskInstance(nodeInstanceId,nodeKey,status) + dataMap
      * @throws Exception
      */
     public RollbackTaskResult rollback(RollbackTaskParam rollbackTaskParam) {
@@ -212,13 +212,13 @@ public class RuntimeProcessor {
             //2.get flowInstance
             FlowInstanceBO flowInstanceBO = getFlowInstanceBO(rollbackTaskParam.getFlowInstanceId());
             if (flowInstanceBO == null) {
-                LOGGER.warn("recall failed: flowInstanceBO is null.||flowInstanceId={}", rollbackTaskParam.getFlowInstanceId());
+                LOGGER.warn("rollback failed: flowInstanceBO is null.||flowInstanceId={}", rollbackTaskParam.getFlowInstanceId());
                 throw new ProcessException(ErrorEnum.GET_FLOW_INSTANCE_FAILED);
             }
 
             //3.check status
             if (flowInstanceBO.getStatus() != FlowInstanceStatus.RUNNING) {
-                LOGGER.warn("recall failed: invalid status to recall.||rollbackTaskParam={}||status={}", rollbackTaskParam, flowInstanceBO.getStatus());
+                LOGGER.warn("rollback failed: invalid status to rollback.||rollbackTaskParam={}||status={}", rollbackTaskParam, flowInstanceBO.getStatus());
                 throw new ProcessException(ErrorEnum.ROLLBACK_REJECTRD);
             }
             String flowDeployId = flowInstanceBO.getFlowDeployId();
@@ -236,7 +236,7 @@ public class RuntimeProcessor {
             return buildRollbackTaskResult(runtimeContext);
         } catch (ProcessException e) {
             if (!ErrorEnum.isSuccess(e.getErrNo())) {
-                LOGGER.warn("recall ProcessException.||rollbackTaskParam={}||runtimeContext={}, ", rollbackTaskParam, runtimeContext, e);
+                LOGGER.warn("rollback ProcessException.||rollbackTaskParam={}||runtimeContext={}, ", rollbackTaskParam, runtimeContext, e);
             }
             return buildRollbackTaskResult(runtimeContext, e);
         }
@@ -328,7 +328,7 @@ public class RuntimeProcessor {
             Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
 
             //4.pick out userTask and build result
-            List<NodeInstance> userTaskDTOList = historyListResult.getNodeInstanceList();//empty list
+            List<NodeInstance> userTaskList = historyListResult.getNodeInstanceList();//empty list
 
             for (NodeInstancePO nodeInstancePO : historyNodeInstanceList) {
                 //ignore noneffective nodeInstance
@@ -341,21 +341,21 @@ public class RuntimeProcessor {
                     continue;
                 }
 
-                //build effective userTask instance DTO
-                NodeInstance nodeInstanceDTO = new NodeInstance();
+                //build effective userTask instance
+                NodeInstance nodeInstance = new NodeInstance();
                 //set instanceId & status
-                BeanUtils.copyProperties(nodeInstancePO, nodeInstanceDTO);
+                BeanUtils.copyProperties(nodeInstancePO, nodeInstance);
 
                 //set ElementModel info
                 FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
-                nodeInstanceDTO.setModelKey(flowElement.getKey());
-                nodeInstanceDTO.setModelName(FlowModelUtil.getElementName(flowElement));
+                nodeInstance.setModelKey(flowElement.getKey());
+                nodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));
                 if (MapUtils.isNotEmpty(flowElement.getProperties())) {
-                    nodeInstanceDTO.setProperties(flowElement.getProperties());
+                    nodeInstance.setProperties(flowElement.getProperties());
                 } else {
-                    nodeInstanceDTO.setProperties(Maps.newHashMap());
+                    nodeInstance.setProperties(Maps.newHashMap());
                 }
-                userTaskDTOList.add(nodeInstanceDTO);
+                userTaskList.add(nodeInstance);
             }
         } catch (ProcessException e) {
             historyListResult.setErrCode(e.getErrNo());
@@ -390,7 +390,7 @@ public class RuntimeProcessor {
         //1.getHistoryNodeList
         List<NodeInstancePO> historyNodeInstanceList = getHistoryNodeInstanceList(flowInstanceId);
 
-        //2.init DTO
+        //2.init
         ElementInstanceListResult elementInstanceListResult = new ElementInstanceListResult(ErrorEnum.SUCCESS);
         elementInstanceListResult.setElementInstanceList(Lists.newArrayList());
 
@@ -411,7 +411,7 @@ public class RuntimeProcessor {
                 String sourceNodeKey = nodeInstancePO.getSourceNodeKey();
                 int nodeStatus = nodeInstancePO.getStatus();
 
-                //4.1 build the source sequenceFlow instance DTO
+                //4.1 build the source sequenceFlow instance
                 if (StringUtils.isNotBlank(sourceNodeKey)) {
                     FlowElement sourceFlowElement = FlowModelUtil.getSequenceFlow(flowElementMap, sourceNodeKey, nodeKey);
                     if (sourceFlowElement == null) {
@@ -425,13 +425,13 @@ public class RuntimeProcessor {
                     if (nodeStatus == NodeInstanceStatus.ACTIVE) {
                         sourceSequenceFlowStatus = NodeInstanceStatus.COMPLETED;
                     }
-                    ElementInstance sequenceFlowInstanceDTO = new ElementInstance(sourceFlowElement.getKey(), sourceSequenceFlowStatus);
-                    elementInstanceList.add(sequenceFlowInstanceDTO);
+                    ElementInstance sequenceFlowInstance = new ElementInstance(sourceFlowElement.getKey(), sourceSequenceFlowStatus);
+                    elementInstanceList.add(sequenceFlowInstance);
                 }
 
-                //4.2 build nodeInstance DTO
-                ElementInstance nodeInstanceDTO = new ElementInstance(nodeKey, nodeStatus);
-                elementInstanceList.add(nodeInstanceDTO);
+                //4.2 build nodeInstance
+                ElementInstance nodeInstance = new ElementInstance(nodeKey, nodeStatus);
+                elementInstanceList.add(nodeInstance);
             }
         } catch (ProcessException e) {
             elementInstanceListResult.setErrCode(e.getErrNo());
@@ -454,17 +454,17 @@ public class RuntimeProcessor {
             NodeInstancePO nodeInstancePO = nodeInstanceDAO.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
             String flowDeployId = nodeInstancePO.getFlowDeployId();
             Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
-            NodeInstance nodeInstanceDTO = new NodeInstance();
-            BeanUtils.copyProperties(nodeInstancePO, nodeInstanceDTO);
+            NodeInstance nodeInstance = new NodeInstance();
+            BeanUtils.copyProperties(nodeInstancePO, nodeInstance);
             FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
-            nodeInstanceDTO.setModelKey(flowElement.getKey());
-            nodeInstanceDTO.setModelName(FlowModelUtil.getElementName(flowElement));
+            nodeInstance.setModelKey(flowElement.getKey());
+            nodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));
             if (MapUtils.isNotEmpty(flowElement.getProperties())) {
-                nodeInstanceDTO.setProperties(flowElement.getProperties());
+                nodeInstance.setProperties(flowElement.getProperties());
             } else {
-                nodeInstanceDTO.setProperties(Maps.newHashMap());
+                nodeInstance.setProperties(Maps.newHashMap());
             }
-            nodeInstanceResult.setNodeInstance(nodeInstanceDTO);
+            nodeInstanceResult.setNodeInstance(nodeInstance);
             nodeInstanceResult.setErrCode(ErrorEnum.SUCCESS.getErrNo());
             nodeInstanceResult.setErrMsg(ErrorEnum.SUCCESS.getErrMsg());
         } catch (ProcessException e) {
