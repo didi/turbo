@@ -31,11 +31,11 @@ public class ParamValidator {
     }
 
     public static void validate(CreateFlowParam createFlowParam) throws ParamException {
-        commonValidate(createFlowParam);
+        baseValidate(createFlowParam);
     }
 
     public static void validate(UpdateFlowParam updateFlowParam) throws ParamException {
-        commonValidate(updateFlowParam);
+        baseValidate(updateFlowParam);
         if (StringUtils.isBlank(updateFlowParam.getFlowModuleId())) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModuleId is null");
         }
@@ -54,13 +54,13 @@ public class ParamValidator {
     }
 
     public static void validate(DeployFlowParam deployFlowParam) throws ParamException {
-        commonValidate(deployFlowParam);
+        baseValidate(deployFlowParam);
         if (StringUtils.isBlank(deployFlowParam.getFlowModuleId())) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModuleId is null");
         }
     }
 
-    private static void commonValidate(CommonParam commonParam) throws ParamException {
+    private static void baseValidate(CommonParam commonParam) throws ParamException {
         if (commonParam == null) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "param is null");
         }
