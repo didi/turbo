@@ -1,7 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.validator;
 
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
-import com.xiaoju.uemc.turbo.engine.exception.ModelException;
+import com.xiaoju.uemc.turbo.engine.exception.DefinitionException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +19,7 @@ import java.util.Map;
 public class SequenceFlowValidator extends ElementValidator {
 
     @Override
-    public void checkIncoming(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {
+    public void checkIncoming(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws DefinitionException {
         super.checkIncoming(flowElementMap, flowElement);
 
         List<String> incomingList = flowElement.getIncoming();
@@ -29,7 +29,7 @@ public class SequenceFlowValidator extends ElementValidator {
     }
 
     @Override
-    public void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {
+    public void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws DefinitionException {
         super.checkOutgoing(flowElementMap, flowElement);
 
         List<String> outgoingList = flowElement.getOutgoing();

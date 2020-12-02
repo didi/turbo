@@ -1,7 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.processor;
 
 import com.alibaba.fastjson.JSON;
-import com.xiaoju.uemc.turbo.engine.exception.BusinessException;
+import com.xiaoju.uemc.turbo.engine.exception.*;
 import com.xiaoju.uemc.turbo.engine.param.GetFlowModuleParam;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -14,9 +14,6 @@ import com.xiaoju.uemc.turbo.engine.dao.FlowDeploymentDAO;
 import com.xiaoju.uemc.turbo.engine.result.*;
 import com.xiaoju.uemc.turbo.engine.entity.FlowDefinitionPO;
 import com.xiaoju.uemc.turbo.engine.entity.FlowDeploymentPO;
-import com.xiaoju.uemc.turbo.engine.exception.BaseException;
-import com.xiaoju.uemc.turbo.engine.exception.ParamException;
-import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.param.CreateFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.DeployFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.UpdateFlowParam;
@@ -67,12 +64,12 @@ public class DefinitionProcessor {
             int rows = flowDefinitionDAO.insert(flowDefinitionPO);
             if (rows != 1) {
                 LOGGER.warn("create flow failed: insert to db failed.||createFlowParam={}", createFlowParam);
-                throw new BusinessException(ErrorEnum.DEFINITION_INSERT_INVALID);
+                throw new DefinitionException(ErrorEnum.DEFINITION_INSERT_INVALID);
             }
 
             BeanUtils.copyProperties(flowDefinitionPO, createFlowResult);
             fillCommonResult(createFlowResult, ErrorEnum.SUCCESS);
-        } catch (BaseException pe) {
+        } catch (TurboException pe) {
             fillCommonResult(createFlowResult, pe.getErrNo(), pe.getErrMsg());
         }
         return createFlowResult;
@@ -91,10 +88,10 @@ public class DefinitionProcessor {
             int rows = flowDefinitionDAO.updateByModuleId(flowDefinitionPO);
             if (rows != 1) {
                 LOGGER.warn("update flow failed: update to db failed.||updateFlowParam={}", updateFlowParam);
-                throw new ProcessException(ErrorEnum.DEFINITION_UPDATE_INVALID);
+                throw new DefinitionException(ErrorEnum.DEFINITION_UPDATE_INVALID);
             }
             fillCommonResult(updateFlowResult, ErrorEnum.SUCCESS);
-        } catch (ProcessException pe) {
+        } catch (TurboException pe) {
             fillCommonResult(updateFlowResult, pe.getErrNo(), pe.getErrMsg());
         }
         return updateFlowResult;
@@ -129,12 +126,12 @@ public class DefinitionProcessor {
             int rows = flowDeploymentDAO.insert(flowDeploymentPO);
             if (rows != 1) {
                 LOGGER.warn("deploy flow failed: insert to db failed.||deployFlowParam={}", deployFlowParam);
-                throw new ProcessException(ErrorEnum.DEFINITION_INSERT_INVALID);
+                throw new DefinitionException(ErrorEnum.DEFINITION_INSERT_INVALID);
             }
 
             BeanUtils.copyProperties(flowDeploymentPO, deployFlowResult);
             fillCommonResult(deployFlowResult, ErrorEnum.SUCCESS);
-        } catch (BaseException be) {
+        } catch (TurboException be) {
             fillCommonResult(deployFlowResult, be.getErrNo(), be.getErrMsg());
         }
         return deployFlowResult;
@@ -152,7 +149,7 @@ public class DefinitionProcessor {
                 flowModuleResult = getFlowModuleByFlowModuleId(flowModuleId);
             }
             fillCommonResult(flowModuleResult, ErrorEnum.SUCCESS);
-        } catch (ProcessException pe) {
+        } catch (TurboException pe) {
             fillCommonResult(flowModuleResult, pe.getErrNo(), pe.getErrMsg());
         }
         return flowModuleResult;

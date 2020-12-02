@@ -1,7 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.validator;
 
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
-import com.xiaoju.uemc.turbo.engine.exception.ModelException;
+import com.xiaoju.uemc.turbo.engine.exception.DefinitionException;
 import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.model.FlowModel;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
@@ -24,16 +24,16 @@ public class ModelValidator {
     @Resource
     private FlowModelValidator flowModelValidator;
 
-    public void validate(String flowModelStr) throws ModelException, ProcessException {
+    public void validate(String flowModelStr) throws DefinitionException, ProcessException {
         if (StringUtils.isBlank(flowModelStr)) {
             LOGGER.warn("message={}", ErrorEnum.MODEL_EMPTY.getErrMsg());
-            throw new ModelException(ErrorEnum.MODEL_EMPTY);
+            throw new DefinitionException(ErrorEnum.MODEL_EMPTY);
         }
 
         FlowModel flowModel = FlowModelUtil.parseModelFromString(flowModelStr);
         if (flowModel == null || CollectionUtils.isEmpty(flowModel.getFlowElementList())) {
             LOGGER.warn("message={}||flowModelStr={}", ErrorEnum.MODEL_EMPTY.getErrMsg(), flowModelStr);
-            throw new ModelException(ErrorEnum.MODEL_EMPTY);
+            throw new DefinitionException(ErrorEnum.MODEL_EMPTY);
         }
         flowModelValidator.validate(flowModel);
     }

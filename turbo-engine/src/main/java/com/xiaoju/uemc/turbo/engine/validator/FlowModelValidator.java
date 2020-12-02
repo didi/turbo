@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.xiaoju.uemc.turbo.engine.common.Constants;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.common.FlowElementType;
-import com.xiaoju.uemc.turbo.engine.exception.ModelException;
+import com.xiaoju.uemc.turbo.engine.exception.DefinitionException;
 import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.model.FlowModel;
@@ -34,10 +34,10 @@ public class FlowModelValidator {
     @Resource
     private ElementValidatorFactory elementValidatorFactory;
 
-    public void validate(FlowModel flowModel) throws ProcessException, ModelException {
+    public void validate(FlowModel flowModel) throws ProcessException, DefinitionException {
         if (flowModel == null || CollectionUtils.isEmpty(flowModel.getFlowElementList())) {
             LOGGER.warn("message={}", ErrorEnum.MODEL_EMPTY.getErrMsg());
-            throw new ModelException(ErrorEnum.MODEL_EMPTY);
+            throw new DefinitionException(ErrorEnum.MODEL_EMPTY);
         }
 
         List<FlowElement> flowElementList = flowModel.getFlowElementList();
@@ -49,7 +49,7 @@ public class FlowModelValidator {
                 String elementKey = flowElement.getKey();
                 String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT, ErrorEnum.ELEMENT_KEY_NOT_UNIQUE, elementName, elementKey);
                 LOGGER.warn(exceptionMsg);
-                throw new ModelException(ErrorEnum.ELEMENT_KEY_NOT_UNIQUE.getErrNo(), exceptionMsg);
+                throw new DefinitionException(ErrorEnum.ELEMENT_KEY_NOT_UNIQUE.getErrNo(), exceptionMsg);
             }
             flowElementMap.put(flowElement.getKey(), flowElement);
         }
@@ -73,12 +73,12 @@ public class FlowModelValidator {
 
         if (startEventCount != 1) {
             LOGGER.warn("message={}||startEventCount={}", ErrorEnum.START_NODE_INVALID.getErrMsg(), startEventCount);
-            throw new ModelException(ErrorEnum.START_NODE_INVALID);
+            throw new DefinitionException(ErrorEnum.START_NODE_INVALID);
         }
 
         if (endEventCount < 1) {
             LOGGER.warn("message={}", ErrorEnum.END_NODE_INVALID.getErrMsg());
-            throw new ModelException(ErrorEnum.END_NODE_INVALID);
+            throw new DefinitionException(ErrorEnum.END_NODE_INVALID);
         }
     }
 }

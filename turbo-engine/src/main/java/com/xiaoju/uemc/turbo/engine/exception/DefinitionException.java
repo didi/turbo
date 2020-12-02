@@ -5,13 +5,13 @@ import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 /**
  * Created by Stefanie on 2019/12/6.
  */
-public class ModelException extends BaseException {
+public class DefinitionException extends TurboException {
 
-    public ModelException(int errNo, String errMsg) {
+    public DefinitionException(int errNo, String errMsg) {
         super(errNo, errMsg);
     }
 
-    public ModelException(ErrorEnum errorEnum) {
+    public DefinitionException(ErrorEnum errorEnum) {
         super(errorEnum);
     }
 }

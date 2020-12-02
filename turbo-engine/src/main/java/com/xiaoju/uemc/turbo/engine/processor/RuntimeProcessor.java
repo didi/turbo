@@ -3,6 +3,7 @@ package com.xiaoju.uemc.turbo.engine.processor;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.xiaoju.uemc.turbo.engine.exception.TurboException;
 import com.xiaoju.uemc.turbo.engine.param.RollbackTaskParam;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -85,7 +86,7 @@ public class RuntimeProcessor {
 
             //5.build result
             return buildStartProcessResult(runtimeContext);
-        } catch (ProcessException e) {
+        } catch (TurboException e) {
             if (!ErrorEnum.isSuccess(e.getErrNo())) {
                 LOGGER.warn("startProcess ProcessException.||startProcessParam={}||runtimeContext={}, ",
                         startProcessParam, runtimeContext, e);
@@ -117,7 +118,7 @@ public class RuntimeProcessor {
         return (StartProcessResult) fillRuntimeResult(startProcessResult, runtimeContext);
     }
 
-    private StartProcessResult buildStartProcessResult(RuntimeContext runtimeContext, ProcessException e) {
+    private StartProcessResult buildStartProcessResult(RuntimeContext runtimeContext, TurboException e) {
         StartProcessResult startProcessResult = new StartProcessResult();
         BeanUtils.copyProperties(runtimeContext, startProcessResult);
         return (StartProcessResult) fillRuntimeResult(startProcessResult, runtimeContext, e);
@@ -160,7 +161,7 @@ public class RuntimeProcessor {
 
             //7.build result
             return buildCommitTaskResult(runtimeContext);
-        } catch (ProcessException e) {
+        } catch (TurboException e) {
             if (!ErrorEnum.isSuccess(e.getErrNo())) {
                 LOGGER.warn("commit ProcessException.||commitTaskParam={}||runtimeContext={}, ", commitTaskParam, runtimeContext, e);
             }
@@ -189,7 +190,7 @@ public class RuntimeProcessor {
         return (CommitTaskResult) fillRuntimeResult(commitTaskResult, runtimeContext);
     }
 
-    private CommitTaskResult buildCommitTaskResult(RuntimeContext runtimeContext, ProcessException e) {
+    private CommitTaskResult buildCommitTaskResult(RuntimeContext runtimeContext, TurboException e) {
         CommitTaskResult commitTaskResult = new CommitTaskResult();
         return (CommitTaskResult) fillRuntimeResult(commitTaskResult, runtimeContext, e);
     }
@@ -234,7 +235,7 @@ public class RuntimeProcessor {
 
             //7.build result
             return buildRollbackTaskResult(runtimeContext);
-        } catch (ProcessException e) {
+        } catch (TurboException e) {
             if (!ErrorEnum.isSuccess(e.getErrNo())) {
                 LOGGER.warn("rollback ProcessException.||rollbackTaskParam={}||runtimeContext={}, ", rollbackTaskParam, runtimeContext, e);
             }
@@ -263,7 +264,7 @@ public class RuntimeProcessor {
         return (RollbackTaskResult) fillRuntimeResult(rollbackTaskResult, runtimeContext);
     }
 
-    private RollbackTaskResult buildRollbackTaskResult(RuntimeContext runtimeContext, ProcessException e) {
+    private RollbackTaskResult buildRollbackTaskResult(RuntimeContext runtimeContext, TurboException e) {
         RollbackTaskResult rollbackTaskResult = new RollbackTaskResult();
         return (RollbackTaskResult) fillRuntimeResult(rollbackTaskResult, runtimeContext, e);
     }
@@ -573,7 +574,7 @@ public class RuntimeProcessor {
         return fillRuntimeResult(runtimeResult, runtimeContext, errorEnum.getErrNo(), errorEnum.getErrMsg());
     }
 
-    private RuntimeResult fillRuntimeResult(RuntimeResult runtimeResult, RuntimeContext runtimeContext, ProcessException e) {
+    private RuntimeResult fillRuntimeResult(RuntimeResult runtimeResult, RuntimeContext runtimeContext, TurboException e) {
         return fillRuntimeResult(runtimeResult, runtimeContext, e.getErrNo(), e.getErrMsg());
     }
 

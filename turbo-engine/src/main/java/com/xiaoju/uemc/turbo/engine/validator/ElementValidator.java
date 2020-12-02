@@ -2,7 +2,7 @@ package com.xiaoju.uemc.turbo.engine.validator;
 
 import com.xiaoju.uemc.turbo.engine.common.Constants;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
-import com.xiaoju.uemc.turbo.engine.exception.ModelException;
+import com.xiaoju.uemc.turbo.engine.exception.DefinitionException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -24,7 +24,7 @@ public class ElementValidator {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(ElementValidator.class);
 
-    protected void checkIncoming(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {
+    protected void checkIncoming(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws DefinitionException {
         List<String> incomingList = flowElement.getIncoming();
 
         if (CollectionUtils.isEmpty(incomingList)) {
@@ -32,7 +32,7 @@ public class ElementValidator {
         }
     }
 
-    protected void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {
+    protected void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws DefinitionException {
         List<String> outgoingList = flowElement.getOutgoing();
 
         if (CollectionUtils.isEmpty(outgoingList)) {
@@ -40,15 +40,15 @@ public class ElementValidator {
         }
     }
 
-    protected void validator(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {
+    protected void validator(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws DefinitionException {
         checkIncoming(flowElementMap, flowElement);
         checkOutgoing(flowElementMap, flowElement);
     }
 
-    protected void throwElementValidatorException(FlowElement flowElement, ErrorEnum errorEnum) throws ModelException {
+    protected void throwElementValidatorException(FlowElement flowElement, ErrorEnum errorEnum) throws DefinitionException {
         String exceptionMsg = getElementValidatorExceptionMsg(flowElement, errorEnum);
         LOGGER.warn(exceptionMsg);
-        throw new ModelException(errorEnum.getErrNo(), exceptionMsg);
+        throw new DefinitionException(errorEnum.getErrNo(), exceptionMsg);
     }
 
     protected String getElementValidatorExceptionMsg(FlowElement flowElement, ErrorEnum errorEnum) {

@@ -50,17 +50,6 @@ public class ProcessEngineTest extends BaseTest {
     }
 
     @Test
-    public void getFlowModuleTest() {
-        String flowModuleId = "a038f993-1d7c-11ea-928e-8214dae31b03";
-        try {
-            FlowModuleResult flowModule = processEngineImpl.getFlowModule(flowModuleId, null);
-            LOGGER.info("flowModule={} by flowModuleId", flowModule);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
     public void deployFlowTest() {
         DeployFlowParam deployFlowParam = new DeployFlowParam("didi", "optimus-prime");
         deployFlowParam.setFlowModuleId("76bb65d9-35ef-11ea-a4cd-5ef9e2914105");

@@ -1,7 +1,7 @@
 package com.xiaoju.uemc.turbo.engine.validator;
 
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
-import com.xiaoju.uemc.turbo.engine.exception.ModelException;
+import com.xiaoju.uemc.turbo.engine.exception.DefinitionException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -26,7 +26,7 @@ public class ExclusiveGatewayValidator extends ElementValidator {
     protected static final Logger LOGGER = LoggerFactory.getLogger(ExclusiveGatewayValidator.class);
 
     @Override
-    protected void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws ModelException {
+    protected void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws DefinitionException {
         List<String> outgoing = flowElement.getOutgoing();
 
         if (CollectionUtils.isEmpty(outgoing)) {
