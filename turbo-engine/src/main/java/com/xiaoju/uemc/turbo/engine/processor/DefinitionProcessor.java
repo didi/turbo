@@ -104,14 +104,14 @@ public class DefinitionProcessor {
 
             FlowDefinitionPO flowDefinitionPO = flowDefinitionDAO.selectByModuleId(deployFlowParam.getFlowModuleId());
             if (null == flowDefinitionPO) {
-                LOGGER.warn("deploy flow failed: flowModule is not exist.||deployFlowParam={}", deployFlowParam);
-                throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModule is not exist");
+                LOGGER.warn("deploy flow failed: flow is not exist.||deployFlowParam={}", deployFlowParam);
+                throw new DefinitionException(ErrorEnum.FLOW_NOT_EXIST);
             }
 
             Integer status = flowDefinitionPO.getStatus();
             if (status != FlowDefinitionStatus.EDITING) {
-                LOGGER.warn("deploy flow failed: flowModule is not editing status.||deployFlowParam={}", deployFlowParam);
-                throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModule is not editing status");
+                LOGGER.warn("deploy flow failed: flow is not editing status.||deployFlowParam={}", deployFlowParam);
+                throw new DefinitionException(ErrorEnum.FLOW_NOT_EDITING);
             }
 
             String flowModel = flowDefinitionPO.getFlowModel();

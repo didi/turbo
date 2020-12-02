@@ -18,6 +18,9 @@ public enum ErrorEnum {
     DEFINITION_INSERT_INVALID(3001, "Definition insert failed"),
     DEFINITION_UPDATE_INVALID(3002, "Definition update failed"),
 
+    FLOW_NOT_EXIST(3101, "Flow not exist"),
+    FLOW_NOT_EDITING(3102, "Flow not editing status"),
+
     MODEL_EMPTY(3201, "Empty model"),
     START_NODE_INVALID(3202, "Zero or more than one start node"),
     ELEMENT_KEY_NOT_UNIQUE(3203, "Element key not unique"),
@@ -33,7 +36,6 @@ public enum ErrorEnum {
     ELEMENT_TOO_MUCH_OUTGOING(3213, "Too many outgoing"),
     ELEMENT_LACK_INCOMING(3214, "Element lack incoming"),
     ELEMENT_LACK_OUTGOING(3215, "Element lack outgoing"),
-
 
     //4000~4999 流程执行错误
     COMMIT_FAILED(4001, "Commit task failed"),
