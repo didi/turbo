@@ -33,11 +33,11 @@ public class ParamValidator {
     }
 
     public static void validate(CreateFlowParam createFlowParam) throws ParamException {
-        baseValidate(createFlowParam);
+        commonValidate(createFlowParam);
     }
 
     public static void validate(UpdateFlowParam updateFlowParam) throws ParamException {
-        baseValidate(updateFlowParam);
+        commonValidate(updateFlowParam);
         if (StringUtils.isBlank(updateFlowParam.getFlowModuleId())) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModuleId is null");
         }
@@ -46,31 +46,30 @@ public class ParamValidator {
         }
     }
 
-    public static void validate(String flowModuleId, String flowDeployId) throws ParamException {
-        if (StringUtils.isBlank(flowModuleId) && StringUtils.isBlank(flowDeployId)) {
+    public static void validate(GetFlowModuleParam getFlowModuleParam) throws ParamException {
+        if (getFlowModuleParam == null) {
+            throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "param is null");
+        }
+        if (StringUtils.isBlank(getFlowModuleParam.getFlowModuleId()) && StringUtils.isBlank(getFlowModuleParam.getFlowDeployId())) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDeployId and flowModuleId is blank");
         }
     }
 
     public static void validate(DeployFlowParam deployFlowParam) throws ParamException {
-        baseValidate(deployFlowParam);
+        commonValidate(deployFlowParam);
         if (StringUtils.isBlank(deployFlowParam.getFlowModuleId())) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowModuleId is null");
         }
     }
 
-    private static void baseValidate(Object param) throws ParamException {
-        if (param == null) {
+    private static void commonValidate(CommonParam commonParam) throws ParamException {
+        if (commonParam == null) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "param is null");
         }
-        JSONObject paramJson = JSONObject.parseObject(JSON.toJSONString(param));
-        if (paramJson == null) {
-            throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "param is null");
-        }
-        if (StringUtils.isBlank(paramJson.getString("tenant"))) {
+        if (StringUtils.isBlank(commonParam.getTenant())) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "tenant is null");
         }
-        if (StringUtils.isBlank(paramJson.getString("caller"))) {
+        if (StringUtils.isBlank(commonParam.getCaller())) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "caller is null");
         }
     }

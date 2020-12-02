@@ -15,7 +15,7 @@ public interface ProcessEngine {
 
     DeployFlowResult deployFlow(DeployFlowParam deployFlowParam);
 
-    FlowModuleResult getFlowModule(String flowModuleId, String flowDeployId);
+    FlowModuleResult getFlowModule(GetFlowModuleParam getFlowModuleParam);
 
     StartProcessResult startProcess(StartProcessParam startProcessParam);
 

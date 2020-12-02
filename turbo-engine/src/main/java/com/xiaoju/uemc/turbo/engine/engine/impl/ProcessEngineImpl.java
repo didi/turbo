@@ -37,8 +37,8 @@ public class ProcessEngineImpl implements ProcessEngine {
     }
 
     @Override
-    public FlowModuleResult getFlowModule(String flowModuleId, String flowDeployId) {
-        return definitionProcessor.getFlowModule(flowModuleId, flowDeployId);
+    public FlowModuleResult getFlowModule(GetFlowModuleParam getFlowModuleParam) {
+        return definitionProcessor.getFlowModule(getFlowModuleParam);
     }
 
     @Override

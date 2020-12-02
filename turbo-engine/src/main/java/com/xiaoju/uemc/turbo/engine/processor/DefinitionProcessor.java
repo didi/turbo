@@ -2,6 +2,7 @@ package com.xiaoju.uemc.turbo.engine.processor;
 
 import com.alibaba.fastjson.JSON;
 import com.xiaoju.uemc.turbo.engine.exception.BusinessException;
+import com.xiaoju.uemc.turbo.engine.param.GetFlowModuleParam;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
@@ -139,10 +140,12 @@ public class DefinitionProcessor {
         return deployFlowResult;
     }
 
-    public FlowModuleResult getFlowModule(String flowModuleId, String flowDeployId) {
+    public FlowModuleResult getFlowModule(GetFlowModuleParam getFlowModuleParam) {
         FlowModuleResult flowModuleResult = new FlowModuleResult();
         try {
-            ParamValidator.validate(flowModuleId, flowDeployId);
+            ParamValidator.validate(getFlowModuleParam);
+            String flowModuleId = getFlowModuleParam.getFlowModuleId();
+            String flowDeployId = getFlowModuleParam.getFlowDeployId();
             if (StringUtils.isNotBlank(flowDeployId)) {
                 flowModuleResult = getFlowModuleByFlowDeployId(flowDeployId);
             } else {
