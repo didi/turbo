@@ -1,8 +1,6 @@
 package com.xiaoju.uemc.turbo.engine.validator;
 
 import com.google.common.collect.Maps;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import com.xiaoju.uemc.turbo.engine.common.Constants;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.common.FlowElementType;
@@ -12,13 +10,14 @@ import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.model.FlowModel;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 项目名称：optimus-prime
@@ -47,8 +46,8 @@ public class FlowModelValidator {
         for(FlowElement flowElement : flowElementList) {
             if (flowElementMap.containsKey(flowElement.getKey())) {
                 String elementName = FlowModelUtil.getElementName(flowElement);
-                String elementkey = flowElement.getKey();
-                String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT, ErrorEnum.ELEMENT_KEY_NOT_UNIQUE, elementName, elementkey);
+                String elementKey = flowElement.getKey();
+                String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT, ErrorEnum.ELEMENT_KEY_NOT_UNIQUE, elementName, elementKey);
                 LOGGER.warn(exceptionMsg);
                 throw new ModelException(ErrorEnum.ELEMENT_KEY_NOT_UNIQUE.getErrNo(), exceptionMsg);
             }

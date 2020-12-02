@@ -26,7 +26,7 @@ public class ModelValidator {
 
     public void validate(String flowModelStr) throws ModelException, ProcessException {
         if (StringUtils.isBlank(flowModelStr)) {
-            LOGGER.warn("message={}||flowModelStr={}", ErrorEnum.MODEL_EMPTY.getErrMsg());
+            LOGGER.warn("message={}", ErrorEnum.MODEL_EMPTY.getErrMsg());
             throw new ModelException(ErrorEnum.MODEL_EMPTY);
         }
 
