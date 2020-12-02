@@ -13,13 +13,6 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 项目名称：optimus-prime
- * 类 名 称：ElementValidator
- * 类 描 述：
- * 创建时间：2019/12/10 9:53 AM
- * 创 建 人：didiwangxing
- */
 public class ElementValidator {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(ElementValidator.class);

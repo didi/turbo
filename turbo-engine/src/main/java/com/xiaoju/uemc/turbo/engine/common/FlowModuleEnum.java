@@ -3,13 +3,6 @@ package com.xiaoju.uemc.turbo.engine.common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 项目名称：optimus-prime
- * 类 名 称：FlowModuleEnum
- * 类 描 述：
- * 创建时间：2020/9/16 3:19 PM
- * 创 建 人：didiwangxing
- */
 public enum FlowModuleEnum {
 
     DEFAULT(FlowDefinitionStatus.DEFAULT, FlowDeploymentStatus.DEFAULT, FlowModuleStatus.DEFAULT),
