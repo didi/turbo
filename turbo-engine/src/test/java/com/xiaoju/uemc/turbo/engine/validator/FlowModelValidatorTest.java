@@ -9,8 +9,7 @@ import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class FlowModelValidatorTest extends BaseTest {
 
