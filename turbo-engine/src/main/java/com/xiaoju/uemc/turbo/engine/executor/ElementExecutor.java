@@ -1,6 +1,5 @@
 package com.xiaoju.uemc.turbo.engine.executor;
 
-import com.alibaba.fastjson.JSONObject;
 import com.xiaoju.uemc.turbo.engine.bo.NodeInstanceBO;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.common.FlowElementType;
@@ -12,14 +11,13 @@ import com.xiaoju.uemc.turbo.engine.exception.ReentrantException;
 import com.xiaoju.uemc.turbo.engine.exception.SuspendException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
-import com.xiaoju.uemc.turbo.engine.service.CalculateService;
+import com.xiaoju.uemc.turbo.engine.util.ExpressionCalculator;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
 import com.xiaoju.uemc.turbo.engine.util.InstanceDataUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import javax.annotation.Resource;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -29,10 +27,10 @@ import java.util.Map;
 public abstract class ElementExecutor extends RuntimeExecutor {
 
     @Resource
-    CalculateService calculateService;
+    protected ExpressionCalculator expressionCalculator;
 
     @Override
-    public void execute(RuntimeContext runtimeContext) throws Exception {
+    public void execute(RuntimeContext runtimeContext) throws ProcessException {
         try {
             preExecute(runtimeContext);
             doExecute(runtimeContext);
@@ -41,9 +39,6 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         } catch (SuspendException se) {
             LOGGER.info("execute suspend.||runtimeContext={}", runtimeContext);
             throw se;
-        } catch (Throwable t) {
-            LOGGER.warn("execute exception.||runtimeContext={},", runtimeContext, t);
-            throw t;
         } finally {
             postExecute(runtimeContext);
         }
@@ -54,7 +49,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
      * 1.currentNodeInfo(nodeInstance & nodeKey): currentNode is this.model
      * 2.sourceNodeInfo(nodeInstance & nodeKey): sourceNode is runtimeContext.currentNodeInstance
      */
-    protected void preExecute(RuntimeContext runtimeContext) throws Exception {
+    protected void preExecute(RuntimeContext runtimeContext) throws ProcessException {
 
         NodeInstanceBO currentNodeInstance = new NodeInstanceBO();
 
@@ -91,14 +86,14 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
     }
 
-    protected void doExecute(RuntimeContext runtimeContext) throws Exception {
+    protected void doExecute(RuntimeContext runtimeContext) throws ProcessException {
     }
 
-    protected void postExecute(RuntimeContext runtimeContext) throws Exception {
+    protected void postExecute(RuntimeContext runtimeContext) throws ProcessException {
     }
 
     @Override
-    protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception {
+    protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws ProcessException {
         Map<String, FlowElement> flowElementMap = runtimeContext.getFlowElementMap();
         FlowElement flowElement = getUniqueNextNode(runtimeContext.getCurrentNodeModel(), flowElementMap);
         runtimeContext.setCurrentNodeModel(flowElement);
@@ -106,8 +101,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     }
 
     @Override
-    public void commit(RuntimeContext runtimeContext) throws Exception {
-
+    public void commit(RuntimeContext runtimeContext) throws ProcessException {
         preCommit(runtimeContext);
 
         try {
@@ -120,20 +114,21 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         }
     }
 
-    protected void preCommit(RuntimeContext runtimeContext) throws Exception {
+
+    protected void preCommit(RuntimeContext runtimeContext) throws ProcessException {
         LOGGER.warn("preCommit: unsupported element type.||flowInstanceId={}||elementType={}",
                 runtimeContext.getFlowInstanceId(), runtimeContext.getCurrentNodeModel().getType());
         throw new ProcessException(ErrorEnum.UNSUPPORTED_ELEMENT_TYPE);
     }
 
-    protected void doCommit(RuntimeContext runtimeContext) throws Exception {
+    protected void doCommit(RuntimeContext runtimeContext) throws ProcessException {
     }
 
-    protected void postCommit(RuntimeContext runtimeContext) throws Exception {
+    protected void postCommit(RuntimeContext runtimeContext) throws ProcessException {
     }
 
     @Override
-    public void rollback(RuntimeContext runtimeContext) throws Exception {
+    public void rollback(RuntimeContext runtimeContext) throws ProcessException {
         try {
             preRollback(runtimeContext);
             doRollback(runtimeContext);
@@ -160,7 +155,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
      *
      * @throws Exception
      */
-    protected void preRollback(RuntimeContext runtimeContext) throws Exception {
+    protected void preRollback(RuntimeContext runtimeContext) throws ProcessException {
         String flowInstanceId = runtimeContext.getFlowInstanceId();
         String nodeInstanceId, nodeKey;
         NodeInstanceBO currentNodeInstance;
@@ -197,7 +192,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
      *
      * @throws Exception
      */
-    protected void doRollback(RuntimeContext runtimeContext) throws Exception {
+    protected void doRollback(RuntimeContext runtimeContext) throws ProcessException {
     }
 
     /**
@@ -205,7 +200,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
      *
      * @throws Exception
      */
-    protected void postRollback(RuntimeContext runtimeContext) throws Exception {
+    protected void postRollback(RuntimeContext runtimeContext) throws ProcessException {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
         currentNodeInstance.setStatus(NodeInstanceStatus.DISABLED);
         runtimeContext.getNodeInstanceList().add(currentNodeInstance);
@@ -219,7 +214,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
      * @throws Exception
      */
     @Override
-    protected ElementExecutor getRollbackExecutor(RuntimeContext runtimeContext) throws Exception {
+    protected ElementExecutor getRollbackExecutor(RuntimeContext runtimeContext) throws ProcessException {
         String flowInstanceId = runtimeContext.getFlowInstanceId();
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
 
@@ -247,7 +242,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     }
 
     @Override
-    protected boolean isCompleted(RuntimeContext runtimeContext) {
+    protected boolean isCompleted(RuntimeContext runtimeContext) throws ProcessException{
         NodeInstanceBO nodeInstance = runtimeContext.getCurrentNodeInstance();
         //case 1.startEvent
         if (nodeInstance == null) {
@@ -268,7 +263,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         return false;
     }
 
-    protected   FlowElement getUniqueNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap) {
+    protected FlowElement getUniqueNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap) {
         List<String> outgoingKeyList = currentFlowElement.getOutgoing();
         String nextElementKey = outgoingKeyList.get(0);
         FlowElement nextFlowElement = FlowModelUtil.getFlowElement(flowElementMap, nextElementKey);
@@ -279,7 +274,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     }
 
     protected FlowElement calculateNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap,
-                                                Map<String, InstanceData> instanceDataMap) throws Exception {
+                                                Map<String, InstanceData> instanceDataMap) throws ProcessException {
         FlowElement nextFlowElement = calculateOutgoing(currentFlowElement, flowElementMap, instanceDataMap);
 
         while (nextFlowElement.getType() == FlowElementType.SEQUENCE_FLOW) {
@@ -288,8 +283,8 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         return nextFlowElement;
     }
 
-    protected FlowElement calculateOutgoing(FlowElement flowElement, Map<String, FlowElement> flowElementMap,
-                                                 Map<String, InstanceData> instanceDataMap) throws Exception {
+    private FlowElement calculateOutgoing(FlowElement flowElement, Map<String, FlowElement> flowElementMap,
+                                                 Map<String, InstanceData> instanceDataMap) throws ProcessException {
         FlowElement defaultElement = null;
 
         List<String> outgoingList = flowElement.getOutgoing();
@@ -318,6 +313,6 @@ public abstract class ElementExecutor extends RuntimeExecutor {
 
     protected boolean processCondition(String expression, Map<String, InstanceData> instanceDataMap) throws ProcessException {
         Map<String, Object> dataMap = InstanceDataUtil.parseInstanceDataMap(instanceDataMap);
-        return calculateService.calculate(expression, dataMap);
+        return expressionCalculator.calculate(expression, dataMap);
     }
 }

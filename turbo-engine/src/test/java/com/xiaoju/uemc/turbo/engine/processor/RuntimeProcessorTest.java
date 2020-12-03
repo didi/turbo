@@ -3,19 +3,19 @@ package com.xiaoju.uemc.turbo.engine.processor;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import com.google.common.collect.Lists;
-import com.xiaoju.uemc.turbo.engine.dto.CommitTaskDTO;
-import com.xiaoju.uemc.turbo.engine.dto.RecallTaskDTO;
-import com.xiaoju.uemc.turbo.engine.dto.StartProcessDTO;
+import com.xiaoju.uemc.turbo.engine.result.CommitTaskResult;
+import com.xiaoju.uemc.turbo.engine.result.InstanceDataListResult;
+import com.xiaoju.uemc.turbo.engine.result.RollbackTaskResult;
+import com.xiaoju.uemc.turbo.engine.result.StartProcessResult;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.param.CommitTaskParam;
-import com.xiaoju.uemc.turbo.engine.param.RecallTaskParam;
+import com.xiaoju.uemc.turbo.engine.param.RollbackTaskParam;
 import com.xiaoju.uemc.turbo.engine.param.StartProcessParam;
 import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
 import org.junit.Test;
 
 import javax.annotation.Resource;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class RuntimeProcessorTest extends BaseTest {
     public void testStartProcess() {
         StartProcessParam startProcessParam = EntityBuilder.buildStartProcessParam("08ec9356-27e4-11ea-a4b4-5ef9e2914105");
         try {
-            StartProcessDTO startProcessDTO = runtimeProcessor.startProcess(startProcessParam);
+            StartProcessResult startProcessDTO = runtimeProcessor.startProcess(startProcessParam);
             LOGGER.info("testStartProcess.||startProcessDTO={}", startProcessDTO);
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,9 +60,9 @@ public class RuntimeProcessorTest extends BaseTest {
         commitTaskParam.setVariables(variables);
         try {
             System.out.println("\ncurrentStartTime:" + (new Date()));
-            CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+            CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
             System.out.println("\ncurrentEndTime:" + (new Date()));
-            LOGGER.info("testCommit.||commitTaskDTO={}", commitTaskDTO);
+            LOGGER.info("testCommit.||commitTaskResult={}", commitTaskResult);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -75,10 +75,10 @@ public class RuntimeProcessorTest extends BaseTest {
         String userTask2InstanceId = "b9b61c1b-2d73-11ea-9415-ae4f86b932f6";
         String userTask3InstanceId = "1e02de27-2bc4-11ea-8b8f-ae63b1c4eb76";
         String userTask4InstanceId = "a321982c-2bc9-11ea-9220-ae63b1c4eb76";
-        RecallTaskParam recallTaskParam = EntityBuilder.buildRecallTaskParam(flowInstanceId, userTask1InstanceId);
+        RollbackTaskParam rollbackTaskParam = EntityBuilder.buildRecallTaskParam(flowInstanceId, userTask1InstanceId);
         try {
-            RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
-            LOGGER.info("testCommit.||testRecall={}", recallTaskDTO);
+            RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
+            LOGGER.info("testCommit.||testRecall={}", rollbackTaskResult);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,21 +88,11 @@ public class RuntimeProcessorTest extends BaseTest {
     public void testGetInstanceData() {
         String flowInstanceId = "296d6b46-32a9-11ea-be8c-5ef9e2914105";
         try {
-            List<InstanceData> instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
-            LOGGER.info("testGetInstanceData.||instanceDataList={}", instanceDataList);
-
-            System.out.println(System.currentTimeMillis() / 1000);
-            /*com.alibaba.fastjson.JSONArray list = new com.alibaba.fastjson.JSONArray();for (int i = 0; i < driverViolationRecordsList.size(); i++) { com.alibaba.fastjson.JSONObject ls = driverViolationRecordsList.getJSONObject(i);com.alibaba.fastjson.JSONObject j = new com.alibaba.fastjson.JSONObject();j.put("degree",ls.get("degree"));j.put("fine",String.format("%.2f",ls.get("fine")/100));j.put("violationLocation",ls.get("violationLocation"));java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");String dateString = formatter.format(ls.get("violationOccurTime"));j.put("violationOccurTime",dateString);list.add(j);if (i==driverViolationRecordsList.size()-1) { return list; } }
-            "com.alibaba.fastjson.JSONArray list = new com.alibaba.fastjson.JSONArray();for (int i = 0; i < driverViolationRecordsList.size(); i++) { com.alibaba.fastjson.JSONObject ls = driverViolationRecordsList.getJSONObject(i);com.alibaba.fastjson.JSONObject j = new com.alibaba.fastjson.JSONObject();j.put(\"degree\",ls.get(\"degree\"));j.put(\"fine\",String.format(\"%.2f\",ls.get(\"fine\")/100));j.put(\"violationLocation\",ls.get(\"violationLocation\"));java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(\"yyyy-MM-dd HH:mm:ss\");String dateString = formatter.format(ls.get(\"violationOccurTime\"));j.put(\"violationOccurTime\",dateString);list.add(j);if (i==driverViolationRecordsList.size()-1) { return list; } }"
-        */} catch (Exception e) {
+            InstanceDataListResult instanceData = runtimeProcessor.getInstanceData(flowInstanceId);
+            LOGGER.info("testGetInstanceData.||instanceData={}", instanceData);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-    }
-
-    @Test
-    public void test() {
-
     }
 
 }

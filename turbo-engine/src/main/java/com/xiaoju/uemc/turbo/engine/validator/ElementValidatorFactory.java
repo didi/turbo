@@ -4,7 +4,6 @@ import com.xiaoju.uemc.turbo.engine.common.Constants;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.common.FlowElementType;
 import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
-import com.xiaoju.uemc.turbo.engine.executor.*;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.util.FlowModelUtil;
 import org.slf4j.Logger;
@@ -42,7 +41,7 @@ public class ElementValidatorFactory {
         ElementValidator elementValidator = getElementValidator(elementType);
 
         if (elementValidator == null) {
-            LOGGER.warn("getElementValidator failed: unsupported elementType.|elementType={}", elementType);
+            LOGGER.warn("getElementValidator failed: unsupported elementType.||elementType={}", elementType);
             throw new ProcessException(ErrorEnum.UNSUPPORTED_ELEMENT_TYPE,
                     MessageFormat.format(Constants.NODE_INFO_FORMAT, flowElement.getKey(),
                             FlowModelUtil.getElementName(flowElement), elementType));

@@ -820,11 +820,11 @@ public class EntityBuilder {
         return commitTaskParam;
     }
 
-    public static RecallTaskParam buildRecallTaskParam(String flowInstanceId, String nodeInstanceId) {
-        RecallTaskParam recallTaskParam = new RecallTaskParam();
-        recallTaskParam.setFlowInstanceId(flowInstanceId);
-        recallTaskParam.setTaskInstanceId(nodeInstanceId);
-        return recallTaskParam;
+    public static RollbackTaskParam buildRecallTaskParam(String flowInstanceId, String nodeInstanceId) {
+        RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+        rollbackTaskParam.setFlowInstanceId(flowInstanceId);
+        rollbackTaskParam.setTaskInstanceId(nodeInstanceId);
+        return rollbackTaskParam;
     }
 
 
