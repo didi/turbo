@@ -1,12 +1,14 @@
 package com.xiaoju.uemc.turbo.engine.processor;
 
+import com.xiaoju.uemc.turbo.engine.bo.ElementInstance;
+import com.xiaoju.uemc.turbo.engine.bo.NodeInstance;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.dao.mapper.FlowDeploymentMapper;
-import com.xiaoju.uemc.turbo.engine.dto.*;
+import com.xiaoju.uemc.turbo.engine.result.*;
 import com.xiaoju.uemc.turbo.engine.entity.FlowDeploymentPO;
 import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import com.xiaoju.uemc.turbo.engine.param.CommitTaskParam;
-import com.xiaoju.uemc.turbo.engine.param.RecallTaskParam;
+import com.xiaoju.uemc.turbo.engine.param.RollbackTaskParam;
 import com.xiaoju.uemc.turbo.engine.param.StartProcessParam;
 import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
@@ -29,7 +31,7 @@ public class RuntimeProcessorTest extends BaseTest {
     @Resource
     private FlowDeploymentMapper flowDeploymentMapper;
 
-    private StartProcessDTO startProcess() throws Exception {
+    private StartProcessResult startProcess() throws Exception {
         // prepare
         FlowDeploymentPO flowDeploymentPO = EntityBuilder.buildSpecialFlowDeploymentPO();
         FlowDeploymentPO _flowDeploymentPO = flowDeploymentMapper.selectByDeployId(flowDeploymentPO.getFlowDeployId());
@@ -55,159 +57,159 @@ public class RuntimeProcessorTest extends BaseTest {
 
     @Test
     public void testStartProcess() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
-        Assert.assertTrue(startProcessDTO.getErrCode() == ErrorEnum.COMMIT_SUSPEND.getErrNo());
-        Assert.assertTrue(StringUtils.equals(startProcessDTO.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
+        StartProcessResult startProcessResult = startProcess();
+        Assert.assertTrue(startProcessResult.getErrCode() == ErrorEnum.COMMIT_SUSPEND.getErrNo());
+        Assert.assertTrue(StringUtils.equals(startProcessResult.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
     }
 
     // UserTask -> EndEvent
     @Test
     public void testNormalCommitToEnd() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
 
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 1));
         commitTaskParam.setVariables(variables);
 
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
-        LOGGER.info("testCommit.||commitTaskDTO={}", commitTaskDTO);
-        Assert.assertTrue(commitTaskDTO.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
-        Assert.assertTrue(StringUtils.equals(commitTaskDTO.getActiveTaskInstance().getModelKey(), "EndEvent_0s4vsxw"));
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
+        LOGGER.info("testCommit.||commitTaskResult={}", commitTaskResult);
+        Assert.assertTrue(commitTaskResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
+        Assert.assertTrue(StringUtils.equals(commitTaskResult.getActiveTaskInstance().getModelKey(), "EndEvent_0s4vsxw"));
     }
 
     // UserTask -> ExclusiveGateway -> UserTask
     @Test
     public void testNormalCommitToUserTask() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
 
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 0));
         commitTaskParam.setVariables(variables);
 
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
-        LOGGER.info("testCommit.||commitTaskDTO={}", commitTaskDTO);
-        Assert.assertTrue(commitTaskDTO.getErrCode() == ErrorEnum.COMMIT_SUSPEND.getErrNo());
-        Assert.assertTrue(StringUtils.equals(commitTaskDTO.getActiveTaskInstance().getModelKey(), "UserTask_0uld0u9"));
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
+        LOGGER.info("testCommit.||commitTaskResult={}", commitTaskResult);
+        Assert.assertTrue(commitTaskResult.getErrCode() == ErrorEnum.COMMIT_SUSPEND.getErrNo());
+        Assert.assertTrue(StringUtils.equals(commitTaskResult.getActiveTaskInstance().getModelKey(), "UserTask_0uld0u9"));
     }
 
     // UserTask -> ExclusiveGateway -> UserTask
     // UserTask ->
     @Test
     public void testRepeatedCommitToUserTask() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
 
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 0));
         commitTaskParam.setVariables(variables);
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
-        commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
-        LOGGER.info("testCommit.||commitTaskDTO={}", commitTaskDTO);
+        commitTaskResult = runtimeProcessor.commit(commitTaskParam);
+        LOGGER.info("testCommit.||commitTaskResult={}", commitTaskResult);
 
-        Assert.assertTrue(commitTaskDTO.getErrCode() == ErrorEnum.COMMIT_SUSPEND.getErrNo());
-        Assert.assertTrue(StringUtils.equals(commitTaskDTO.getActiveTaskInstance().getModelKey(), "UserTask_0uld0u9"));
+        Assert.assertTrue(commitTaskResult.getErrCode() == ErrorEnum.COMMIT_SUSPEND.getErrNo());
+        Assert.assertTrue(StringUtils.equals(commitTaskResult.getActiveTaskInstance().getModelKey(), "UserTask_0uld0u9"));
     }
 
     // UserTask -> EndEvent -> Commit again
     @Test
     public void testCommitCompletedFlowInstance() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
 
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 1));
         commitTaskParam.setVariables(variables);
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
-        commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
-        LOGGER.info("testCommit.||commitTaskDTO={}", commitTaskDTO);
+        commitTaskResult = runtimeProcessor.commit(commitTaskParam);
+        LOGGER.info("testCommit.||commitTaskResult={}", commitTaskResult);
 
-        Assert.assertTrue(commitTaskDTO.getErrCode() == ErrorEnum.REENTRANT_WARNING.getErrNo());
+        Assert.assertTrue(commitTaskResult.getErrCode() == ErrorEnum.REENTRANT_WARNING.getErrNo());
     }
 
     @Test
     public void testCommitTerminatedFlowInstance() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
 
-        runtimeProcessor.terminateProcess(startProcessDTO.getFlowInstanceId());
+        runtimeProcessor.terminateProcess(startProcessResult.getFlowInstanceId());
 
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 1));
         commitTaskParam.setVariables(variables);
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
-        Assert.assertTrue(commitTaskDTO.getErrCode() == ErrorEnum.TERMINATE_CANNOT_COMMIT.getErrNo());
+        Assert.assertTrue(commitTaskResult.getErrCode() == ErrorEnum.COMMIT_REJECTRD.getErrNo());
     }
 
     // UserTask <- ExclusiveGateway <- UserTask : Commit old UserTask
     @Test
     public void testRollbackToUserTaskAndCommitOldUserTask() throws Exception {
         // start process
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 0));
         commitTaskParam.setVariables(variables);
 
         // UserTask -> ExclusiveGateway -> UserTask
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
         // UserTask <- ExclusiveGateway <- UserTask
-        RecallTaskParam recallTaskParam = new RecallTaskParam();
-        recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        recallTaskParam.setTaskInstanceId(commitTaskDTO.getActiveTaskInstance().getNodeInstanceId());
-        RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
+        RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+        rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
+        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
         // commit old UserTask
-        commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
-        LOGGER.info("testRollbackToUserTaskAndCommitOldUserTask.||commitTaskDTO={}", commitTaskDTO);
-        Assert.assertTrue(commitTaskDTO.getErrCode() == ErrorEnum.COMMIT_FAILED.getErrNo());
-        Assert.assertTrue(StringUtils.equals(commitTaskDTO.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
+        LOGGER.info("testRollbackToUserTaskAndCommitOldUserTask.||commitTaskResult={}", commitTaskResult);
+        Assert.assertTrue(commitTaskResult.getErrCode() == ErrorEnum.COMMIT_FAILED.getErrNo());
+        Assert.assertTrue(StringUtils.equals(commitTaskResult.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
     }
 
     @Test
     public void testRollbackFromMiddleUserTask() throws Exception {
         // start process
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        String branchUserTaskNodeInstanceId = startProcessDTO.getActiveTaskInstance().getNodeInstanceId();
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        String branchUserTaskNodeInstanceId = startProcessResult.getActiveTaskInstance().getNodeInstanceId();
         commitTaskParam.setTaskInstanceId(branchUserTaskNodeInstanceId);
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 0));
         commitTaskParam.setVariables(variables);
 
         // UserTask -> ExclusiveGateway -> UserTask
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
         // StartEvent <- UserTask
-        RecallTaskParam recallTaskParam = new RecallTaskParam();
-        recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
+        RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+        rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
         // Previous UserTask node
-        recallTaskParam.setTaskInstanceId(branchUserTaskNodeInstanceId);
-        RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
+        rollbackTaskParam.setTaskInstanceId(branchUserTaskNodeInstanceId);
+        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
         // Ignore current userTask
-        LOGGER.info("testRollbackFromMiddleUserTask.||recallTaskDTO={}", recallTaskDTO);
-        Assert.assertTrue(recallTaskDTO.getErrCode() == ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
-        Assert.assertTrue(StringUtils.equals(recallTaskDTO.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
+        LOGGER.info("testRollbackFromMiddleUserTask.||recallTaskResult={}", recallTaskResult);
+        Assert.assertTrue(recallTaskResult.getErrCode() == ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
+        Assert.assertTrue(StringUtils.equals(recallTaskResult.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
     }
 
 
@@ -216,227 +218,227 @@ public class RuntimeProcessorTest extends BaseTest {
     @Test
     public void testRollbackToUserTask() throws Exception {
         // start process
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 0));
         commitTaskParam.setVariables(variables);
 
         // UserTask -> ExclusiveGateway -> UserTask
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
         // UserTask <- ExclusiveGateway <- UserTask
-        RecallTaskParam recallTaskParam = new RecallTaskParam();
-        recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        recallTaskParam.setTaskInstanceId(commitTaskDTO.getActiveTaskInstance().getNodeInstanceId());
-        RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
+        RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+        rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
+        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
-        LOGGER.info("testRollback.||recallTaskDTO={}", recallTaskDTO);
-        Assert.assertTrue(recallTaskDTO.getErrCode() == ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
-        Assert.assertTrue(StringUtils.equals(recallTaskDTO.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
+        LOGGER.info("testRollback.||recallTaskResult={}", recallTaskResult);
+        Assert.assertTrue(recallTaskResult.getErrCode() == ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
+        Assert.assertTrue(StringUtils.equals(recallTaskResult.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
     }
 
     // StartEvent <- UserTask
     @Test
     public void testRollbackToStartEvent() throws Exception {
         // start process
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 0));
         commitTaskParam.setVariables(variables);
 
         // UserTask -> ExclusiveGateway -> UserTask
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
         // UserTask <- ExclusiveGateway <- UserTask
-        RecallTaskParam recallTaskParam = new RecallTaskParam();
-        recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        recallTaskParam.setTaskInstanceId(commitTaskDTO.getActiveTaskInstance().getNodeInstanceId());
-        RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
+        RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+        rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
+        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
         // StartEvent <- UserTask
-        recallTaskParam = new RecallTaskParam();
-        recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        recallTaskParam.setTaskInstanceId(recallTaskDTO.getActiveTaskInstance().getNodeInstanceId());
-        recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
-        LOGGER.info("testRollback.||recallTaskDTO={}", recallTaskDTO);
-        Assert.assertTrue(recallTaskDTO.getErrCode() == ErrorEnum.NO_USER_TASK_TO_ROLLBACK.getErrNo());
+        rollbackTaskParam = new RollbackTaskParam();
+        rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        rollbackTaskParam.setTaskInstanceId(recallTaskResult.getActiveTaskInstance().getNodeInstanceId());
+        recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
+        LOGGER.info("testRollback.||recallTaskResult={}", recallTaskResult);
+        Assert.assertTrue(recallTaskResult.getErrCode() == ErrorEnum.NO_USER_TASK_TO_ROLLBACK.getErrNo());
     }
 
     // rollback completed process
     @Test
     public void testRollbackFromEndEvent() throws Exception {
         // start process
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 1));
         commitTaskParam.setVariables(variables);
 
         // UserTask -> EndEvent
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
         // rollback EndEvent
-        RecallTaskParam recallTaskParam = new RecallTaskParam();
-        recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        recallTaskParam.setTaskInstanceId(commitTaskDTO.getActiveTaskInstance().getNodeInstanceId());
-        RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
+        RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+        rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
+        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
-        LOGGER.info("testRollback.||recallTaskDTO={}", recallTaskDTO);
-        Assert.assertTrue(recallTaskDTO.getErrCode() == ErrorEnum.FLOW_INSTANCE_CANNOT_ROLLBACK.getErrNo());
+        LOGGER.info("testRollback.||recallTaskResult={}", recallTaskResult);
+        Assert.assertTrue(recallTaskResult.getErrCode() == ErrorEnum.ROLLBACK_REJECTRD.getErrNo());
     }
 
     @Test
     public void testTerminateProcess() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
-        TerminateDTO terminateDTO = runtimeProcessor.terminateProcess(startProcessDTO.getFlowInstanceId());
-        LOGGER.info("testTerminateProcess.||terminateDTO={}", terminateDTO);
-        Assert.assertTrue(terminateDTO.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
+        StartProcessResult startProcessResult = startProcess();
+        TerminateResult terminateResult = runtimeProcessor.terminateProcess(startProcessResult.getFlowInstanceId());
+        LOGGER.info("testTerminateProcess.||terminateResult={}", terminateResult);
+        Assert.assertTrue(terminateResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
     }
 
     @Test
     public void testGetHistoryUserTaskList() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 0));
         commitTaskParam.setVariables(variables);
 
         // UserTask -> ExclusiveGateway -> UserTask
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
-        NodeInstanceListDTO nodeInstanceListDTO = runtimeProcessor.getHistoryUserTaskList(commitTaskDTO.getFlowInstanceId());
-        LOGGER.info("testGetHistoryUserTaskList.||nodeInstanceListDTO={}", nodeInstanceListDTO);
+        NodeInstanceListResult nodeInstanceListResult = runtimeProcessor.getHistoryUserTaskList(commitTaskResult.getFlowInstanceId());
+        LOGGER.info("testGetHistoryUserTaskList.||nodeInstanceListResult={}", nodeInstanceListResult);
         StringBuilder sb = new StringBuilder();
-        for (ElementInstanceDTO elementInstanceDTO : nodeInstanceListDTO.getNodeInstanceDTOList()) {
+        for (NodeInstance elementInstanceResult : nodeInstanceListResult.getNodeInstanceList()) {
             sb.append("[");
-            sb.append(elementInstanceDTO.getModelKey());
+            sb.append(elementInstanceResult.getModelKey());
             sb.append(" ");
-            sb.append(elementInstanceDTO.getStatus());
+            sb.append(elementInstanceResult.getStatus());
             sb.append("]->");
         }
         LOGGER.info("testGetHistoryUserTaskList.||snapshot={}", sb.toString());
 
-        Assert.assertTrue(nodeInstanceListDTO.getNodeInstanceDTOList().size() == 2);
-        Assert.assertTrue(StringUtils.equals(nodeInstanceListDTO.getNodeInstanceDTOList().get(0).getModelKey(), "UserTask_0uld0u9"));
+        Assert.assertTrue(nodeInstanceListResult.getNodeInstanceList().size() == 2);
+        Assert.assertTrue(StringUtils.equals(nodeInstanceListResult.getNodeInstanceList().get(0).getModelKey(), "UserTask_0uld0u9"));
     }
 
 
     @Test
     public void testGetFailedHistoryElementList() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 0));
         variables.add(new InstanceData("orderId", "string", "notExistOrderId"));
         commitTaskParam.setVariables(variables);
 
         // UserTask -> ExclusiveGateway : Failed
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
-        LOGGER.info("testGetFailedHistoryElementList.||commitTaskDTO={}", commitTaskDTO);
-        Assert.assertTrue(commitTaskDTO.getErrCode() == ErrorEnum.GET_OUTGOING_FAILED.getErrNo());
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
+        LOGGER.info("testGetFailedHistoryElementList.||commitTaskResult={}", commitTaskResult);
+        Assert.assertTrue(commitTaskResult.getErrCode() == ErrorEnum.GET_OUTGOING_FAILED.getErrNo());
 
-        ElementInstanceListDTO elementInstanceListDTO = runtimeProcessor.getHistoryElementList(commitTaskDTO.getFlowInstanceId());
-        LOGGER.info("testGetHistoryElementList.||elementInstanceListDTO={}", elementInstanceListDTO);
+        ElementInstanceListResult elementInstanceListResult = runtimeProcessor.getHistoryElementList(commitTaskResult.getFlowInstanceId());
+        LOGGER.info("testGetHistoryElementList.||elementInstanceListResult={}", elementInstanceListResult);
         StringBuilder sb = new StringBuilder();
-        for (ElementInstanceDTO elementInstanceDTO : elementInstanceListDTO.getElementInstanceDTOList()) {
+        for (ElementInstance elementInstanceResult : elementInstanceListResult.getElementInstanceList()) {
             sb.append("[");
-            sb.append(elementInstanceDTO.getModelKey());
+            sb.append(elementInstanceResult.getModelKey());
             sb.append(" ");
-            sb.append(elementInstanceDTO.getStatus());
+            sb.append(elementInstanceResult.getStatus());
             sb.append("]->");
         }
         LOGGER.info("testGetHistoryElementList.||snapshot={}", sb.toString());
 
-        Assert.assertTrue(elementInstanceListDTO.getElementInstanceDTOList().size() == 5);
-        Assert.assertTrue(StringUtils.equals(elementInstanceListDTO.getElementInstanceDTOList().get(4).getModelKey(), "ExclusiveGateway_0yq2l0s"));
+        Assert.assertTrue(elementInstanceListResult.getElementInstanceList().size() == 5);
+        Assert.assertTrue(StringUtils.equals(elementInstanceListResult.getElementInstanceList().get(4).getModelKey(), "ExclusiveGateway_0yq2l0s"));
     }
 
     @Test
     public void testGetCompletedHistoryElementList() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
+        StartProcessResult startProcessResult = startProcess();
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 1));
         commitTaskParam.setVariables(variables);
 
         // UserTask -> EndEvent
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
-        ElementInstanceListDTO elementInstanceListDTO = runtimeProcessor.getHistoryElementList(commitTaskDTO.getFlowInstanceId());
-        LOGGER.info("testGetHistoryElementList.||elementInstanceListDTO={}", elementInstanceListDTO);
+        ElementInstanceListResult elementInstanceListResult = runtimeProcessor.getHistoryElementList(commitTaskResult.getFlowInstanceId());
+        LOGGER.info("testGetHistoryElementList.||elementInstanceListResult={}", elementInstanceListResult);
         StringBuilder sb = new StringBuilder();
-        for (ElementInstanceDTO elementInstanceDTO : elementInstanceListDTO.getElementInstanceDTOList()) {
+        for (ElementInstance elementInstanceResult : elementInstanceListResult.getElementInstanceList()) {
             sb.append("[");
-            sb.append(elementInstanceDTO.getModelKey());
+            sb.append(elementInstanceResult.getModelKey());
             sb.append(" ");
-            sb.append(elementInstanceDTO.getStatus());
+            sb.append(elementInstanceResult.getStatus());
             sb.append("]->");
         }
         LOGGER.info("testGetHistoryElementList.||snapshot={}", sb.toString());
 
-        Assert.assertTrue(elementInstanceListDTO.getElementInstanceDTOList().size() == 5);
-        Assert.assertTrue(StringUtils.equals(elementInstanceListDTO.getElementInstanceDTOList().get(4).getModelKey(), "EndEvent_0s4vsxw"));
+        Assert.assertTrue(elementInstanceListResult.getElementInstanceList().size() == 5);
+        Assert.assertTrue(StringUtils.equals(elementInstanceListResult.getElementInstanceList().get(4).getModelKey(), "EndEvent_0s4vsxw"));
     }
 
     // commit a,  b  回滚之后是不是之前的数据 - error
     @Test
     public void testGetInstanceData() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
-        String flowInstanceId = startProcessDTO.getFlowInstanceId();
-        List<InstanceData> instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
+        StartProcessResult startProcessResult = startProcess();
+        String flowInstanceId = startProcessResult.getFlowInstanceId();
+        InstanceDataListResult instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
         LOGGER.info("testGetInstanceData 1.||instanceDataList={}", instanceDataList);
 
         CommitTaskParam commitTaskParam = new CommitTaskParam();
-        commitTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam.setTaskInstanceId(startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
         variables.add(new InstanceData("danxuankuang_ytgyk", "int", 0));
         variables.add(new InstanceData("commitTime", "int", 1));
         commitTaskParam.setVariables(variables);
 
         // UserTask -> ExclusiveGateway -> UserTask
-        CommitTaskDTO commitTaskDTO = runtimeProcessor.commit(commitTaskParam);
+        CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
         // UserTask -> UserTask
         CommitTaskParam commitTaskParam1 = new CommitTaskParam();
-        commitTaskParam1.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        commitTaskParam1.setTaskInstanceId(commitTaskDTO.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam1.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam1.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables1 = new ArrayList<>();
         variables1.add(new InstanceData("orderStatus", "string", "2"));
         variables1.add(new InstanceData("commitTime", "int", 2));
         commitTaskParam1.setVariables(variables1);
-        CommitTaskDTO commitTaskDTO1 = runtimeProcessor.commit(commitTaskParam1);
+        CommitTaskResult commitTaskResult1 = runtimeProcessor.commit(commitTaskParam1);
 
         instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
         LOGGER.info("testGetInstanceData 2.||instanceDataList={}", instanceDataList);
 
         // UserTask <- UserTask
-        RecallTaskParam recallTaskParam = new RecallTaskParam();
-        recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        recallTaskParam.setTaskInstanceId(commitTaskDTO1.getActiveTaskInstance().getNodeInstanceId());
-        RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
-        LOGGER.info("recallTaskDTO 3.||recallTaskDTO.variables={}", recallTaskDTO.getVariables());
+        RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+        rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        rollbackTaskParam.setTaskInstanceId(commitTaskResult1.getActiveTaskInstance().getNodeInstanceId());
+        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
+        LOGGER.info("recallTaskResult 3.||recallTaskResult.variables={}", recallTaskResult.getVariables());
 
         // UserTask <- ExclusiveGateway <- UserTask
-        RecallTaskParam recallTaskParam1 = new RecallTaskParam();
-        recallTaskParam1.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
-        recallTaskParam1.setTaskInstanceId(recallTaskDTO.getActiveTaskInstance().getNodeInstanceId());
-        RecallTaskDTO recallTaskDTO1 = runtimeProcessor.recall(recallTaskParam1);
-        LOGGER.info("recallTaskDTO 4.||recallTaskDTO.variables={}", recallTaskDTO1.getVariables());
+        RollbackTaskParam rollbackTaskParam1 = new RollbackTaskParam();
+        rollbackTaskParam1.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        rollbackTaskParam1.setTaskInstanceId(recallTaskResult.getActiveTaskInstance().getNodeInstanceId());
+        RollbackTaskResult recallTaskResult1 = runtimeProcessor.rollback(rollbackTaskParam1);
+        LOGGER.info("recallTaskResult 4.||recallTaskResult.variables={}", recallTaskResult1.getVariables());
 
         instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
         LOGGER.info("testGetInstanceData 5.||instanceDataList={}", instanceDataList);
@@ -444,11 +446,11 @@ public class RuntimeProcessorTest extends BaseTest {
 
     @Test
     public void testGetNodeInstance() throws Exception {
-        StartProcessDTO startProcessDTO = startProcess();
-        String flowInstanceId = startProcessDTO.getFlowInstanceId();
-        NodeInstanceDTO nodeInstanceDTO = runtimeProcessor.getNodeInstance(flowInstanceId, startProcessDTO.getActiveTaskInstance().getNodeInstanceId());
-        LOGGER.info("testGetNodeInstance.||nodeInstanceDTO={}", nodeInstanceDTO);
+        StartProcessResult startProcessResult = startProcess();
+        String flowInstanceId = startProcessResult.getFlowInstanceId();
+        NodeInstanceResult nodeInstanceResult = runtimeProcessor.getNodeInstance(flowInstanceId, startProcessResult.getActiveTaskInstance().getNodeInstanceId());
+        LOGGER.info("testGetNodeInstance.||nodeInstanceResult={}", nodeInstanceResult);
 
-        Assert.assertTrue(StringUtils.equals(nodeInstanceDTO.getNodeInstanceId(), startProcessDTO.getActiveTaskInstance().getNodeInstanceId()));
+        Assert.assertTrue(StringUtils.equals(nodeInstanceResult.getNodeInstance().getNodeInstanceId(), startProcessResult.getActiveTaskInstance().getNodeInstanceId()));
     }
 }
