@@ -11,6 +11,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Stefanie on 2019/12/1.
@@ -22,14 +23,14 @@ public class NodeInstanceMapperTest extends BaseTest {
 
     @Test
     public void insert() {
-        NodeInstancePO nodeInstancePO = EntityBuilder.buildNodeInstancePO();
+        NodeInstancePO nodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
         int result = nodeInstanceMapper.insert(nodeInstancePO);
         Assert.assertTrue(result == 1);
     }
 
     @Test
     public void selectByNodeInstanceId() {
-        NodeInstancePO nodeInstancePO = EntityBuilder.buildNodeInstancePO();
+        NodeInstancePO nodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
         nodeInstanceMapper.insert(nodeInstancePO);
         NodeInstancePO result = nodeInstanceMapper.selectByNodeInstanceId(nodeInstancePO.getFlowInstanceId(), nodeInstancePO.getNodeInstanceId());
         Assert.assertTrue(result.getNodeInstanceId().equals(nodeInstancePO.getNodeInstanceId()));
@@ -46,27 +47,6 @@ public class NodeInstanceMapperTest extends BaseTest {
     }
 
     @Test
-    public void selectByFlowInstanceId() {
-        NodeInstancePO nodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
-        nodeInstanceMapper.insert(nodeInstancePO);
-        nodeInstanceMapper.insert(EntityBuilder.buildDynamicNodeInstancePO());
-        nodeInstanceMapper.insert(EntityBuilder.buildDynamicNodeInstancePO());
-        List<NodeInstancePO> result = nodeInstanceMapper.selectByFlowInstanceId(nodeInstancePO.getFlowInstanceId());
-        Assert.assertTrue(result.size() == 3);
-    }
-
-    @Test
-    public void selectDescByFlowInstanceId() {
-        NodeInstancePO nodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
-        nodeInstanceMapper.insert(nodeInstancePO);
-        nodeInstanceMapper.insert(EntityBuilder.buildDynamicNodeInstancePO());
-        nodeInstanceMapper.insert(EntityBuilder.buildDynamicNodeInstancePO());
-        List<NodeInstancePO> result = nodeInstanceMapper.selectDescByFlowInstanceId(nodeInstancePO.getFlowInstanceId());
-        Assert.assertTrue(result.size() == 3);
-        Assert.assertTrue(result.get(2).getNodeInstanceId().equals(nodeInstancePO.getNodeInstanceId()));
-    }
-
-    @Test
     public void selectRecentOneByStatus() {
         NodeInstancePO oldNodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
         nodeInstanceMapper.insert(oldNodeInstancePO);
@@ -78,7 +58,7 @@ public class NodeInstanceMapperTest extends BaseTest {
 
     @Test
     public void selectBySourceInstanceId() {
-        NodeInstancePO nodeInstancePO = EntityBuilder.buildNodeInstancePO();
+        NodeInstancePO nodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
         nodeInstanceMapper.insert(nodeInstancePO);
         NodeInstancePO result = nodeInstanceMapper.selectBySourceInstanceId(nodeInstancePO.getFlowInstanceId(), nodeInstancePO.getSourceNodeInstanceId(), nodeInstancePO.getNodeKey());
         Assert.assertTrue(result.getNodeInstanceId().equals(nodeInstancePO.getNodeInstanceId()));
@@ -86,7 +66,7 @@ public class NodeInstanceMapperTest extends BaseTest {
 
     @Test
     public void updateStatus() {
-        NodeInstancePO nodeInstancePO = EntityBuilder.buildNodeInstancePO();
+        NodeInstancePO nodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
         nodeInstanceMapper.insert(nodeInstancePO);
         nodeInstancePO.setStatus(NodeInstanceStatus.COMPLETED);
         nodeInstancePO.setModifyTime(new Date());
@@ -98,10 +78,15 @@ public class NodeInstanceMapperTest extends BaseTest {
     @Test
     public void batchInsert() {
         NodeInstancePO firstNodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
+        firstNodeInstancePO.setFlowInstanceId("flowInstanceId" + UUID.randomUUID().toString());
         List<NodeInstancePO> nodeInstancePOList = new ArrayList<>();
         nodeInstancePOList.add(firstNodeInstancePO);
-        nodeInstancePOList.add(EntityBuilder.buildDynamicNodeInstancePO());
-        nodeInstancePOList.add(EntityBuilder.buildDynamicNodeInstancePO());
+        NodeInstancePO nodeInstancePO1 = EntityBuilder.buildDynamicNodeInstancePO();
+        nodeInstancePO1.setFlowInstanceId(firstNodeInstancePO.getFlowInstanceId());
+        nodeInstancePOList.add(nodeInstancePO1);
+        NodeInstancePO nodeInstancePO2 = EntityBuilder.buildDynamicNodeInstancePO();
+        nodeInstancePO2.setFlowInstanceId(firstNodeInstancePO.getFlowInstanceId());
+        nodeInstancePOList.add(nodeInstancePO2);
         nodeInstanceMapper.batchInsert(firstNodeInstancePO.getFlowInstanceId(), nodeInstancePOList);
         List<NodeInstancePO> result = nodeInstanceMapper.selectByFlowInstanceId(firstNodeInstancePO.getFlowInstanceId());
         Assert.assertTrue(result.size() == 3);

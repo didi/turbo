@@ -174,7 +174,7 @@ public class RuntimeProcessorTest extends BaseTest {
         RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
         rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
         rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
-        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
+        RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
         // commit old UserTask
         commitTaskResult = runtimeProcessor.commit(commitTaskParam);
@@ -204,12 +204,12 @@ public class RuntimeProcessorTest extends BaseTest {
         rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
         // Previous UserTask node
         rollbackTaskParam.setTaskInstanceId(branchUserTaskNodeInstanceId);
-        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
+        RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
         // Ignore current userTask
-        LOGGER.info("testRollbackFromMiddleUserTask.||recallTaskResult={}", recallTaskResult);
-        Assert.assertTrue(recallTaskResult.getErrCode() == ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
-        Assert.assertTrue(StringUtils.equals(recallTaskResult.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
+        LOGGER.info("testRollbackFromMiddleUserTask.||rollbackTaskResult={}", rollbackTaskResult);
+        Assert.assertTrue(rollbackTaskResult.getErrCode() == ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
+        Assert.assertTrue(StringUtils.equals(rollbackTaskResult.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
     }
 
 
@@ -233,11 +233,11 @@ public class RuntimeProcessorTest extends BaseTest {
         RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
         rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
         rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
-        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
+        RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
-        LOGGER.info("testRollback.||recallTaskResult={}", recallTaskResult);
-        Assert.assertTrue(recallTaskResult.getErrCode() == ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
-        Assert.assertTrue(StringUtils.equals(recallTaskResult.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
+        LOGGER.info("testRollback.||rollbackTaskResult={}", rollbackTaskResult);
+        Assert.assertTrue(rollbackTaskResult.getErrCode() == ErrorEnum.ROLLBACK_SUSPEND.getErrNo());
+        Assert.assertTrue(StringUtils.equals(rollbackTaskResult.getActiveTaskInstance().getModelKey(), "BranchUserTask_0scrl8d"));
     }
 
     // StartEvent <- UserTask
@@ -259,15 +259,15 @@ public class RuntimeProcessorTest extends BaseTest {
         RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
         rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
         rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
-        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
+        RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
         // StartEvent <- UserTask
         rollbackTaskParam = new RollbackTaskParam();
         rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
-        rollbackTaskParam.setTaskInstanceId(recallTaskResult.getActiveTaskInstance().getNodeInstanceId());
-        recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
-        LOGGER.info("testRollback.||recallTaskResult={}", recallTaskResult);
-        Assert.assertTrue(recallTaskResult.getErrCode() == ErrorEnum.NO_USER_TASK_TO_ROLLBACK.getErrNo());
+        rollbackTaskParam.setTaskInstanceId(rollbackTaskResult.getActiveTaskInstance().getNodeInstanceId());
+        rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
+        LOGGER.info("testRollback.||rollbackTaskResult={}", rollbackTaskResult);
+        Assert.assertTrue(rollbackTaskResult.getErrCode() == ErrorEnum.NO_USER_TASK_TO_ROLLBACK.getErrNo());
     }
 
     // rollback completed process
@@ -289,10 +289,10 @@ public class RuntimeProcessorTest extends BaseTest {
         RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
         rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
         rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
-        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
+        RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
-        LOGGER.info("testRollback.||recallTaskResult={}", recallTaskResult);
-        Assert.assertTrue(recallTaskResult.getErrCode() == ErrorEnum.ROLLBACK_REJECTRD.getErrNo());
+        LOGGER.info("testRollback.||rollbackTaskResult={}", rollbackTaskResult);
+        Assert.assertTrue(rollbackTaskResult.getErrCode() == ErrorEnum.ROLLBACK_REJECTRD.getErrNo());
     }
 
     @Test
@@ -430,15 +430,15 @@ public class RuntimeProcessorTest extends BaseTest {
         RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
         rollbackTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
         rollbackTaskParam.setTaskInstanceId(commitTaskResult1.getActiveTaskInstance().getNodeInstanceId());
-        RollbackTaskResult recallTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
-        LOGGER.info("recallTaskResult 3.||recallTaskResult.variables={}", recallTaskResult.getVariables());
+        RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
+        LOGGER.info("rollbackTaskResult 3.||rollbackTaskResult.variables={}", rollbackTaskResult.getVariables());
 
         // UserTask <- ExclusiveGateway <- UserTask
         RollbackTaskParam rollbackTaskParam1 = new RollbackTaskParam();
         rollbackTaskParam1.setFlowInstanceId(startProcessResult.getFlowInstanceId());
-        rollbackTaskParam1.setTaskInstanceId(recallTaskResult.getActiveTaskInstance().getNodeInstanceId());
-        RollbackTaskResult recallTaskResult1 = runtimeProcessor.rollback(rollbackTaskParam1);
-        LOGGER.info("recallTaskResult 4.||recallTaskResult.variables={}", recallTaskResult1.getVariables());
+        rollbackTaskParam1.setTaskInstanceId(rollbackTaskResult.getActiveTaskInstance().getNodeInstanceId());
+        RollbackTaskResult rollbackTaskResult1 = runtimeProcessor.rollback(rollbackTaskParam1);
+        LOGGER.info("rollbackTaskResult 4.||rollbackTaskResult.variables={}", rollbackTaskResult1.getVariables());
 
         instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
         LOGGER.info("testGetInstanceData 5.||instanceDataList={}", instanceDataList);

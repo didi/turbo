@@ -17,7 +17,7 @@ public class InstanceDataMapperTest extends BaseTest {
 
     @Test
     public void insert() {
-        InstanceDataPO instanceDataPO = EntityBuilder.buildInstanceDataPO();
+        InstanceDataPO instanceDataPO = EntityBuilder.buildDynamicInstanceDataPO();
         int result = instanceDataMapper.insert(instanceDataPO);
         LOGGER.info("insert.result={}", result);
         Assert.assertTrue(result == 1);
@@ -25,7 +25,7 @@ public class InstanceDataMapperTest extends BaseTest {
 
     @Test
     public void select() {
-        InstanceDataPO instanceDataPO = EntityBuilder.buildInstanceDataPO();
+        InstanceDataPO instanceDataPO = EntityBuilder.buildDynamicInstanceDataPO();
         instanceDataMapper.insert(instanceDataPO);
         InstanceDataPO result = instanceDataMapper.select(instanceDataPO.getFlowInstanceId(), instanceDataPO.getInstanceDataId());
         Assert.assertTrue(result.getInstanceDataId().equals(instanceDataPO.getInstanceDataId()));

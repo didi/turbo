@@ -20,13 +20,6 @@ public class NodeInstanceLogDAOTest extends BaseTest {
     private NodeInstanceLogDAO nodeInstanceLogDAO;
 
     @Test
-    public void insert() {
-        NodeInstanceLogPO nodeInstanceLogPO = EntityBuilder.buildNodeInstanceLogPO();
-        int result = nodeInstanceLogDAO.insert(nodeInstanceLogPO);
-        Assert.assertTrue(result == 1);
-    }
-
-    @Test
     public void batchInsert() {
         NodeInstanceLogPO nodeInstanceLogPO = EntityBuilder.buildNodeInstanceLogPO();
         List<NodeInstanceLogPO> nodeInstanceLogPOList = new ArrayList<>();

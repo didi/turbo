@@ -20,7 +20,7 @@ public class ProcessInstanceDAOTest extends BaseTest {
 
     @Test
     public void insert() {
-        FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
+        FlowInstancePO flowInstancePO = EntityBuilder.buildDynamicFlowInstancePO();
         int result = processInstanceDAO.insert(flowInstancePO);
         LOGGER.info("insertTest.result={}", result);
         Assert.assertTrue(result == 1);
@@ -28,7 +28,7 @@ public class ProcessInstanceDAOTest extends BaseTest {
 
     @Test
     public void selectByFlowInstanceId(){
-        FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
+        FlowInstancePO flowInstancePO = EntityBuilder.buildDynamicFlowInstancePO();
         processInstanceDAO.insert(flowInstancePO);
         String flowInstanceId = flowInstancePO.getFlowInstanceId();
         flowInstancePO = processInstanceDAO.selectByFlowInstanceId(flowInstancePO.getFlowInstanceId());
@@ -37,7 +37,7 @@ public class ProcessInstanceDAOTest extends BaseTest {
 
     @Test
     public void updateStatus_1() {
-        FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
+        FlowInstancePO flowInstancePO = EntityBuilder.buildDynamicFlowInstancePO();
         processInstanceDAO.insert(flowInstancePO);
         // change status
         processInstanceDAO.updateStatus(flowInstancePO, FlowInstanceStatus.COMPLETED);
@@ -47,7 +47,7 @@ public class ProcessInstanceDAOTest extends BaseTest {
 
     @Test
     public void updateStatus_2() {
-        FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
+        FlowInstancePO flowInstancePO = EntityBuilder.buildDynamicFlowInstancePO();
         processInstanceDAO.insert(flowInstancePO);
         // change status
         processInstanceDAO.updateStatus(flowInstancePO.getFlowInstanceId(), FlowInstanceStatus.COMPLETED);

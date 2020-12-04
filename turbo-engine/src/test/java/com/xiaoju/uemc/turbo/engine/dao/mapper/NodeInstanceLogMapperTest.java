@@ -10,6 +10,7 @@ import org.junit.Test;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Stefanie on 2019/12/1.
@@ -20,19 +21,13 @@ public class NodeInstanceLogMapperTest extends BaseTest {
     private NodeInstanceLogMapper nodeInstanceLogMapper;
 
     @Test
-    public void insert() {
-        NodeInstanceLogPO nodeInstanceLogPO = EntityBuilder.buildNodeInstanceLogPO();
-        int result = nodeInstanceLogMapper.insert(nodeInstanceLogPO);
-        Assert.assertTrue(result == 1);
-    }
-
-    @Test
     public void batchInsert() {
-        NodeInstanceLogPO nodeInstanceLogPO = EntityBuilder.buildNodeInstanceLogPO();
+        String flowInstanceId = "flowInstanceId_" + UUID.randomUUID().toString();
+        NodeInstanceLogPO nodeInstanceLogPO = EntityBuilder.buildNodeInstanceLogPO(flowInstanceId);
         List<NodeInstanceLogPO> nodeInstanceLogPOList = new ArrayList<>();
         nodeInstanceLogPOList.add(nodeInstanceLogPO);
-        nodeInstanceLogPOList.add(EntityBuilder.buildNodeInstanceLogPO());
-        nodeInstanceLogPOList.add(EntityBuilder.buildNodeInstanceLogPO());
+        nodeInstanceLogPOList.add(EntityBuilder.buildNodeInstanceLogPO(flowInstanceId));
+        nodeInstanceLogPOList.add(EntityBuilder.buildNodeInstanceLogPO(flowInstanceId));
         nodeInstanceLogMapper.batchInsert(nodeInstanceLogPO.getFlowInstanceId(), nodeInstanceLogPOList);
 
         QueryWrapper<NodeInstanceLogPO> entityWrapper = new QueryWrapper<>();

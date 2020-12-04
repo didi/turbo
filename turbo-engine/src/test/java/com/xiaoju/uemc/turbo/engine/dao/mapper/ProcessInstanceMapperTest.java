@@ -21,14 +21,14 @@ public class ProcessInstanceMapperTest extends BaseTest {
 
     @Test
     public void insert() {
-        FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
+        FlowInstancePO flowInstancePO = EntityBuilder.buildDynamicFlowInstancePO();
         int result = processInstanceMapper.insert(flowInstancePO);
         Assert.assertTrue(result == 1);
     }
 
     @Test
     public void selectByFlowInstanceId() {
-        FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
+        FlowInstancePO flowInstancePO = EntityBuilder.buildDynamicFlowInstancePO();
         processInstanceMapper.insert(flowInstancePO);
         String flowInstanceId = flowInstancePO.getFlowInstanceId();
         flowInstancePO = processInstanceMapper.selectByFlowInstanceId(flowInstancePO.getFlowInstanceId());
@@ -37,7 +37,7 @@ public class ProcessInstanceMapperTest extends BaseTest {
 
     @Test
     public void updateStatus() {
-        FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
+        FlowInstancePO flowInstancePO = EntityBuilder.buildDynamicFlowInstancePO();
         processInstanceMapper.insert(flowInstancePO);
         // change status
         flowInstancePO.setStatus(FlowInstanceStatus.COMPLETED);

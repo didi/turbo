@@ -267,6 +267,12 @@ public class EntityBuilder {
         return flowInstancePO;
     }
 
+    public static FlowInstancePO buildDynamicFlowInstancePO() {
+        FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
+        flowInstancePO.setFlowInstanceId("testFlowInstanceId_" + System.currentTimeMillis() + new Random().nextInt());
+        return flowInstancePO;
+    }
+
     public static NodeInstancePO buildNodeInstancePO() {
         NodeInstancePO nodeInstancePO = new NodeInstancePO();
         nodeInstancePO.setFlowDeployId(flowDeployId);
@@ -286,18 +292,26 @@ public class EntityBuilder {
 
     public static NodeInstancePO buildDynamicNodeInstancePO() {
         NodeInstancePO nodeInstancePO = buildNodeInstancePO();
-        // avoid repeat
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        nodeInstancePO.setNodeInstanceId("testNodeInstanceId_" + System.currentTimeMillis());
-        nodeInstancePO.setSourceNodeInstanceId("testSourceNodeInstanceId_" + System.currentTimeMillis());
+        nodeInstancePO.setNodeInstanceId("testNodeInstanceId_" + UUID.randomUUID().toString());
+        nodeInstancePO.setSourceNodeInstanceId("testSourceNodeInstanceId_" + UUID.randomUUID().toString());
         return nodeInstancePO;
     }
 
     public static NodeInstanceLogPO buildNodeInstanceLogPO() {
+        NodeInstanceLogPO nodeInstanceLogPO = new NodeInstanceLogPO();
+        nodeInstanceLogPO.setFlowInstanceId(flowInstanceId);
+        nodeInstanceLogPO.setNodeInstanceId(nodeInstanceId);
+        nodeInstanceLogPO.setInstanceDataId(instanceDataId);
+        nodeInstanceLogPO.setNodeKey(nodeKey);
+        nodeInstanceLogPO.setType(NodeInstanceType.EXECUTE);
+        nodeInstanceLogPO.setStatus(NodeInstanceStatus.ACTIVE);
+        nodeInstanceLogPO.setCreateTime(new Date());
+        nodeInstanceLogPO.setCaller("caller");
+        nodeInstanceLogPO.setTenant("tenant");
+        return nodeInstanceLogPO;
+    }
+
+    public static NodeInstanceLogPO buildNodeInstanceLogPO(String flowInstanceId) {
         NodeInstanceLogPO nodeInstanceLogPO = new NodeInstanceLogPO();
         nodeInstanceLogPO.setFlowInstanceId(flowInstanceId);
         nodeInstanceLogPO.setNodeInstanceId(nodeInstanceId);
@@ -330,7 +344,7 @@ public class EntityBuilder {
 
     public static InstanceDataPO buildDynamicInstanceDataPO() {
         InstanceDataPO instanceDataPO = buildInstanceDataPO();
-        instanceDataPO.setInstanceDataId("testInstanceDataId_" + System.currentTimeMillis());
+        instanceDataPO.setInstanceDataId("testInstanceDataId_" + System.currentTimeMillis() + new Random().nextInt());
         return instanceDataPO;
     }
 

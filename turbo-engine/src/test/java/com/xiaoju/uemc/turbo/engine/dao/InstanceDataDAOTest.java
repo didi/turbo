@@ -18,7 +18,7 @@ public class InstanceDataDAOTest extends BaseTest {
 
     @Test
     public void insert_1() {
-        InstanceDataPO instanceDataPO = EntityBuilder.buildInstanceDataPO();
+        InstanceDataPO instanceDataPO = EntityBuilder.buildDynamicInstanceDataPO();
         int result = instanceDataDAO.insert(instanceDataPO);
         LOGGER.info("insertTest.result={}", result);
         Assert.assertTrue(result == 1);
@@ -26,7 +26,7 @@ public class InstanceDataDAOTest extends BaseTest {
 
     @Test
     public void insert_2() {
-        InstanceDataPO instanceDataPO = EntityBuilder.buildInstanceDataPO();
+        InstanceDataPO instanceDataPO = EntityBuilder.buildDynamicInstanceDataPO();
         instanceDataDAO.insert(instanceDataPO);
         // test DuplicateKeyException
         int result = instanceDataDAO.insert(instanceDataPO);
@@ -36,7 +36,7 @@ public class InstanceDataDAOTest extends BaseTest {
 
     @Test
     public void select() {
-        InstanceDataPO instanceDataPO = EntityBuilder.buildInstanceDataPO();
+        InstanceDataPO instanceDataPO = EntityBuilder.buildDynamicInstanceDataPO();
         instanceDataDAO.insert(instanceDataPO);
         InstanceDataPO result = instanceDataDAO.select(instanceDataPO.getFlowInstanceId(), instanceDataPO.getInstanceDataId());
         Assert.assertTrue(result.getInstanceDataId().equals(instanceDataPO.getInstanceDataId()));
