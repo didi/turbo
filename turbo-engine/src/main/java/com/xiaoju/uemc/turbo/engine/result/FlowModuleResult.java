@@ -1,6 +1,7 @@
-package com.xiaoju.uemc.turbo.engine.dto;
+package com.xiaoju.uemc.turbo.engine.result;
 
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.Date;
 
@@ -8,7 +9,8 @@ import java.util.Date;
  * Created by Stefanie on 2019/12/2.
  */
 @Data
-public class FlowModuleDTO {
+@ToString(callSuper = true)
+public class FlowModuleResult extends CommonResult {
     private String flowModuleId;
     private String flowName;
     private String flowKey;

@@ -31,7 +31,7 @@ public class UserTaskExecutor extends ElementExecutor {
      * @throws Exception
      */
     @Override
-    protected void doExecute(RuntimeContext runtimeContext) throws Exception {
+    protected void doExecute(RuntimeContext runtimeContext) throws ProcessException {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
         // allow repeate execute
         if (currentNodeInstance.getStatus() == NodeInstanceStatus.COMPLETED) {
@@ -62,7 +62,7 @@ public class UserTaskExecutor extends ElementExecutor {
      * @throws Exception
      */
     @Override
-    protected void preCommit(RuntimeContext runtimeContext) throws Exception {
+    protected void preCommit(RuntimeContext runtimeContext) throws ProcessException {
         String flowInstanceId = runtimeContext.getFlowInstanceId();
         NodeInstanceBO suspendNodeInstance = runtimeContext.getSuspendNodeInstance();
         String nodeInstanceId = suspendNodeInstance.getNodeInstanceId();
@@ -106,7 +106,7 @@ public class UserTaskExecutor extends ElementExecutor {
      * @throws Exception
      */
     @Override
-    protected void postCommit(RuntimeContext runtimeContext) throws Exception {
+    protected void postCommit(RuntimeContext runtimeContext) {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
         if (currentNodeInstance.getStatus() != NodeInstanceStatus.COMPLETED) {
             currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);
@@ -121,7 +121,7 @@ public class UserTaskExecutor extends ElementExecutor {
      * SuspendException: while need suspend and status is COMPLETED
      */
     @Override
-    protected void doRollback(RuntimeContext runtimeContext) throws Exception {
+    protected void doRollback(RuntimeContext runtimeContext) throws ProcessException {
 
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
         int currentStatus = currentNodeInstance.getStatus();
@@ -146,7 +146,7 @@ public class UserTaskExecutor extends ElementExecutor {
     }
 
     @Override
-    protected void postRollback(RuntimeContext runtimeContext) throws Exception {
+    protected void postRollback(RuntimeContext runtimeContext) throws ProcessException {
         //do nothing
     }
 
@@ -162,17 +162,17 @@ public class UserTaskExecutor extends ElementExecutor {
      * @throws Exception
      */
     @Override
-    protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception {
+    protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws ProcessException {
         FlowElement currentFlowElement = runtimeContext.getCurrentNodeModel();
         Map<String, FlowElement> flowElementMap = runtimeContext.getFlowElementMap();
 
         FlowElement nextNode;
         if (currentFlowElement.getOutgoing().size() == 1) {
             //case1. unique outgoing
-            nextNode = FlowModelUtil.getUniqueNextNode(currentFlowElement, flowElementMap);
+            nextNode = getUniqueNextNode(currentFlowElement, flowElementMap);
         } else {
             //case2. multiple outgoings and calculate the next node with instanceDataMap
-            nextNode = FlowModelUtil.calculateNextNode(currentFlowElement, flowElementMap, runtimeContext.getInstanceDataMap());
+            nextNode = calculateNextNode(currentFlowElement, flowElementMap, runtimeContext.getInstanceDataMap());
         }
         LOGGER.info("getExecuteExecutor.||nextNode={}||runtimeContext={}", nextNode, runtimeContext);
 

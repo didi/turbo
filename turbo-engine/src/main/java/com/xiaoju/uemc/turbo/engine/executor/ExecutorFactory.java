@@ -14,9 +14,6 @@ import javax.annotation.Resource;
 import java.text.MessageFormat;
 
 /**
- * ExecutorFactory is used to get Executor by flowElement type
- * ExecutorFactory support six type up to now
- *
  * Created by Stefanie on 2019/12/1.
  */
 @Service
@@ -37,19 +34,10 @@ public class ExecutorFactory {
     private UserTaskExecutor userTaskExecutor;
 
     @Resource
-    private ServiceTaskExecutor serviceTaskExecutor;
-
-    @Resource
     private ExclusiveGatewayExecutor exclusiveGatewayExecutor;
 
-    /**
-     * get element executor by current flowElement type
-     *
-     * @param flowElement current flowElement
-     * @return flowElement executor
-     * @throws Exception unsupported element type
-     */
-    public ElementExecutor getElementExecutor(FlowElement flowElement) throws Exception {
+
+    public ElementExecutor getElementExecutor(FlowElement flowElement) throws ProcessException {
         int elementType = flowElement.getType();
         ElementExecutor elementExecutor = getElementExecutor(elementType);
 
@@ -76,9 +64,6 @@ public class ExecutorFactory {
             }
             case FlowElementType.USER_TASK: {
                 return userTaskExecutor;
-            }
-            case FlowElementType.SERVICE_TASK: {
-                return serviceTaskExecutor;
             }
             case FlowElementType.EXCLUSIVE_GATEWAY: {
                 return exclusiveGatewayExecutor;

@@ -3,20 +3,13 @@ package com.xiaoju.uemc.turbo.engine.common;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 项目名称：optimus-prime
- * 类 名 称：FlowModuleEnum
- * 类 描 述：
- * 创建时间：2020/9/16 3:19 PM
- * 创 建 人：didiwangxing
- */
 public enum FlowModuleEnum {
 
-    DEFAULT(FlowDefinitionStatus.DEFAULT, FlowDeploymentStatus.DEFAULT, FlowModuleDTOStatus.DEFAULT),
-    INIT(FlowDefinitionStatus.INIT, null, FlowModuleDTOStatus.EDITING),
-    EDITING(FlowDefinitionStatus.EDITING, null, FlowModuleDTOStatus.EDITING),
-    DEPLOYED(null, FlowDeploymentStatus.DEPLOYED, FlowModuleDTOStatus.EDITING),
-    DISABLED(FlowDefinitionStatus.DISABLED, FlowDeploymentStatus.DISABLED, FlowModuleDTOStatus.DISABLED);
+    DEFAULT(FlowDefinitionStatus.DEFAULT, FlowDeploymentStatus.DEFAULT, FlowModuleStatus.DEFAULT),
+    INIT(FlowDefinitionStatus.INIT, null, FlowModuleStatus.EDITING),
+    EDITING(FlowDefinitionStatus.EDITING, null, FlowModuleStatus.EDITING),
+    DEPLOYED(null, FlowDeploymentStatus.DEPLOYED, FlowModuleStatus.EDITING),
+    DISABLED(FlowDefinitionStatus.DISABLED, FlowDeploymentStatus.DISABLED, FlowModuleStatus.DISABLED);
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowModuleEnum.class);
 

@@ -1,7 +1,5 @@
 package com.xiaoju.uemc.turbo.engine.validator;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.exception.ParamException;
 import com.xiaoju.uemc.turbo.engine.param.*;
@@ -46,8 +44,11 @@ public class ParamValidator {
         }
     }
 
-    public static void validate(String flowModuleId, String flowDeployId) throws ParamException {
-        if (StringUtils.isBlank(flowModuleId) && StringUtils.isBlank(flowDeployId)) {
+    public static void validate(GetFlowModuleParam getFlowModuleParam) throws ParamException {
+        if (getFlowModuleParam == null) {
+            throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "param is null");
+        }
+        if (StringUtils.isBlank(getFlowModuleParam.getFlowModuleId()) && StringUtils.isBlank(getFlowModuleParam.getFlowDeployId())) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDeployId and flowModuleId is blank");
         }
     }
@@ -59,18 +60,14 @@ public class ParamValidator {
         }
     }
 
-    private static void baseValidate(Object param) throws ParamException {
-        if (param == null) {
+    private static void baseValidate(CommonParam commonParam) throws ParamException {
+        if (commonParam == null) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "param is null");
         }
-        JSONObject paramJson = JSONObject.parseObject(JSON.toJSONString(param));
-        if (paramJson == null) {
-            throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "param is null");
-        }
-        if (StringUtils.isBlank(paramJson.getString("tenant"))) {
+        if (StringUtils.isBlank(commonParam.getTenant())) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "tenant is null");
         }
-        if (StringUtils.isBlank(paramJson.getString("caller"))) {
+        if (StringUtils.isBlank(commonParam.getCaller())) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "caller is null");
         }
     }

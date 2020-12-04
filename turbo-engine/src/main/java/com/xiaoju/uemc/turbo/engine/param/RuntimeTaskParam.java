@@ -1,27 +1,13 @@
 package com.xiaoju.uemc.turbo.engine.param;
 
+import lombok.Data;
+
 /**
  * Created by Stefanie on 2019/12/2.
  */
+
+@Data
 public class RuntimeTaskParam {
-
     private String flowInstanceId;
-
     private String taskInstanceId;
-
-    public String getFlowInstanceId() {
-        return flowInstanceId;
-    }
-
-    public void setFlowInstanceId(String flowInstanceId) {
-        this.flowInstanceId = flowInstanceId;
-    }
-
-    public String getTaskInstanceId() {
-        return taskInstanceId;
-    }
-
-    public void setTaskInstanceId(String taskInstanceId) {
-        this.taskInstanceId = taskInstanceId;
-    }
 }

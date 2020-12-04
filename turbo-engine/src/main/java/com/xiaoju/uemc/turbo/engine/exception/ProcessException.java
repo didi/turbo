@@ -5,7 +5,7 @@ import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 /**
  * Created by Stefanie on 2019/12/6.
  */
-public class ProcessException extends BaseException {
+public class ProcessException extends TurboException {
 
     public ProcessException(int errNo, String errMsg) {
         super(errNo, errMsg);
