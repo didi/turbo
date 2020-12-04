@@ -22,12 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The node level processor mainly uses the template design pattern, defines the algorithm
- * skeleton of the process running, mainly decomposes the execution, submission and rollback
- * operations into three steps: pre, do and post, and provides the default implementation.
- *
- * Other methods also provide a default implementation, and subclasses can easily override it.
- *
  * Created by Stefanie on 2019/12/1.
  */
 public abstract class ElementExecutor extends RuntimeExecutor {

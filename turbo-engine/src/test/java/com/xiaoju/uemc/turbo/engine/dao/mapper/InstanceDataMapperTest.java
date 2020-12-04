@@ -5,15 +5,14 @@ import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
 import org.junit.Assert;
 import org.junit.Test;
-
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by Stefanie on 2019/12/1.
  */
 public class InstanceDataMapperTest extends BaseTest {
 
-    @Resource
+    @Autowired
     private InstanceDataMapper instanceDataMapper;
 
     @Test

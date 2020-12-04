@@ -16,33 +16,23 @@ import java.text.MessageFormat;
 import java.util.Map;
 
 /**
- * user node executor
- *
  * Created by Stefanie on 2019/12/1.
  */
 
 @Service
 public class UserTaskExecutor extends ElementExecutor {
 
-    /**
-     * when flow module run to user task, this will throw normal exception to suspend execute
-     *
-     * @param runtimeContext
-     * @throws Exception
-     */
     @Override
     protected void doExecute(RuntimeContext runtimeContext) throws ProcessException {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();
-        // allow repeate execute
         if (currentNodeInstance.getStatus() == NodeInstanceStatus.COMPLETED) {
             LOGGER.warn("doExecute reentrant: currentNodeInstance is completed.||runtimeContext={}", runtimeContext);
             return;
         }
-        // force change status to active
+
         if (currentNodeInstance.getStatus() != NodeInstanceStatus.ACTIVE) {
             currentNodeInstance.setStatus(NodeInstanceStatus.ACTIVE);
         }
-        // add this node to processed nodeInstance list tail
         runtimeContext.getNodeInstanceList().add(currentNodeInstance);
 
         FlowElement flowElement = runtimeContext.getCurrentNodeModel();
@@ -53,14 +43,6 @@ public class UserTaskExecutor extends ElementExecutor {
                 flowElement.getKey(), nodeName, currentNodeInstance.getNodeInstanceId()));
     }
 
-    /**
-     * pre commit in order to do something
-     * 1.set currentNodeInstance
-     * 2.check node instance status, it must be active.
-     *
-     * @param runtimeContext
-     * @throws Exception
-     */
     @Override
     protected void preCommit(RuntimeContext runtimeContext) throws ProcessException {
         String flowInstanceId = runtimeContext.getFlowInstanceId();
@@ -70,7 +52,7 @@ public class UserTaskExecutor extends ElementExecutor {
         FlowElement flowElement = runtimeContext.getCurrentNodeModel();
         String nodeName = FlowModelUtil.getElementName(flowElement);
         String nodeKey = flowElement.getKey();
-        // copy suspendNodeInstance's properties to currentNodeInstance
+
         NodeInstanceBO currentNodeInstance = new NodeInstanceBO();
         BeanUtils.copyProperties(suspendNodeInstance, currentNodeInstance);
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
@@ -99,12 +81,6 @@ public class UserTaskExecutor extends ElementExecutor {
         }
     }
 
-    /**
-     * post commit in order to set status to completed and add this node to processed nodeInstance list tail
-     *
-     * @param runtimeContext
-     * @throws Exception
-     */
     @Override
     protected void postCommit(RuntimeContext runtimeContext) {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();

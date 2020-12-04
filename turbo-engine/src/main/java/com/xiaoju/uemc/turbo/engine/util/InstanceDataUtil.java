@@ -18,12 +18,6 @@ import java.util.Map;
  */
 public class InstanceDataUtil {
 
-    /**
-     * convert list to map
-     *
-     * @param instanceDataList data list
-     * @return data map
-     */
     public static Map<String, InstanceData> getInstanceDataMap(List<InstanceData> instanceDataList) {
         if (CollectionUtils.isEmpty(instanceDataList)) {
             return MapUtils.EMPTY_MAP;

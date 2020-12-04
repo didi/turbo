@@ -26,9 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ExclusiveGatewayExecutor is used to be judging branch
- * if flowElement config the hookInfos, ExclusiveGatewayExecutor will flush the data by http
- *
  * Created by Stefanie on 2019/12/1.
  */
 @Service
@@ -45,7 +42,6 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
      * Update data map: http request to update data map
      * Url: dynamic config
      * Param: one of flowElement's properties
-     * if data map have value, we will reset instanceDataId in runtimeContext
      */
     // TODO: 2019/12/16 common hook in preExecute
     @Override
@@ -148,13 +144,6 @@ public class ExclusiveGatewayExecutor extends ElementExecutor {
         return instanceDataPO;
     }
 
-    /**
-     * Reset the instance data ID to prevent data changes in the do phase,
-     * then set the status to complete and add it to the end of the execution node list
-     *
-     * @param runtimeContext include flow info and runtime info
-     * @throws Exception
-     */
     @Override
     protected void postExecute(RuntimeContext runtimeContext) throws ProcessException {
         NodeInstanceBO currentNodeInstance = runtimeContext.getCurrentNodeInstance();

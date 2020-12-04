@@ -37,15 +37,15 @@ public abstract class RuntimeExecutor {
         return idGenerator.getNextId();
     }
 
-    public abstract void execute(RuntimeContext runtimeContext) throws Exception;
+    public abstract void execute(RuntimeContext runtimeContext) throws ProcessException;
 
-    public abstract void commit(RuntimeContext runtimeContext) throws Exception;
+    public abstract void commit(RuntimeContext runtimeContext) throws ProcessException;
 
-    public abstract void rollback(RuntimeContext runtimeContext) throws Exception;
+    public abstract void rollback(RuntimeContext runtimeContext) throws ProcessException;
 
-    protected abstract boolean isCompleted(RuntimeContext runtimeContext) throws Exception;
+    protected abstract boolean isCompleted(RuntimeContext runtimeContext) throws ProcessException;
 
-    protected abstract RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws Exception;
+    protected abstract RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws ProcessException;
 
-    protected abstract RuntimeExecutor getRollbackExecutor(RuntimeContext runtimeContext) throws Exception;
+    protected abstract RuntimeExecutor getRollbackExecutor(RuntimeContext runtimeContext) throws ProcessException;
 }
