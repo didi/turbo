@@ -429,14 +429,14 @@ public class RuntimeProcessorTest extends BaseTest {
         recallTaskParam.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
         recallTaskParam.setTaskInstanceId(commitTaskDTO1.getActiveTaskInstance().getNodeInstanceId());
         RecallTaskDTO recallTaskDTO = runtimeProcessor.recall(recallTaskParam);
-        LOGGER.info("recallTaskDTO 3.||recallTaskDTO={}", recallTaskDTO);
+        LOGGER.info("recallTaskDTO 3.||recallTaskDTO.variables={}", recallTaskDTO.getVariables());
 
         // UserTask <- ExclusiveGateway <- UserTask
         RecallTaskParam recallTaskParam1 = new RecallTaskParam();
         recallTaskParam1.setFlowInstanceId(startProcessDTO.getFlowInstanceId());
         recallTaskParam1.setTaskInstanceId(recallTaskDTO.getActiveTaskInstance().getNodeInstanceId());
         RecallTaskDTO recallTaskDTO1 = runtimeProcessor.recall(recallTaskParam1);
-        LOGGER.info("recallTaskDTO 4.||recallTaskDTO={}", recallTaskDTO1);
+        LOGGER.info("recallTaskDTO 4.||recallTaskDTO.variables={}", recallTaskDTO1.getVariables());
 
         instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
         LOGGER.info("testGetInstanceData 5.||instanceDataList={}", instanceDataList);
