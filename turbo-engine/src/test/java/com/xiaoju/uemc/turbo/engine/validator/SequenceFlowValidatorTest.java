@@ -1,6 +1,6 @@
 package com.xiaoju.uemc.turbo.engine.validator;
 
-import com.xiaoju.uemc.turbo.engine.exception.ModelException;
+import com.xiaoju.uemc.turbo.engine.exception.DefinitionException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
@@ -34,7 +34,7 @@ public class SequenceFlowValidatorTest extends BaseTest {
             sequenceFlowValidator.checkIncoming(flowElementMap, sequenceFlow);
             access = true;
             Assert.assertTrue(access == true);
-        } catch (ModelException e) {
+        } catch (DefinitionException e) {
             e.printStackTrace();
             Assert.assertTrue(access = true);
         }
@@ -59,7 +59,7 @@ public class SequenceFlowValidatorTest extends BaseTest {
             sequenceFlowValidator.checkIncoming(flowElementMap, sequenceFlow);
             access = true;
             Assert.assertTrue(access == false);
-        } catch (ModelException e) {
+        } catch (DefinitionException e) {
             e.printStackTrace();
             Assert.assertTrue(access == false);
         }
@@ -80,7 +80,7 @@ public class SequenceFlowValidatorTest extends BaseTest {
             sequenceFlowValidator.checkOutgoing(flowElementMap, sequenceFlow);
             access = true;
             Assert.assertTrue(access == true);
-        } catch (ModelException e) {
+        } catch (DefinitionException e) {
             e.printStackTrace();
             Assert.assertTrue(access == true);
         }
@@ -102,7 +102,7 @@ public class SequenceFlowValidatorTest extends BaseTest {
             sequenceFlowValidator.checkOutgoing(flowElementMap, sequenceFlow);
             access = true;
             Assert.assertTrue(access == false);
-        } catch (ModelException e) {
+        } catch (DefinitionException e) {
             e.printStackTrace();
         }
     }

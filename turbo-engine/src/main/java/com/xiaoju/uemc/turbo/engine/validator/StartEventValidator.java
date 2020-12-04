@@ -14,7 +14,11 @@ import java.util.Map;
 public class StartEventValidator extends ElementValidator {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(StartEventValidator.class);
-
+    /**
+     * CheckIncoming: check userTask's incoming, warn while incoming is not empty.
+     *
+     * @param flowElementMap, flowElement
+     */
     @Override
     public void checkIncoming(Map<String, FlowElement> flowElementMap, FlowElement flowElement) {
         List<String> incoming = flowElement.getIncoming();

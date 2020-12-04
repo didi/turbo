@@ -18,6 +18,7 @@ public class FlowDefinitionDAOTest extends BaseTest {
     @Test
     public void insertTest() {
         FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
+        flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
         int result = flowDefinitionDAO.insert(flowDefinitionPO);
         LOGGER.info("insertTest.result={}", result);
         Assert.assertTrue(result == 1);
@@ -26,6 +27,7 @@ public class FlowDefinitionDAOTest extends BaseTest {
     @Test
     public void updateByModuleIdTest() {
         FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
+        flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
         int result = flowDefinitionDAO.insert(flowDefinitionPO);
         Assert.assertTrue(result == 1);
         int result1 = flowDefinitionDAO.updateByModuleId(flowDefinitionPO);
@@ -36,6 +38,7 @@ public class FlowDefinitionDAOTest extends BaseTest {
     @Test
     public void selectByModuleIdTest() {
         FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
+        flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
         int result = flowDefinitionDAO.insert(flowDefinitionPO);
         Assert.assertTrue(result == 1);
         String flowModuleId = flowDefinitionPO.getFlowModuleId();

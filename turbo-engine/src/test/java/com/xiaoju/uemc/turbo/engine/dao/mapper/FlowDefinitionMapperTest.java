@@ -18,6 +18,7 @@ public class FlowDefinitionMapperTest extends BaseTest {
     @Test
     public void insert() {
         FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
+        flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
         int result = flowDefinitionMapper.insert(flowDefinitionPO);
         Assert.assertTrue(result == 1);
     }
@@ -25,6 +26,7 @@ public class FlowDefinitionMapperTest extends BaseTest {
     @Test
     public void update() {
         FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
+        flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
         flowDefinitionMapper.insert(flowDefinitionPO);
         flowDefinitionPO = flowDefinitionMapper.selectByFlowModuleId(flowDefinitionPO.getFlowModuleId());
         flowDefinitionPO.setStatus(3);
@@ -37,6 +39,7 @@ public class FlowDefinitionMapperTest extends BaseTest {
     @Test
     public void selectByFlowModuleId() {
         FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
+        flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
         int result = flowDefinitionMapper.insert(flowDefinitionPO);
         Assert.assertTrue(result == 1);
         String flowModuleId = flowDefinitionPO.getFlowModuleId();

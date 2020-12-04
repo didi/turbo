@@ -1,6 +1,6 @@
 package com.xiaoju.uemc.turbo.engine.validator;
 
-import com.xiaoju.uemc.turbo.engine.exception.ModelException;
+import com.xiaoju.uemc.turbo.engine.exception.DefinitionException;
 import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
@@ -24,7 +24,7 @@ public class ModelValidatorTest extends BaseTest {
             modelValidator.validate(modelStr);
             access = true;
             Assert.assertTrue(access == true);
-        } catch (ModelException e) {
+        } catch (DefinitionException e) {
             e.printStackTrace();
             Assert.assertTrue(access == true);
         } catch (ProcessException e) {
@@ -46,7 +46,7 @@ public class ModelValidatorTest extends BaseTest {
             modelValidator.validate(modelStr);
             access = true;
             Assert.assertTrue(access == false);
-        } catch (ModelException e) {
+        } catch (DefinitionException e) {
             e.printStackTrace();
             Assert.assertTrue(access == false);
         } catch (ProcessException e) {

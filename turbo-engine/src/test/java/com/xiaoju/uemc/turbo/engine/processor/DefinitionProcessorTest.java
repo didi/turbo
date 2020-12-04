@@ -1,13 +1,15 @@
 package com.xiaoju.uemc.turbo.engine.processor;
 
 
-import com.xiaoju.uemc.turbo.engine.dto.CreateFlowDTO;
-import com.xiaoju.uemc.turbo.engine.dto.DeployFlowDTO;
-import com.xiaoju.uemc.turbo.engine.dto.FlowModuleDTO;
-import com.xiaoju.uemc.turbo.engine.exception.ParamException;
+import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
+import com.xiaoju.uemc.turbo.engine.param.GetFlowModuleParam;
+import com.xiaoju.uemc.turbo.engine.result.CreateFlowResult;
 import com.xiaoju.uemc.turbo.engine.param.CreateFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.DeployFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.UpdateFlowParam;
+import com.xiaoju.uemc.turbo.engine.result.DeployFlowResult;
+import com.xiaoju.uemc.turbo.engine.result.FlowModuleResult;
+import com.xiaoju.uemc.turbo.engine.result.UpdateFlowResult;
 import com.xiaoju.uemc.turbo.engine.runner.BaseTest;
 import com.xiaoju.uemc.turbo.engine.util.EntityBuilder;
 import org.junit.Assert;
@@ -26,8 +28,9 @@ public class DefinitionProcessorTest extends BaseTest {
     public void createTest() {
         CreateFlowParam createFlowParam = EntityBuilder.buildCreateFlowParam();
         try {
-            CreateFlowDTO createFlowDTO = definitionProcessor.create(createFlowParam);
-            LOGGER.info("createFlow.||createFlowDTO={}", createFlowDTO);
+            CreateFlowResult createFlowResult = definitionProcessor.create(createFlowParam);
+            LOGGER.info("createFlow.||createFlowResult={}", createFlowResult);
+            Assert.assertTrue(createFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -37,17 +40,13 @@ public class DefinitionProcessorTest extends BaseTest {
     public void updateTest() {
         CreateFlowParam createFlowParam = EntityBuilder.buildCreateFlowParam();
         UpdateFlowParam updateFlowParam = EntityBuilder.buildUpdateFlowParam();
-        try {
-            CreateFlowDTO createFlowDTO = definitionProcessor.create(createFlowParam);
-            updateFlowParam.setFlowModuleId(createFlowDTO.getFlowModuleId());
-            boolean result = definitionProcessor.update(updateFlowParam);
-            LOGGER.info("updateFlow.||result={}", result);
-            Assert.assertTrue(result == true);
-        } catch (ParamException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        CreateFlowResult createFlowResult = definitionProcessor.create(createFlowParam);
+        updateFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
+        UpdateFlowResult updateFlowResult = definitionProcessor.update(updateFlowParam);
+        LOGGER.info("updateFlow.||result={}", updateFlowParam);
+        Assert.assertTrue(updateFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
+
     }
 
     @Test
@@ -55,18 +54,17 @@ public class DefinitionProcessorTest extends BaseTest {
         CreateFlowParam createFlowParam = EntityBuilder.buildCreateFlowParam();
         UpdateFlowParam updateFlowParam = EntityBuilder.buildUpdateFlowParam();
         DeployFlowParam deployFlowParam = EntityBuilder.buildDeployFlowParm();
-        try {
-            CreateFlowDTO createFlowDTO = definitionProcessor.create(createFlowParam);
-            updateFlowParam.setFlowModuleId(createFlowDTO.getFlowModuleId());
-            boolean result = definitionProcessor.update(updateFlowParam);
-            Assert.assertTrue(result == true);
-            deployFlowParam.setFlowModuleId(createFlowDTO.getFlowModuleId());
-            DeployFlowDTO deployFlowDTO = definitionProcessor.deploy(deployFlowParam);
-            LOGGER.info("deployFlowTest.||deployFlowDTO={}", deployFlowDTO);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        CreateFlowResult createFlowResult = definitionProcessor.create(createFlowParam);
+        updateFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
+        UpdateFlowResult updateFlowResult = definitionProcessor.update(updateFlowParam);
+        Assert.assertTrue(updateFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
+        deployFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
+        DeployFlowResult deployFlowResult = definitionProcessor.deploy(deployFlowParam);
+        LOGGER.info("deployFlowTest.||deployFlowResult={}", deployFlowResult);
+        Assert.assertTrue(deployFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
+
+
     }
 
     @Test
@@ -74,20 +72,23 @@ public class DefinitionProcessorTest extends BaseTest {
         CreateFlowParam createFlowParam = EntityBuilder.buildCreateFlowParam();
         UpdateFlowParam updateFlowParam = EntityBuilder.buildUpdateFlowParam();
         DeployFlowParam deployFlowParam = EntityBuilder.buildDeployFlowParm();
-        try {
-            CreateFlowDTO createFlowDTO = definitionProcessor.create(createFlowParam);
-            updateFlowParam.setFlowModuleId(createFlowDTO.getFlowModuleId());
-            boolean result = definitionProcessor.update(updateFlowParam);
-            Assert.assertTrue(result == true);
-            FlowModuleDTO flowModuleDTOByFlowModuleId = definitionProcessor.getFlowModule(createFlowDTO.getFlowModuleId(),null);
-            Assert.assertTrue(flowModuleDTOByFlowModuleId.getFlowModuleId().equals(createFlowDTO.getFlowModuleId()));
-            deployFlowParam.setFlowModuleId(createFlowDTO.getFlowModuleId());
-            DeployFlowDTO deployFlowDTO = definitionProcessor.deploy(deployFlowParam);
-            FlowModuleDTO flowModuleDTOByDeployId = definitionProcessor.getFlowModule(null,deployFlowDTO.getFlowDeployId());
-            Assert.assertTrue(flowModuleDTOByDeployId.getFlowModel().equals(updateFlowParam.getFlowModel()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        GetFlowModuleParam flowModuleParam = new GetFlowModuleParam();
+
+        CreateFlowResult createFlowResult = definitionProcessor.create(createFlowParam);
+        updateFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
+        UpdateFlowResult updateFlowResult = definitionProcessor.update(updateFlowParam);
+        Assert.assertTrue(updateFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
+
+        flowModuleParam.setFlowModuleId(updateFlowParam.getFlowModuleId());
+        FlowModuleResult flowModuleResultByFlowModuleId = definitionProcessor.getFlowModule(flowModuleParam);
+        Assert.assertTrue(flowModuleResultByFlowModuleId.getFlowModuleId().equals(createFlowResult.getFlowModuleId()));
+
+        deployFlowParam.setFlowModuleId(createFlowResult.getFlowModuleId());
+        DeployFlowResult deployFlowResult = definitionProcessor.deploy(deployFlowParam);
+        flowModuleParam.setFlowDeployId(deployFlowResult.getFlowDeployId());
+        flowModuleParam.setFlowModuleId(null);
+        FlowModuleResult flowModuleResultByDeployId = definitionProcessor.getFlowModule(flowModuleParam);
+        Assert.assertTrue(flowModuleResultByDeployId.getFlowModel().equals(updateFlowParam.getFlowModel()));
     }
 
 }
