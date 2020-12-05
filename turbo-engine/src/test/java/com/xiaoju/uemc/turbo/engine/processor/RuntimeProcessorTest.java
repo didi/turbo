@@ -1,5 +1,6 @@
 package com.xiaoju.uemc.turbo.engine.processor;
 
+import com.alibaba.fastjson.JSON;
 import com.xiaoju.uemc.turbo.engine.bo.ElementInstance;
 import com.xiaoju.uemc.turbo.engine.bo.NodeInstance;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
@@ -394,7 +395,7 @@ public class RuntimeProcessorTest extends BaseTest {
         Assert.assertTrue(StringUtils.equals(elementInstanceListResult.getElementInstanceList().get(4).getModelKey(), "EndEvent_0s4vsxw"));
     }
 
-    // commit a,  b  回滚之后是不是之前的数据 - error
+
     @Test
     public void testGetInstanceData() throws Exception {
         StartProcessResult startProcessResult = startProcess();
@@ -442,6 +443,9 @@ public class RuntimeProcessorTest extends BaseTest {
 
         instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
         LOGGER.info("testGetInstanceData 5.||instanceDataList={}", instanceDataList);
+        String initData = JSON.toJSONString(startProcessResult.getVariables());
+        String rollbackData = JSON.toJSONString(rollbackTaskResult1.getVariables());
+        Assert.assertTrue(StringUtils.equals(initData, rollbackData));
     }
 
     @Test
