@@ -506,6 +506,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
         NodeInstanceBO suspendNodeInstance = runtimeContext.getSuspendNodeInstance();
         if (suspendNodeInstance == null) {
+            LOGGER.warn("suspendNodeInstance is null.||runtimeContext={}", runtimeContext);
             return false;
         }
 

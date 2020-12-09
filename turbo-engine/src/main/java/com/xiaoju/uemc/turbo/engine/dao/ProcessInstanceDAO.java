@@ -34,7 +34,6 @@ public class ProcessInstanceDAO extends BaseDAO<ProcessInstanceMapper, FlowInsta
 
     public void updateStatus(String flowInstanceId, int status) {
         FlowInstancePO flowInstancePO = baseMapper.selectByFlowInstanceId(flowInstanceId);
-        // NPE possible
         updateStatus(flowInstancePO, status);
     }
 
