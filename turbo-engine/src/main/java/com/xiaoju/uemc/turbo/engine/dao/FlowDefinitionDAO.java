@@ -16,7 +16,7 @@ public class FlowDefinitionDAO extends BaseDAO<FlowDefinitionMapper, FlowDefinit
      * Insert: insert flowDefinitionPO, return -1 while insert failed.
      *
      * @param flowDefinitionPO
-     * @return
+     * @return int
      */
     public int insert(FlowDefinitionPO flowDefinitionPO) {
         try {
@@ -54,7 +54,7 @@ public class FlowDefinitionDAO extends BaseDAO<FlowDefinitionMapper, FlowDefinit
     }
 
     /**
-     * SelectByModuleId: query flowDefinitionPO by flowModuleId, return null while selectByModuleId failed.
+     * SelectByModuleId: query flowDefinitionPO by flowModuleId, return null while flowDefinitionPO can't be found.
      *
      * @param flowModuleId
      * @return flowDefinitionPO

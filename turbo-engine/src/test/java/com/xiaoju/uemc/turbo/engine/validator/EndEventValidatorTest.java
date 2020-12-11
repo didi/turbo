@@ -32,10 +32,10 @@ public class EndEventValidatorTest extends BaseTest {
         try {
             endEventValidator.checkIncoming(map, endEvent);
             access = true;
-            Assert.assertTrue(access == true);
+            Assert.assertTrue(access);
         } catch (DefinitionException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == true);
+            Assert.assertTrue(access);
         }
     }
 
@@ -53,14 +53,12 @@ public class EndEventValidatorTest extends BaseTest {
         boolean access = false;
         try {
             endEventValidator.checkIncoming(map, endEventInvalid);
-            access = false;
-            Assert.assertTrue(access == false);
+            access = true;
+            Assert.assertFalse(access);
         } catch (DefinitionException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         }
-        access = true;
-
     }
 
     /**

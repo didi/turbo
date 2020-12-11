@@ -27,13 +27,9 @@ public class DefinitionProcessorTest extends BaseTest {
     @Test
     public void createTest() {
         CreateFlowParam createFlowParam = EntityBuilder.buildCreateFlowParam();
-        try {
-            CreateFlowResult createFlowResult = definitionProcessor.create(createFlowParam);
-            LOGGER.info("createFlow.||createFlowResult={}", createFlowResult);
-            Assert.assertTrue(createFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        CreateFlowResult createFlowResult = definitionProcessor.create(createFlowParam);
+        LOGGER.info("createFlow.||createFlowResult={}", createFlowResult);
+        Assert.assertTrue(createFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
     }
 
     @Test
@@ -46,7 +42,6 @@ public class DefinitionProcessorTest extends BaseTest {
         UpdateFlowResult updateFlowResult = definitionProcessor.update(updateFlowParam);
         LOGGER.info("updateFlow.||result={}", updateFlowParam);
         Assert.assertTrue(updateFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
-
     }
 
     @Test
@@ -63,8 +58,6 @@ public class DefinitionProcessorTest extends BaseTest {
         DeployFlowResult deployFlowResult = definitionProcessor.deploy(deployFlowParam);
         LOGGER.info("deployFlowTest.||deployFlowResult={}", deployFlowResult);
         Assert.assertTrue(deployFlowResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
-
-
     }
 
     @Test

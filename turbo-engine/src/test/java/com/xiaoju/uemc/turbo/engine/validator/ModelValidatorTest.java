@@ -23,13 +23,13 @@ public class ModelValidatorTest extends BaseTest {
         try {
             modelValidator.validate(modelStr);
             access = true;
-            Assert.assertTrue(access == true);
+            Assert.assertTrue(access);
         } catch (DefinitionException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == true);
+            Assert.assertTrue(access);
         } catch (ProcessException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == true);
+            Assert.assertTrue(access);
         }
 
 
@@ -45,13 +45,13 @@ public class ModelValidatorTest extends BaseTest {
         try {
             modelValidator.validate(modelStr);
             access = true;
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         } catch (DefinitionException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         } catch (ProcessException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         }
     }
 

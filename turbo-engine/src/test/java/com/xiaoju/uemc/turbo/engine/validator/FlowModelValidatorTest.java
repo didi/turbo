@@ -29,15 +29,15 @@ public class FlowModelValidatorTest extends BaseTest {
         try {
             flowModelValidator.validate(flowModel);
             access = true;
-            Assert.assertTrue(access == true);
+            Assert.assertTrue(access);
         } catch (ProcessException e) {
             e.printStackTrace();
             access = true;
-            Assert.assertTrue(access == true);
+            Assert.assertTrue(access);
         } catch (DefinitionException e) {
             e.printStackTrace();
             access = true;
-            Assert.assertTrue(access == true);
+            Assert.assertTrue(access);
         }
 
     }
@@ -65,13 +65,13 @@ public class FlowModelValidatorTest extends BaseTest {
         try {
             flowModelValidator.validate(flowModel);
             access = true;
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         } catch (ProcessException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         } catch (DefinitionException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         }
     }
 
@@ -96,13 +96,13 @@ public class FlowModelValidatorTest extends BaseTest {
         try {
             flowModelValidator.validate(flowModel);
             access = true;
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         } catch (ProcessException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         } catch (DefinitionException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         }
     }
 
@@ -122,13 +122,13 @@ public class FlowModelValidatorTest extends BaseTest {
         try {
             flowModelValidator.validate(flowModel);
             access = true;
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         } catch (ProcessException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         } catch (DefinitionException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         }
     }
 }

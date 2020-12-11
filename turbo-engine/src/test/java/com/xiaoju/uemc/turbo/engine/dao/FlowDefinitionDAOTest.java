@@ -28,11 +28,11 @@ public class FlowDefinitionDAOTest extends BaseTest {
     public void updateByModuleIdTest() {
         FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
         flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
-        int result = flowDefinitionDAO.insert(flowDefinitionPO);
-        Assert.assertTrue(result == 1);
-        int result1 = flowDefinitionDAO.updateByModuleId(flowDefinitionPO);
-        LOGGER.info("updateByModuleIdTest.||result={}", result);
-        Assert.assertTrue(result1 == 1);
+        int insertResult = flowDefinitionDAO.insert(flowDefinitionPO);
+        Assert.assertTrue(insertResult == 1);
+        int updateResult = flowDefinitionDAO.updateByModuleId(flowDefinitionPO);
+        LOGGER.info("updateByModuleIdTest.||result={}", updateResult);
+        Assert.assertTrue(updateResult == 1);
     }
 
     @Test

@@ -57,10 +57,10 @@ public class StartEventValidatorTest extends BaseTest {
         try {
             startEventValidator.checkOutgoing(map, startEvent);
             access = true;
-            Assert.assertTrue(access == true);
+            Assert.assertTrue(access);
         } catch (DefinitionException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == true);
+            Assert.assertTrue(access);
         }
     }
     /**
@@ -78,10 +78,10 @@ public class StartEventValidatorTest extends BaseTest {
         try {
             startEventValidator.checkOutgoing(map, startEventVaild);
             access = true;
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         } catch (DefinitionException e) {
             e.printStackTrace();
-            Assert.assertTrue(access == false);
+            Assert.assertFalse(access);
         }
 
     }

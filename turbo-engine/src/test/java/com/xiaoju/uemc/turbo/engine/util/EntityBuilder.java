@@ -301,16 +301,6 @@ public class EntityBuilder {
         return sequenceFlow;
     }
 
-    /*public static FlowElement buildSequenceFlowInvalid1() {
-        FlowElement sequenceFlow = new SequenceFlow();
-        sequenceFlow.setKey("sequenceFlow5");
-        sequenceFlow.setType(FlowElementType.SEQUENCE_FLOW);
-        List<String> sfIncomings = new ArrayList<>();
-        sfIncomings.add("userTask2");
-        sequenceFlow.setIncoming(sfIncomings);
-        return sequenceFlow;
-    }*/
-
     public static ExclusiveGateway buildExclusiveGateway() {
         ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
 
@@ -473,23 +463,6 @@ public class EntityBuilder {
         return instanceDataList;
     }
 
-//    private static String buildModelString() {
-//        String str = "{\n" +
-//                "    \"flowElementList\": \"[{\\\"key\\\":\\\"startEvent1\\\",\\\"type\\\":2,\\\"incoming\\\":[],\\\"outgoing\\\":[\\\"SequenceFlow_1tsh7p9\\\"],\\\"properties\\\":{\\\"name\\\":\\\"\\\"},\\\"bounds\\\":[{\\\"x\\\":260,\\\"y\\\":284},{\\\"x\\\":230,\\\"y\\\":254}],\\\"dockers\\\":[]},{\\\"key\\\":\\\"EndEvent_0bul6nv\\\",\\\"type\\\":3,\\\"incoming\\\":[\\\"SequenceFlow_0ciset9\\\"],\\\"outgoing\\\":[],\\\"properties\\\":{\\\"name\\\":\\\"\\\"},\\\"bounds\\\":[{\\\"x\\\":646,\\\"y\\\":287},{\\\"x\\\":610,\\\"y\\\":251}],\\\"dockers\\\":[]},{\\\"key\\\":\\\"UserTask_08pxw7r\\\",\\\"type\\\":4,\\\"incoming\\\":[\\\"SequenceFlow_1tsh7p9\\\"],\\\"outgoing\\\":[\\\"SequenceFlow_0til2dx\\\"],\\\"properties\\\":{\\\"name\\\":\\\"1\\\",\\\"outPcFormurl\\\":\\\"7903\\\"},\\\"bounds\\\":[{\\\"x\\\":410,\\\"y\\\":309},{\\\"x\\\":310,\\\"y\\\":229}],\\\"dockers\\\":[]},{\\\"key\\\":\\\"UserTask_0yp8yei\\\",\\\"type\\\":4,\\\"incoming\\\":[\\\"SequenceFlow_0til2dx\\\"],\\\"outgoing\\\":[\\\"SequenceFlow_0ciset9\\\"],\\\"properties\\\":{\\\"name\\\":\\\"展示\\\",\\\"outPcFormurl\\\":\\\"7909\\\"},\\\"bounds\\\":[{\\\"x\\\":560,\\\"y\\\":309},{\\\"x\\\":460,\\\"y\\\":229}],\\\"dockers\\\":[]},{\\\"key\\\":\\\"SequenceFlow_1tsh7p9\\\",\\\"type\\\":1,\\\"incoming\\\":[\\\"startEvent1\\\"],\\\"outgoing\\\":[\\\"UserTask_08pxw7r\\\"],\\\"properties\\\":{\\\"conditionsequenceflow\\\":\\\"\\\",\\\"optimusFormulaGroups\\\":\\\"\\\"},\\\"bounds\\\":[{\\\"x\\\":310,\\\"y\\\":269},{\\\"x\\\":260,\\\"y\\\":269}],\\\"dockers\\\":[{\\\"x\\\":15,\\\"y\\\":15},{\\\"x\\\":50,\\\"y\\\":40}]},{\\\"key\\\":\\\"SequenceFlow_0til2dx\\\",\\\"type\\\":1,\\\"incoming\\\":[\\\"UserTask_08pxw7r\\\"],\\\"outgoing\\\":[\\\"UserTask_0yp8yei\\\"],\\\"properties\\\":{\\\"conditionsequenceflow\\\":\\\"\\\",\\\"optimusFormulaGroups\\\":\\\"\\\"},\\\"bounds\\\":[{\\\"x\\\":460,\\\"y\\\":269},{\\\"x\\\":410,\\\"y\\\":269}],\\\"dockers\\\":[{\\\"x\\\":50,\\\"y\\\":40},{\\\"x\\\":50,\\\"y\\\":40}]},{\\\"key\\\":\\\"SequenceFlow_0ciset9\\\",\\\"type\\\":1,\\\"incoming\\\":[\\\"UserTask_0yp8yei\\\"],\\\"outgoing\\\":[\\\"EndEvent_0bul6nv\\\"],\\\"properties\\\":{\\\"conditionsequenceflow\\\":\\\"\\\",\\\"optimusFormulaGroups\\\":\\\"\\\"},\\\"bounds\\\":[{\\\"x\\\":610,\\\"y\\\":269},{\\\"x\\\":560,\\\"y\\\":269}],\\\"dockers\\\":[{\\\"x\\\":50,\\\"y\\\":40},{\\\"x\\\":18,\\\"y\\\":18}]}]\",\n" +
-//                "    \"bounds\": [\n" +
-//                "        {\n" +
-//                "            \"x\": 646,\n" +
-//                "            \"y\": 309\n" +
-//                "        },\n" +
-//                "        {\n" +
-//                "            \"x\": 230,\n" +
-//                "            \"y\": 229\n" +
-//                "        }\n" +
-//                "    ]\n" +
-//                "}";
-//        JSONObject model = JSON.parseObject(str);
-//        return model.toJSONString();
-//    }
     public static String buildModelStringAccess() {
         FlowModel flowModel = new FlowModel();
         List<FlowElement> flowElementList = Lists.newArrayList();
@@ -826,23 +799,6 @@ public class EntityBuilder {
         rollbackTaskParam.setTaskInstanceId(nodeInstanceId);
         return rollbackTaskParam;
     }
-
-
-//    //flowInfo
-//    private String flowDeployId;
-//    private String flowModuleId;
-//    private String tenantId;
-//    private Map<String, FlowElement> flowElementMap;
-//
-//    //runtimeInfo
-//    private String flowInstanceId;
-//    private List<NodeInstanceBO> nodeInstanceList;
-//    private NodeInstanceBO currentNodeInstance;
-//    private NodeInstanceBO suspendNodeInstance;
-//    private String instanceDataId;
-//    private Map<String, InstanceData> instanceDataMap;
-//    private int flowInstanceStatus;
-//    private int processStatus;
 
     public static RuntimeContext buildRuntimeContext() {
         RuntimeContext runtimeContext = new RuntimeContext();
