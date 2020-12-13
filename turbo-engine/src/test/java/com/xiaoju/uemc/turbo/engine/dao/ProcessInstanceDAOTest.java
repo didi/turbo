@@ -36,7 +36,7 @@ public class ProcessInstanceDAOTest extends BaseTest {
     }
 
     @Test
-    public void updateStatus_1() {
+    public void updateStatusByFlowInstancePO() {
         FlowInstancePO flowInstancePO = EntityBuilder.buildDynamicFlowInstancePO();
         processInstanceDAO.insert(flowInstancePO);
         // change status
@@ -46,7 +46,7 @@ public class ProcessInstanceDAOTest extends BaseTest {
     }
 
     @Test
-    public void updateStatus_2() {
+    public void updateStatusByFlowInstanceId() {
         FlowInstancePO flowInstancePO = EntityBuilder.buildDynamicFlowInstancePO();
         processInstanceDAO.insert(flowInstancePO);
         // change status

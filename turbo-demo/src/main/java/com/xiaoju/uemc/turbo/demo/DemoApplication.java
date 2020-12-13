@@ -109,7 +109,7 @@ public class DemoApplication implements CommandLineRunner {
         StartProcessParam startProcessParam = new StartProcessParam();
         startProcessParam.setFlowDeployId(deployFlowResult.getFlowDeployId());
         List<InstanceData> variables = new ArrayList<>();
-        variables.add(new InstanceData("commitTime", "int", 1));
+        variables.add(new InstanceData("commitTime", 1));
         startProcessParam.setVariables(variables);
         StartProcessResult startProcessResult = processEngine.startProcess(startProcessParam);
 
@@ -123,8 +123,8 @@ public class DemoApplication implements CommandLineRunner {
         commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
         commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
-        variables.add(new InstanceData("commitTime", "int", 2));
-        variables.add(new InstanceData("message", "string", "open"));
+        variables.add(new InstanceData("commitTime", 2));
+        variables.add(new InstanceData("message", "open"));
         commitTaskParam.setVariables(variables);
 
         CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
@@ -149,8 +149,8 @@ public class DemoApplication implements CommandLineRunner {
         commitTaskParam.setFlowInstanceId(rollbackTaskResult.getFlowInstanceId());
         commitTaskParam.setTaskInstanceId(rollbackTaskResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
-        variables.add(new InstanceData("commitTime", "int", 3));
-        variables.add(new InstanceData("message", "string", "close"));
+        variables.add(new InstanceData("commitTime", 3));
+        variables.add(new InstanceData("message", "close"));
         commitTaskParam.setVariables(variables);
 
         CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
@@ -164,7 +164,7 @@ public class DemoApplication implements CommandLineRunner {
         commitTaskParam.setFlowInstanceId(commitTaskResult.getFlowInstanceId());
         commitTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
         List<InstanceData> variables = new ArrayList<>();
-        variables.add(new InstanceData("commitTime", "int", 4));
+        variables.add(new InstanceData("commitTime", 4));
         commitTaskParam.setVariables(variables);
 
         CommitTaskResult commitTaskResult1 = processEngine.commitTask(commitTaskParam);

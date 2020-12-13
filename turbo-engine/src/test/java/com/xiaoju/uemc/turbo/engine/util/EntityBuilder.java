@@ -368,9 +368,9 @@ public class EntityBuilder {
     }
 
     private static List<InstanceData> buildInstanceDataList() {
-        InstanceData instanceData1 = new InstanceData("key1", "string", "value1");
-        InstanceData instanceData2 = new InstanceData("key2", "string", "value2");
-        InstanceData instanceData3 = new InstanceData("key3", "string", "value3");
+        InstanceData instanceData1 = new InstanceData("key1", "value1");
+        InstanceData instanceData2 = new InstanceData("key2", "value2");
+        InstanceData instanceData3 = new InstanceData("key3", "value3");
         List<InstanceData> instanceDataList = Lists.newArrayList();
         instanceDataList.add(instanceData1);
         instanceDataList.add(instanceData2);

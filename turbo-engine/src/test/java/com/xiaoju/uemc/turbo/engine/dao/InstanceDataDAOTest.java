@@ -17,7 +17,7 @@ public class InstanceDataDAOTest extends BaseTest {
     private InstanceDataDAO instanceDataDAO;
 
     @Test
-    public void insert_1() {
+    public void insertSuccess() {
         InstanceDataPO instanceDataPO = EntityBuilder.buildDynamicInstanceDataPO();
         int result = instanceDataDAO.insert(instanceDataPO);
         LOGGER.info("insertTest.result={}", result);
@@ -25,7 +25,7 @@ public class InstanceDataDAOTest extends BaseTest {
     }
 
     @Test
-    public void insert_2() {
+    public void insertFailed() {
         InstanceDataPO instanceDataPO = EntityBuilder.buildDynamicInstanceDataPO();
         instanceDataDAO.insert(instanceDataPO);
         // test DuplicateKeyException

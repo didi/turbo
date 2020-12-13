@@ -174,13 +174,12 @@ public abstract class ElementExecutor extends RuntimeExecutor {
             }
             currentNodeInstance = new NodeInstanceBO();
             BeanUtils.copyProperties(currentNodeInstancePO, currentNodeInstance);
-            // FIXME: 2020/12/4
+
             String currentInstanceDataId = currentNodeInstance.getInstanceDataId();
             runtimeContext.setInstanceDataId(currentInstanceDataId);
             InstanceDataPO instanceDataPO = instanceDataDAO.select(flowInstanceId, currentInstanceDataId);
             Map<String, InstanceData> currentInstanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
             runtimeContext.setInstanceDataMap(currentInstanceDataMap);
-//            currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());
         }
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
 
