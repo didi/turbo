@@ -834,7 +834,7 @@ public class EntityBuilder {
         return commitTaskParam;
     }
 
-    public static RollbackTaskParam buildRecallTaskParam(String flowInstanceId, String nodeInstanceId) {
+    public static RollbackTaskParam buildRollbackTaskParam(String flowInstanceId, String nodeInstanceId) {
         RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
         rollbackTaskParam.setFlowInstanceId(flowInstanceId);
         rollbackTaskParam.setTaskInstanceId(nodeInstanceId);
