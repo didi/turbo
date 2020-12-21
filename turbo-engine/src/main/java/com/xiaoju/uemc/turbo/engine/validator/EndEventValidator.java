@@ -15,6 +15,11 @@ public class EndEventValidator extends ElementValidator {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(EndEventValidator.class);
 
+    /**
+     * CheckOutgoing: check endEvent's outgoing, warn while outgoing is not empty.
+     *
+     * @param flowElementMap, flowElement
+     */
     @Override
     protected void checkOutgoing(Map<String, FlowElement> flowElementMap, FlowElement flowElement) {
         List<String> outgoing = flowElement.getOutgoing();

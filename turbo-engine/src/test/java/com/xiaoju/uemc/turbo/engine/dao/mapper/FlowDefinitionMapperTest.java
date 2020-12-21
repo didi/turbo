@@ -18,26 +18,34 @@ public class FlowDefinitionMapperTest extends BaseTest {
     @Test
     public void insert() {
         FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
+        flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
         int result = flowDefinitionMapper.insert(flowDefinitionPO);
-        LOGGER.info("insert.result={}", result);
         Assert.assertTrue(result == 1);
     }
-//
-//    @Test
-//    public void update() {
-//        FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
-//        flowDefinitionMapper.insert(flowDefinitionPO);
-//        flowDefinitionPO = flowDefinitionMapper.selectByFlowModuleId(flowDefinitionPO.getFlowModuleId());
-//        flowDefinitionPO.setStatus(3);
-//        int result = flowDefinitionMapper.updateById(flowDefinitionPO);
-//        LOGGER.info("update.result={}", result);
-//        flowDefinitionPO = flowDefinitionMapper.selectByFlowModuleId(flowDefinitionPO.getFlowModuleId());
-//
-//        Assert.assertTrue(flowDefinitionPO.getStatus().equals(3));
-//    }
 
     @Test
-    public void query() {
+    public void update() {
+        FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
+        flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
+        flowDefinitionMapper.insert(flowDefinitionPO);
+        flowDefinitionPO = flowDefinitionMapper.selectByFlowModuleId(flowDefinitionPO.getFlowModuleId());
+        flowDefinitionPO.setStatus(3);
+        int result = flowDefinitionMapper.updateById(flowDefinitionPO);
+        Assert.assertTrue(result == 1);
+        flowDefinitionPO = flowDefinitionMapper.selectByFlowModuleId(flowDefinitionPO.getFlowModuleId());
+        Assert.assertTrue(flowDefinitionPO.getStatus().equals(3));
+    }
+
+    @Test
+    public void selectByFlowModuleId() {
+        FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
+        flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
+        int result = flowDefinitionMapper.insert(flowDefinitionPO);
+        Assert.assertTrue(result == 1);
+        String flowModuleId = flowDefinitionPO.getFlowModuleId();
+        FlowDefinitionPO queryFlowDefinitionPO = flowDefinitionMapper.selectByFlowModuleId(flowModuleId);
+        LOGGER.info("selectByModuleIdTest.||flowDefinitionPO={}", flowDefinitionPO);
+        Assert.assertTrue(flowModuleId.equals(queryFlowDefinitionPO.getFlowModuleId()));
 
     }
 }

@@ -12,6 +12,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class FlowDefinitionDAO extends BaseDAO<FlowDefinitionMapper, FlowDefinitionPO> {
 
+    /**
+     * Insert: insert flowDefinitionPO, return -1 while insert failed.
+     *
+     * @param flowDefinitionPO
+     * @return int
+     */
     public int insert(FlowDefinitionPO flowDefinitionPO) {
         try {
             return baseMapper.insert(flowDefinitionPO);
@@ -21,6 +27,12 @@ public class FlowDefinitionDAO extends BaseDAO<FlowDefinitionMapper, FlowDefinit
         return -1;
     }
 
+    /**
+     * UpdateByModuleId: update flowDefinitionPO by flowModuleId, return -1 while updateByModuleId failed.
+     *
+     * @param flowDefinitionPO
+     * @return int
+     */
     public int updateByModuleId(FlowDefinitionPO flowDefinitionPO) {
         if (null == flowDefinitionPO) {
             LOGGER.warn("updateByModuleId failed: flowDefinitionPO is null.");
@@ -41,6 +53,12 @@ public class FlowDefinitionDAO extends BaseDAO<FlowDefinitionMapper, FlowDefinit
         return -1;
     }
 
+    /**
+     * SelectByModuleId: query flowDefinitionPO by flowModuleId, return null while flowDefinitionPO can't be found.
+     *
+     * @param flowModuleId
+     * @return flowDefinitionPO
+     */
     public FlowDefinitionPO selectByModuleId(String flowModuleId) {
         if (StringUtils.isBlank(flowModuleId)) {
             LOGGER.warn("getById failed: flowModuleId is empty.");
