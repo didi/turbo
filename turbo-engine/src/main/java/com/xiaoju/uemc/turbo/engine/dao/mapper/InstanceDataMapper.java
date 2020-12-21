@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.Select;
  */
 public interface InstanceDataMapper extends BaseMapper<InstanceDataPO> {
 
-    @Select("/*{\"router\":\"m\"}*/SELECT * FROM ei_instance_data WHERE instance_data_id=#{instanceDataId}")
+    @Select("SELECT * FROM ei_instance_data WHERE instance_data_id=#{instanceDataId}")
     InstanceDataPO select(@Param("flowInstanceId") String flowInstanceId,
                           @Param("instanceDataId") String instanceDataId);
 

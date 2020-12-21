@@ -16,6 +16,12 @@ public class ProcessInstanceDAO extends BaseDAO<ProcessInstanceMapper, FlowInsta
         return baseMapper.selectByFlowInstanceId(flowInstanceId);
     }
 
+    /**
+     * insert flowInstancePO
+     *
+     * @param flowInstancePO
+     * @return -1 while insert failed
+     */
     public int insert(FlowInstancePO flowInstancePO) {
         try {
             return baseMapper.insert(flowInstancePO);

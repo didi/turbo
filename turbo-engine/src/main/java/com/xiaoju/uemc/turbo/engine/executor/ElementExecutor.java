@@ -5,6 +5,7 @@ import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.common.FlowElementType;
 import com.xiaoju.uemc.turbo.engine.common.NodeInstanceStatus;
 import com.xiaoju.uemc.turbo.engine.common.RuntimeContext;
+import com.xiaoju.uemc.turbo.engine.entity.InstanceDataPO;
 import com.xiaoju.uemc.turbo.engine.entity.NodeInstancePO;
 import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.exception.ReentrantException;
@@ -173,7 +174,12 @@ public abstract class ElementExecutor extends RuntimeExecutor {
             }
             currentNodeInstance = new NodeInstanceBO();
             BeanUtils.copyProperties(currentNodeInstancePO, currentNodeInstance);
-            currentNodeInstance.setInstanceDataId(runtimeContext.getInstanceDataId());
+
+            String currentInstanceDataId = currentNodeInstance.getInstanceDataId();
+            runtimeContext.setInstanceDataId(currentInstanceDataId);
+            InstanceDataPO instanceDataPO = instanceDataDAO.select(flowInstanceId, currentInstanceDataId);
+            Map<String, InstanceData> currentInstanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
+            runtimeContext.setInstanceDataMap(currentInstanceDataMap);
         }
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
 
@@ -242,7 +248,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     }
 
     @Override
-    protected boolean isCompleted(RuntimeContext runtimeContext) throws ProcessException{
+    protected boolean isCompleted(RuntimeContext runtimeContext) throws ProcessException {
         NodeInstanceBO nodeInstance = runtimeContext.getCurrentNodeInstance();
         //case 1.startEvent
         if (nodeInstance == null) {
@@ -274,7 +280,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     }
 
     protected FlowElement calculateNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap,
-                                                Map<String, InstanceData> instanceDataMap) throws ProcessException {
+                                            Map<String, InstanceData> instanceDataMap) throws ProcessException {
         FlowElement nextFlowElement = calculateOutgoing(currentFlowElement, flowElementMap, instanceDataMap);
 
         while (nextFlowElement.getType() == FlowElementType.SEQUENCE_FLOW) {
@@ -284,7 +290,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     }
 
     private FlowElement calculateOutgoing(FlowElement flowElement, Map<String, FlowElement> flowElementMap,
-                                                 Map<String, InstanceData> instanceDataMap) throws ProcessException {
+                                          Map<String, InstanceData> instanceDataMap) throws ProcessException {
         FlowElement defaultElement = null;
 
         List<String> outgoingList = flowElement.getOutgoing();

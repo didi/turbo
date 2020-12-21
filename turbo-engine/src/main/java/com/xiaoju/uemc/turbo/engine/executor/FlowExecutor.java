@@ -85,9 +85,9 @@ public class FlowExecutor extends RuntimeExecutor {
 
     private FlowInstancePO buildFlowInstancePO(RuntimeContext runtimeContext) {
         FlowInstancePO flowInstancePO = new FlowInstancePO();
-        //copy flow info
+        // copy flow info
         BeanUtils.copyProperties(runtimeContext, flowInstancePO);
-        //generate flowInstanceId
+        // generate flowInstanceId
         flowInstancePO.setFlowInstanceId(genId());
         flowInstancePO.setStatus(FlowInstanceStatus.RUNNING);
         Date currentTime = new Date();
@@ -113,10 +113,10 @@ public class FlowExecutor extends RuntimeExecutor {
 
     private InstanceDataPO buildInstanceDataPO(FlowInstancePO flowInstancePO, Map<String, InstanceData> instanceDataMap) {
         InstanceDataPO instanceDataPO = new InstanceDataPO();
-        //copy flow info & flowInstanceId
+        // copy flow info & flowInstanceId
         BeanUtils.copyProperties(flowInstancePO, instanceDataPO);
 
-        //generate instanceDataId
+        // generate instanceDataId
         instanceDataPO.setInstanceDataId(genId());
         instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataListStr(instanceDataMap));
 
@@ -506,6 +506,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
         NodeInstanceBO suspendNodeInstance = runtimeContext.getSuspendNodeInstance();
         if (suspendNodeInstance == null) {
+            LOGGER.warn("suspendNodeInstance is null.||runtimeContext={}", runtimeContext);
             return false;
         }
 

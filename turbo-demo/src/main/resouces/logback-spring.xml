@@ -14,7 +14,7 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--日志文件输出的文件名-->
-            <FileNamePattern>${LOG_HOME}/turbo.log.%d{yyyyMMddHH}</FileNamePattern>
+            <FileNamePattern>${LOG_HOME}/turbo.demo.log.%d{yyyyMMddHH}</FileNamePattern>
             <!--日志文件保留数量-->
             <MaxHistory>240</MaxHistory>
         </rollingPolicy>
@@ -28,7 +28,7 @@
     </appender>
     <logger name="org.springframework" level="INFO"/>
     <!-- 日志输出级别 -->
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>

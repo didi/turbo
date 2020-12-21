@@ -1,4 +1,4 @@
-package com.xiaoju.uemc.turbo.engine.dao.mapper;
+package com.xiaoju.uemc.turbo.engine.dao;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xiaoju.uemc.turbo.engine.entity.NodeInstanceLogPO;
@@ -10,29 +10,27 @@ import org.junit.Test;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
- * Created by Stefanie on 2019/12/1.
+ * Created by Stefanie on 2020/11/20.
  */
-public class NodeInstanceLogMapperTest extends BaseTest {
+public class NodeInstanceLogDAOTest extends BaseTest {
 
     @Resource
-    private NodeInstanceLogMapper nodeInstanceLogMapper;
+    private NodeInstanceLogDAO nodeInstanceLogDAO;
 
     @Test
     public void batchInsert() {
-        String flowInstanceId = "flowInstanceId_" + UUID.randomUUID().toString();
-        NodeInstanceLogPO nodeInstanceLogPO = EntityBuilder.buildNodeInstanceLogPO(flowInstanceId);
+        NodeInstanceLogPO nodeInstanceLogPO = EntityBuilder.buildNodeInstanceLogPO();
         List<NodeInstanceLogPO> nodeInstanceLogPOList = new ArrayList<>();
         nodeInstanceLogPOList.add(nodeInstanceLogPO);
-        nodeInstanceLogPOList.add(EntityBuilder.buildNodeInstanceLogPO(flowInstanceId));
-        nodeInstanceLogPOList.add(EntityBuilder.buildNodeInstanceLogPO(flowInstanceId));
-        nodeInstanceLogMapper.batchInsert(nodeInstanceLogPO.getFlowInstanceId(), nodeInstanceLogPOList);
+        nodeInstanceLogPOList.add(EntityBuilder.buildNodeInstanceLogPO());
+        nodeInstanceLogPOList.add(EntityBuilder.buildNodeInstanceLogPO());
+        nodeInstanceLogDAO.insertList(nodeInstanceLogPOList);
 
         QueryWrapper<NodeInstanceLogPO> entityWrapper = new QueryWrapper<>();
         entityWrapper.in("flow_instance_id", nodeInstanceLogPO.getFlowInstanceId());
-        nodeInstanceLogPOList = nodeInstanceLogMapper.selectList(entityWrapper);
+        nodeInstanceLogPOList = nodeInstanceLogDAO.list(entityWrapper);
         Assert.assertTrue(nodeInstanceLogPOList.size() == 3);
     }
 }
