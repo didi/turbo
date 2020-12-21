@@ -11,7 +11,7 @@
 
     <modules>
         <module>turbo-engine</module>
-        <module>turbo-api</module>
+        <module>turbo-demo</module>
     </modules>
 
     <properties>
@@ -56,16 +56,12 @@
             <groupId>com.baomidou</groupId>
             <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
             <version>2.5.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.xiaoju.metric</groupId>
-            <artifactId>metric</artifactId>
-            <version>1.5-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.xiaoju.uemc</groupId>
-            <artifactId>common-support</artifactId>
-            <version>1.0.91-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-aop</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

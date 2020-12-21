@@ -15,7 +15,7 @@ import java.util.List;
  */
 public interface NodeInstanceMapper extends BaseMapper<NodeInstancePO> {
 
-    @Select("/*{\"router\":\"m\"}*/SELECT * FROM ei_node_instance WHERE node_instance_id=#{nodeInstanceId}")
+    @Select("SELECT * FROM ei_node_instance WHERE node_instance_id=#{nodeInstanceId}")
     NodeInstancePO selectByNodeInstanceId(@Param("flowInstanceId") String flowInstanceId,
                                           @Param("nodeInstanceId") String nodeInstanceId);
 

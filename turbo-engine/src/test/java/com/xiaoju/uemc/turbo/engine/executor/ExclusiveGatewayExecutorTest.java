@@ -41,8 +41,8 @@ public class ExclusiveGatewayExecutorTest extends BaseTest {
 
         runtimeContext = EntityBuilder.buildRuntimeContext();
         Map<String, InstanceData> instanceDataMap = Maps.newHashMap();
-        InstanceData instanceDataA = new InstanceData("a", "integer", 2);
-        InstanceData instanceDataB = new InstanceData("b", "integer", 1);
+        InstanceData instanceDataA = new InstanceData("a", 2);
+        InstanceData instanceDataB = new InstanceData("b", 1);
         instanceDataMap.put(instanceDataA.getKey(), instanceDataA);
         instanceDataMap.put(instanceDataB.getKey(), instanceDataB);
         runtimeContext.setInstanceDataMap(instanceDataMap);

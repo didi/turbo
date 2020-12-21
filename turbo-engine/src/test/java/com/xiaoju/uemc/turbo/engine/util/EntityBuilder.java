@@ -262,6 +262,14 @@ public class EntityBuilder {
         flowInstancePO.setStatus(FlowInstanceStatus.RUNNING);
         flowInstancePO.setCreateTime(new Date());
         flowInstancePO.setModifyTime(new Date());
+        flowInstancePO.setCaller("caller");
+        flowInstancePO.setTenant("tenant");
+        return flowInstancePO;
+    }
+
+    public static FlowInstancePO buildDynamicFlowInstancePO() {
+        FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
+        flowInstancePO.setFlowInstanceId("testFlowInstanceId_" + System.currentTimeMillis() + new Random().nextInt());
         return flowInstancePO;
     }
 
@@ -277,6 +285,15 @@ public class EntityBuilder {
         nodeInstancePO.setStatus(NodeInstanceStatus.ACTIVE);
         nodeInstancePO.setCreateTime(new Date());
         nodeInstancePO.setModifyTime(new Date());
+        nodeInstancePO.setCaller("caller");
+        nodeInstancePO.setTenant("tenant");
+        return nodeInstancePO;
+    }
+
+    public static NodeInstancePO buildDynamicNodeInstancePO() {
+        NodeInstancePO nodeInstancePO = buildNodeInstancePO();
+        nodeInstancePO.setNodeInstanceId("testNodeInstanceId_" + UUID.randomUUID().toString());
+        nodeInstancePO.setSourceNodeInstanceId("testSourceNodeInstanceId_" + UUID.randomUUID().toString());
         return nodeInstancePO;
     }
 
@@ -289,6 +306,22 @@ public class EntityBuilder {
         nodeInstanceLogPO.setType(NodeInstanceType.EXECUTE);
         nodeInstanceLogPO.setStatus(NodeInstanceStatus.ACTIVE);
         nodeInstanceLogPO.setCreateTime(new Date());
+        nodeInstanceLogPO.setCaller("caller");
+        nodeInstanceLogPO.setTenant("tenant");
+        return nodeInstanceLogPO;
+    }
+
+    public static NodeInstanceLogPO buildNodeInstanceLogPO(String flowInstanceId) {
+        NodeInstanceLogPO nodeInstanceLogPO = new NodeInstanceLogPO();
+        nodeInstanceLogPO.setFlowInstanceId(flowInstanceId);
+        nodeInstanceLogPO.setNodeInstanceId(nodeInstanceId);
+        nodeInstanceLogPO.setInstanceDataId(instanceDataId);
+        nodeInstanceLogPO.setNodeKey(nodeKey);
+        nodeInstanceLogPO.setType(NodeInstanceType.EXECUTE);
+        nodeInstanceLogPO.setStatus(NodeInstanceStatus.ACTIVE);
+        nodeInstanceLogPO.setCreateTime(new Date());
+        nodeInstanceLogPO.setCaller("caller");
+        nodeInstanceLogPO.setTenant("tenant");
         return nodeInstanceLogPO;
     }
 
@@ -304,6 +337,14 @@ public class EntityBuilder {
         instanceDataPO.setInstanceData(JSON.toJSONString(instanceDataList));
         instanceDataPO.setType(InstanceDataType.EXECUTE);
         instanceDataPO.setCreateTime(new Date());
+        instanceDataPO.setCaller("caller");
+        instanceDataPO.setTenant("tenant");
+        return instanceDataPO;
+    }
+
+    public static InstanceDataPO buildDynamicInstanceDataPO() {
+        InstanceDataPO instanceDataPO = buildInstanceDataPO();
+        instanceDataPO.setInstanceDataId("testInstanceDataId_" + System.currentTimeMillis() + new Random().nextInt());
         return instanceDataPO;
     }
 
@@ -327,9 +368,9 @@ public class EntityBuilder {
     }
 
     private static List<InstanceData> buildInstanceDataList() {
-        InstanceData instanceData1 = new InstanceData("key1", "string", "value1");
-        InstanceData instanceData2 = new InstanceData("key2", "string", "value2");
-        InstanceData instanceData3 = new InstanceData("key3", "string", "value3");
+        InstanceData instanceData1 = new InstanceData("key1", "value1");
+        InstanceData instanceData2 = new InstanceData("key2", "value2");
+        InstanceData instanceData3 = new InstanceData("key3", "value3");
         List<InstanceData> instanceDataList = Lists.newArrayList();
         instanceDataList.add(instanceData1);
         instanceDataList.add(instanceData2);
@@ -487,11 +528,11 @@ public class EntityBuilder {
         return commitTaskParam;
     }
 
-    public static RecallTaskParam buildRecallTaskParam(String flowInstanceId, String nodeInstanceId) {
-        RecallTaskParam recallTaskParam = new RecallTaskParam();
-        recallTaskParam.setFlowInstanceId(flowInstanceId);
-        recallTaskParam.setTaskInstanceId(nodeInstanceId);
-        return recallTaskParam;
+    public static RollbackTaskParam buildRecallTaskParam(String flowInstanceId, String nodeInstanceId) {
+        RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
+        rollbackTaskParam.setFlowInstanceId(flowInstanceId);
+        rollbackTaskParam.setTaskInstanceId(nodeInstanceId);
+        return rollbackTaskParam;
     }
 
     public static ExclusiveGateway buildExclusiveGateway() {
@@ -548,4 +589,299 @@ public class EntityBuilder {
         return runtimeContext;
     }
 
+    // For runtime unit tests [RuntimeProcessorTest] to use, don't change it
+    public static FlowDeploymentPO buildSpecialFlowDeploymentPO() {
+        FlowDeploymentPO flowDeploymentPO = new FlowDeploymentPO();
+        flowDeploymentPO.setFlowName(flowName);
+        flowDeploymentPO.setFlowKey(flowKey);
+        flowDeploymentPO.setFlowModuleId("flowModuleId");
+        flowDeploymentPO.setFlowDeployId("flowDeployId");
+        flowDeploymentPO.setFlowModel(JSON.toJSONString(buildSpecialFlowModel()));
+        flowDeploymentPO.setStatus(FlowDeploymentStatus.DEPLOYED);
+        flowDeploymentPO.setCreateTime(new Date());
+        flowDeploymentPO.setModifyTime(new Date());
+        flowDeploymentPO.setOperator(operator);
+        flowDeploymentPO.setRemark(remark);
+        return flowDeploymentPO;
+    }
+
+    public static FlowModel buildSpecialFlowModel() {
+        List<FlowElement> flowElementList = Lists.newArrayList();
+        {
+            StartEvent startEvent = new StartEvent();
+            startEvent.setKey("StartEvent_1r83q1z");
+            startEvent.setType(FlowElementType.START_EVENT);
+            List<String> outgoings = new ArrayList<>();
+            outgoings.add("SequenceFlow_0vykylt");
+            startEvent.setOutgoing(outgoings);
+            flowElementList.add(startEvent);
+        }
+        {
+            EndEvent endEvent = new EndEvent();
+            endEvent.setKey("EndEvent_0z30kyv");
+            endEvent.setType(FlowElementType.END_EVENT);
+            List<String> incomings = new ArrayList<>();
+            incomings.add("SequenceFlow_1sfugjz");
+            endEvent.setIncoming(incomings);
+            flowElementList.add(endEvent);
+        }
+        {
+            EndEvent endEvent = new EndEvent();
+            endEvent.setKey("EndEvent_0c82i4n");
+            endEvent.setType(FlowElementType.END_EVENT);
+            List<String> incomings = new ArrayList<>();
+            incomings.add("SequenceFlow_1lc9xoo");
+            endEvent.setIncoming(incomings);
+            flowElementList.add(endEvent);
+        }
+        {
+            EndEvent endEvent = new EndEvent();
+            endEvent.setKey("EndEvent_0s4vsxw");
+            endEvent.setType(FlowElementType.END_EVENT);
+            List<String> incomings = new ArrayList<>();
+            incomings.add("SequenceFlow_05niqg6");
+            endEvent.setIncoming(incomings);
+            flowElementList.add(endEvent);
+        }
+
+//        {
+//            EndEvent endEvent = new EndEvent();
+//            endEvent.setKey("EndEvent_1qi4pti");
+//            endEvent.setType(FlowElementType.END_EVENT);
+//            List<String> incomings = new ArrayList<>();
+//            incomings.add("SequenceFlow_0qgt4pg");
+//            endEvent.setIncoming(incomings);
+//            flowElementList.add(endEvent);
+//        }
+
+        {
+            EndEvent endEvent = new EndEvent();
+            endEvent.setKey("EndEvent_0ysd9la");
+            endEvent.setType(FlowElementType.END_EVENT);
+            List<String> incomings = new ArrayList<>();
+            incomings.add("SequenceFlow_0dttfqs");
+            endEvent.setIncoming(incomings);
+            flowElementList.add(endEvent);
+        }
+
+        {
+            ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
+            exclusiveGateway.setKey("ExclusiveGateway_0yq2l0s");
+            exclusiveGateway.setType(FlowElementType.EXCLUSIVE_GATEWAY);
+
+            List<String> egIncomings = new ArrayList<>();
+            egIncomings.add("SequenceFlow_1qonehk");
+            exclusiveGateway.setIncoming(egIncomings);
+
+            List<String> egOutgoings = new ArrayList<>();
+            egOutgoings.add("SequenceFlow_15rfdft");
+            egOutgoings.add("SequenceFlow_1lc9xoo");
+            exclusiveGateway.setOutgoing(egOutgoings);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("hookInfoIds", "");
+            exclusiveGateway.setProperties(properties);
+
+            flowElementList.add(exclusiveGateway);
+        }
+        {
+            UserTask userTask = new UserTask();
+            userTask.setKey("UserTask_0uld0u9");
+            userTask.setType(FlowElementType.USER_TASK);
+
+            List<String> utIncomings = new ArrayList<>();
+            utIncomings.add("SequenceFlow_15rfdft");
+            userTask.setIncoming(utIncomings);
+
+            List<String> utOutgoings = new ArrayList<>();
+            utOutgoings.add("SequenceFlow_1sfugjz");
+            utOutgoings.add("SequenceFlow_1o5y5z7");
+            userTask.setOutgoing(utOutgoings);
+
+            flowElementList.add(userTask);
+        }
+        {
+            SequenceFlow sequenceFlow1 = new SequenceFlow();
+            sequenceFlow1.setKey("SequenceFlow_0vykylt");
+            sequenceFlow1.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("StartEvent_1r83q1z");
+            sequenceFlow1.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("BranchUserTask_0scrl8d");
+            sequenceFlow1.setOutgoing(sfOutgoings);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "false");
+            properties.put("conditionsequenceflow", "");
+            sequenceFlow1.setProperties(properties);
+
+            flowElementList.add(sequenceFlow1);
+        }
+
+        {
+            SequenceFlow sequenceFlow1 = new SequenceFlow();
+            sequenceFlow1.setKey("SequenceFlow_1sfugjz");
+            sequenceFlow1.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("UserTask_0uld0u9");
+            sequenceFlow1.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("EndEvent_0z30kyv");
+            sequenceFlow1.setOutgoing(sfOutgoings);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "");
+            properties.put("conditionsequenceflow", "orderStatus.equals(\"1\")");
+            sequenceFlow1.setProperties(properties);
+
+            flowElementList.add(sequenceFlow1);
+        }
+
+        {
+            SequenceFlow sequenceFlow1 = new SequenceFlow();
+            sequenceFlow1.setKey("SequenceFlow_1o5y5z7");
+            sequenceFlow1.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("UserTask_0uld0u9");
+            sequenceFlow1.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("UserTask_1eglyg7");
+            sequenceFlow1.setOutgoing(sfOutgoings);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "");
+            properties.put("conditionsequenceflow", "orderStatus.equals(\"2\")");
+            sequenceFlow1.setProperties(properties);
+
+            flowElementList.add(sequenceFlow1);
+        }
+
+        {
+            UserTask userTask = new UserTask();
+            userTask.setKey("UserTask_1eglyg7");
+            userTask.setType(FlowElementType.USER_TASK);
+
+            List<String> utIncomings = new ArrayList<>();
+            utIncomings.add("SequenceFlow_1o5y5z7");
+            userTask.setIncoming(utIncomings);
+
+            List<String> utOutgoings = new ArrayList<>();
+            utOutgoings.add("SequenceFlow_0dttfqs");
+            userTask.setOutgoing(utOutgoings);
+
+            flowElementList.add(userTask);
+        }
+
+        {
+            SequenceFlow sequenceFlow1 = new SequenceFlow();
+            sequenceFlow1.setKey("SequenceFlow_0dttfqs");
+            sequenceFlow1.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("UserTask_1eglyg7");
+            sequenceFlow1.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("EndEvent_0ysd9la");
+            sequenceFlow1.setOutgoing(sfOutgoings);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "false");
+            properties.put("conditionsequenceflow", "");
+            sequenceFlow1.setProperties(properties);
+
+            flowElementList.add(sequenceFlow1);
+        }
+
+        {
+            SequenceFlow sequenceFlow1 = new SequenceFlow();
+            sequenceFlow1.setKey("SequenceFlow_15rfdft");
+            sequenceFlow1.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("ExclusiveGateway_0yq2l0s");
+            sequenceFlow1.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("UserTask_0uld0u9");
+            sequenceFlow1.setOutgoing(sfOutgoings);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "false");
+            properties.put("conditionsequenceflow", "orderId.equals(\"123\")");
+            sequenceFlow1.setProperties(properties);
+
+            flowElementList.add(sequenceFlow1);
+        }
+        {
+            SequenceFlow sequenceFlow1 = new SequenceFlow();
+            sequenceFlow1.setKey("SequenceFlow_1qonehk");
+            sequenceFlow1.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("BranchUserTask_0scrl8d");
+            sequenceFlow1.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("ExclusiveGateway_0yq2l0s");
+            sequenceFlow1.setOutgoing(sfOutgoings);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "false");
+            properties.put("conditionsequenceflow", "danxuankuang_ytgyk==0");
+            sequenceFlow1.setProperties(properties);
+
+            flowElementList.add(sequenceFlow1);
+        }
+        {
+            SequenceFlow sequenceFlow1 = new SequenceFlow();
+            sequenceFlow1.setKey("SequenceFlow_05niqg6");
+            sequenceFlow1.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("BranchUserTask_0scrl8d");
+            sequenceFlow1.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("EndEvent_0s4vsxw");
+            sequenceFlow1.setOutgoing(sfOutgoings);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "false");
+            properties.put("conditionsequenceflow", "danxuankuang_ytgyk==1");
+            sequenceFlow1.setProperties(properties);
+
+            flowElementList.add(sequenceFlow1);
+        }
+        {
+            SequenceFlow sequenceFlow1 = new SequenceFlow();
+            sequenceFlow1.setKey("SequenceFlow_1lc9xoo");
+            sequenceFlow1.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("ExclusiveGateway_0yq2l0s");
+            sequenceFlow1.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("EndEvent_0c82i4n");
+            sequenceFlow1.setOutgoing(sfOutgoings);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "false");
+            properties.put("conditionsequenceflow", "orderId.equals(\"456\")");
+            sequenceFlow1.setProperties(properties);
+
+            flowElementList.add(sequenceFlow1);
+        }
+        {
+            UserTask userTask = new UserTask();
+            userTask.setKey("BranchUserTask_0scrl8d");
+            userTask.setType(FlowElementType.USER_TASK);
+
+            List<String> utIncomings = new ArrayList<>();
+            utIncomings.add("SequenceFlow_0vykylt");
+            userTask.setIncoming(utIncomings);
+
+            List<String> utOutgoings = new ArrayList<>();
+            utOutgoings.add("SequenceFlow_1qonehk");
+            utOutgoings.add("SequenceFlow_05niqg6");
+            userTask.setOutgoing(utOutgoings);
+
+            flowElementList.add(userTask);
+        }
+        FlowModel flowModel = new FlowModel();
+        flowModel.setFlowElementList(flowElementList);
+        return flowModel;
+    }
 }

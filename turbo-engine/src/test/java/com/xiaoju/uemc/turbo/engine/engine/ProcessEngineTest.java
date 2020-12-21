@@ -1,8 +1,9 @@
 package com.xiaoju.uemc.turbo.engine.engine;
 
-import com.xiaoju.uemc.turbo.engine.dto.CreateFlowDTO;
-import com.xiaoju.uemc.turbo.engine.dto.DeployFlowDTO;
-import com.xiaoju.uemc.turbo.engine.dto.FlowModuleDTO;
+import com.xiaoju.uemc.turbo.engine.result.CreateFlowResult;
+import com.xiaoju.uemc.turbo.engine.result.DeployFlowResult;
+import com.xiaoju.uemc.turbo.engine.result.FlowModuleResult;
+import com.xiaoju.uemc.turbo.engine.result.UpdateFlowResult;
 import com.xiaoju.uemc.turbo.engine.engine.impl.ProcessEngineImpl;
 import com.xiaoju.uemc.turbo.engine.param.CreateFlowParam;
 import com.xiaoju.uemc.turbo.engine.param.DeployFlowParam;
@@ -29,8 +30,8 @@ public class ProcessEngineTest extends BaseTest {
     public void createFlowTest() {
         CreateFlowParam createFlowParam = EntityBuilder.buildCreateFlowParam();
         try {
-            CreateFlowDTO createFlowDTO = processEngineImpl.createFlow(createFlowParam);
-            LOGGER.info("flowModuleId={}", createFlowDTO.getFlowModuleId());
+            CreateFlowResult createFlowResult = processEngineImpl.createFlow(createFlowParam);
+            LOGGER.info("flowModuleId={}", createFlowResult.getFlowModuleId());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,19 +42,8 @@ public class ProcessEngineTest extends BaseTest {
         UpdateFlowParam updateFlowParam = EntityBuilder.buildUpdateFlowParam();
         updateFlowParam.setFlowModuleId("a038f993-1d7c-11ea-928e-8214dae31b03");
         try {
-            boolean result = processEngineImpl.updateFlow(updateFlowParam);
-            LOGGER.info("result={}", result);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void getFlowModuleTest() {
-        String flowModuleId = "a038f993-1d7c-11ea-928e-8214dae31b03";
-        try {
-            FlowModuleDTO flowModule = processEngineImpl.getFlowModule(flowModuleId);
-            LOGGER.info("flowModule={} by flowModuleId", flowModule);
+            UpdateFlowResult updateFlowResult = processEngineImpl.updateFlow(updateFlowParam);
+            LOGGER.info("result={}", updateFlowResult);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -65,8 +55,8 @@ public class ProcessEngineTest extends BaseTest {
         deployFlowParam.setFlowModuleId("76bb65d9-35ef-11ea-a4cd-5ef9e2914105");
         deployFlowParam.setOperator("didiwangxing");
         try {
-            DeployFlowDTO deployFlowDTO = processEngineImpl.deployFlow(deployFlowParam);
-            LOGGER.info("deployFlowDTO={}", deployFlowDTO);
+            DeployFlowResult deployFlowResult = processEngineImpl.deployFlow(deployFlowParam);
+            LOGGER.info("deployFlowResult={}", deployFlowResult);
         } catch (Exception e) {
             e.printStackTrace();
         }

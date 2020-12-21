@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = {DruidDataSourceAutoConfigure.class})
 @ComponentScan("com.xiaoju.uemc.turbo.engine")
-@MapperScan(basePackages = {"com.xiaoju.uemc.turbo.engine"})
+@MapperScan(basePackages = {"com.xiaoju.uemc.turbo.engine.dao"})
 public class TestEngineApplication {
     public static void main(String[] args) {
         SpringApplication.run(TestEngineApplication.class, args);

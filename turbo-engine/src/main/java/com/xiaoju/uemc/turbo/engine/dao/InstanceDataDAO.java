@@ -14,10 +14,22 @@ public class InstanceDataDAO extends BaseDAO<InstanceDataMapper, InstanceDataPO>
         return baseMapper.select(flowInstanceId, instanceDataId);
     }
 
+    /**
+     * select recent InstanceData order by id desc
+     *
+     * @param flowInstanceId
+     * @return
+     */
     public InstanceDataPO selectRecentOne(String flowInstanceId) {
         return baseMapper.selectRecentOne(flowInstanceId);
     }
 
+    /**
+     * insert instanceDataPO
+     *
+     * @param instanceDataPO
+     * @return -1 while insert failed
+     */
     public int insert(InstanceDataPO instanceDataPO) {
         try {
             return baseMapper.insert(instanceDataPO);
