@@ -391,7 +391,8 @@ public class FlowExecutor extends RuntimeExecutor {
     // TODO: 2020/1/10 clean code
     //1. getActiveUserTask
     //2. if(canRollback): only the active userTask or the lasted completed userTask can be rollback
-    private NodeInstancePO getActiveUserTaskForRollback(String flowInstanceId, String suspendNodeInstanceId, Map<String, FlowElement> flowElementMap) {
+    private NodeInstancePO getActiveUserTaskForRollback(String flowInstanceId, String suspendNodeInstanceId,
+                                                        Map<String, FlowElement> flowElementMap) {
         List<NodeInstancePO> nodeInstancePOList = nodeInstanceDAO.selectDescByFlowInstanceId(flowInstanceId);
         if (CollectionUtils.isEmpty(nodeInstancePOList)) {
             LOGGER.warn("getActiveUserTaskForRollback: nodeInstancePOList is empty."
@@ -461,7 +462,8 @@ public class FlowExecutor extends RuntimeExecutor {
 
     }
 
-    private void fillRollbackContext(RuntimeContext runtimeContext, NodeInstancePO nodeInstancePO, Map<String, InstanceData> instanceDataMap) throws ProcessException {
+    private void fillRollbackContext(RuntimeContext runtimeContext, NodeInstancePO nodeInstancePO,
+                                     Map<String, InstanceData> instanceDataMap) throws ProcessException {
         runtimeContext.setInstanceDataId(nodeInstancePO.getInstanceDataId());
         runtimeContext.setInstanceDataMap(instanceDataMap);
         runtimeContext.setNodeInstanceList(Lists.newArrayList());

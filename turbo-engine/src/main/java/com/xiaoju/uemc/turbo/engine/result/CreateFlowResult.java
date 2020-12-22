@@ -9,5 +9,5 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 public class CreateFlowResult extends CommonResult {
-    String flowModuleId;
+    private String flowModuleId;
 }

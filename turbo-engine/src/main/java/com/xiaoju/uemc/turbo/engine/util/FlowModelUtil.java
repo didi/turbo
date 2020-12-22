@@ -1,21 +1,17 @@
 package com.xiaoju.uemc.turbo.engine.util;
 
 import com.alibaba.fastjson.JSONObject;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import com.google.common.collect.Maps;
 import com.xiaoju.uemc.turbo.engine.common.Constants;
-import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.common.FlowElementType;
-import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import com.xiaoju.uemc.turbo.engine.model.FlowElement;
 import com.xiaoju.uemc.turbo.engine.model.FlowModel;
-import com.xiaoju.uemc.turbo.engine.model.InstanceData;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +20,7 @@ import java.util.Map;
  */
 public class FlowModelUtil {
     protected static final Logger LOGGER = LoggerFactory.getLogger(FlowModelUtil.class);
-
+    private FlowModelUtil() {}
     /**
      * Parse flowModelStr to flowModel, put flowElement into map, with key=key and value=flowElement
      *

@@ -9,5 +9,5 @@ import java.util.List;
  */
 @Data
 public class FlowModel {
-    public List<FlowElement> flowElementList;
+    private List<FlowElement> flowElementList;
 }

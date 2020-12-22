@@ -36,13 +36,14 @@ public class GroovyExpressionCalculator implements ExpressionCalculator {
             if (result instanceof Boolean) {
                 return (Boolean) result;
             } else {
-                LOGGER.warn("the result of expression is not boolean.||expression={}||result={}||dataMap={}", expression, result, JSON.toJSONString(dataMap));
+                LOGGER.warn("the result of expression is not boolean.||expression={}||result={}||dataMap={}",
+                        expression, result, JSON.toJSONString(dataMap));
                 throw new ProcessException(ErrorEnum.GROOVY_CALCULATE_FAILED.getErrNo(), "expression is not instanceof bool.");
             }
-        } catch (Throwable t) {
-            LOGGER.error("calculate expression failed.||message={}||expression={}||dataMap={}, ", t.getMessage(), expression, dataMap, t);
+        } catch (Exception e) {
+            LOGGER.error("calculate expression failed.||message={}||expression={}||dataMap={}, ", e.getMessage(), expression, dataMap, e);
             String groovyExFormat = "{0}: expression={1}";
-            throw new ProcessException(ErrorEnum.GROOVY_CALCULATE_FAILED, MessageFormat.format(groovyExFormat, t.getMessage(), expression));
+            throw new ProcessException(ErrorEnum.GROOVY_CALCULATE_FAILED, MessageFormat.format(groovyExFormat, e.getMessage(), expression));
         } finally {
             LOGGER.info("calculate expression.||expression={}||dataMap={}||result={}", expression, JSONObject.toJSONString(dataMap), result);
         }

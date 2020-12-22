@@ -1,9 +1,5 @@
 package com.xiaoju.uemc.turbo.engine.util;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.xiaoju.uemc.turbo.engine.common.ErrorEnum;
 import com.xiaoju.uemc.turbo.engine.exception.ProcessException;
 import groovy.lang.Binding;
@@ -12,8 +8,9 @@ import groovy.lang.MissingPropertyException;
 import groovy.lang.Script;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.groovy.runtime.InvokerHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +23,8 @@ public class GroovyUtil {
     protected static final Logger LOGGER = LoggerFactory.getLogger(GroovyUtil.class);
 
     private static final Map<String, Class> SCRIPT_CLASS_CACHE = new ConcurrentHashMap<String, Class>();
+
+    private GroovyUtil() {}
 
     public static Object execute(String expression, Map<String, Object> dataMap) throws Exception {
         if (StringUtils.isBlank(expression)) {

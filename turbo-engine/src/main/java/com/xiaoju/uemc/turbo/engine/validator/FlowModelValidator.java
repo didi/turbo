@@ -40,7 +40,8 @@ public class FlowModelValidator {
             if (flowElementMap.containsKey(flowElement.getKey())) {
                 String elementName = FlowModelUtil.getElementName(flowElement);
                 String elementKey = flowElement.getKey();
-                String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT, ErrorEnum.ELEMENT_KEY_NOT_UNIQUE, elementName, elementKey);
+                String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT,
+                        ErrorEnum.ELEMENT_KEY_NOT_UNIQUE, elementName, elementKey);
                 LOGGER.warn(exceptionMsg);
                 throw new DefinitionException(ErrorEnum.ELEMENT_KEY_NOT_UNIQUE.getErrNo(), exceptionMsg);
             }

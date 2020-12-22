@@ -60,7 +60,8 @@ public class NodeInstanceMapperTest extends BaseTest {
     public void selectBySourceInstanceId() {
         NodeInstancePO nodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
         nodeInstanceMapper.insert(nodeInstancePO);
-        NodeInstancePO result = nodeInstanceMapper.selectBySourceInstanceId(nodeInstancePO.getFlowInstanceId(), nodeInstancePO.getSourceNodeInstanceId(), nodeInstancePO.getNodeKey());
+        NodeInstancePO result = nodeInstanceMapper.selectBySourceInstanceId(nodeInstancePO.getFlowInstanceId(),
+                nodeInstancePO.getSourceNodeInstanceId(), nodeInstancePO.getNodeKey());
         Assert.assertTrue(result.getNodeInstanceId().equals(nodeInstancePO.getNodeInstanceId()));
     }
 
