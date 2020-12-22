@@ -9,7 +9,7 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 public class DeployFlowParam extends OperationParam {
-    String flowModuleId;
+    private String flowModuleId;
 
     public DeployFlowParam(String tenant, String caller) {
         super(tenant, caller);

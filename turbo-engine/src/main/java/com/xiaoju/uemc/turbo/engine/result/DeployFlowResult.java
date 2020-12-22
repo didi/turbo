@@ -9,6 +9,6 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 public class DeployFlowResult extends CommonResult {
-    String flowModuleId;
-    String flowDeployId;
+    private String flowModuleId;
+    private String flowDeployId;
 }

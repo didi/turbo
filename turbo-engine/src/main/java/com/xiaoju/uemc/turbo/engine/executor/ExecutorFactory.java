@@ -53,24 +53,12 @@ public class ExecutorFactory {
 
     private ElementExecutor getElementExecutor(int elementType) {
         switch (elementType) {
-            case FlowElementType.START_EVENT: {
-                return startEventExecutor;
-            }
-            case FlowElementType.END_EVENT: {
-                return endEventExecutor;
-            }
-            case FlowElementType.SEQUENCE_FLOW: {
-                return sequenceFlowExecutor;
-            }
-            case FlowElementType.USER_TASK: {
-                return userTaskExecutor;
-            }
-            case FlowElementType.EXCLUSIVE_GATEWAY: {
-                return exclusiveGatewayExecutor;
-            }
-            default: {
-                return null;
-            }
+            case FlowElementType.START_EVENT: return startEventExecutor;
+            case FlowElementType.END_EVENT: return endEventExecutor;
+            case FlowElementType.SEQUENCE_FLOW: return sequenceFlowExecutor;
+            case FlowElementType.USER_TASK: return userTaskExecutor;
+            case FlowElementType.EXCLUSIVE_GATEWAY: return exclusiveGatewayExecutor;
+            default: return null;
         }
     }
 }

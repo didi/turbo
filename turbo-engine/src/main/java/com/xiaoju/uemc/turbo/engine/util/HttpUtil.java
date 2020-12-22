@@ -25,6 +25,8 @@ public class HttpUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
 
+    private HttpUtil() {}
+
     public static String postJson(String urlName, String url, String body, int timeout) {
         Long costTime = 0L;
 

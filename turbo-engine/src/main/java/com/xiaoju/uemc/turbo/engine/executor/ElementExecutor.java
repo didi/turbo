@@ -28,7 +28,7 @@ import java.util.Map;
 public abstract class ElementExecutor extends RuntimeExecutor {
 
     @Resource
-    protected ExpressionCalculator expressionCalculator;
+    private ExpressionCalculator expressionCalculator;
 
     @Override
     public void execute(RuntimeContext runtimeContext) throws ProcessException {

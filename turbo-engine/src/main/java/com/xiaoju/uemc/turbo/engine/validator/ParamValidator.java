@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ParamValidator {
 
+    private ParamValidator() {}
+
     public static void validate(StartProcessParam startProcessParam) throws ParamException {
         if (startProcessParam == null) {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "param is null");

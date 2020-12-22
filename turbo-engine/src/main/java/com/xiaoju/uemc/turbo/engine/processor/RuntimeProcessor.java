@@ -214,7 +214,8 @@ public class RuntimeProcessor {
 
             //3.check status
             if (flowInstanceBO.getStatus() != FlowInstanceStatus.RUNNING) {
-                LOGGER.warn("rollback failed: invalid status to rollback.||rollbackTaskParam={}||status={}", rollbackTaskParam, flowInstanceBO.getStatus());
+                LOGGER.warn("rollback failed: invalid status to rollback.||rollbackTaskParam={}||status={}",
+                        rollbackTaskParam, flowInstanceBO.getStatus());
                 throw new ProcessException(ErrorEnum.ROLLBACK_REJECTRD);
             }
             String flowDeployId = flowInstanceBO.getFlowDeployId();
@@ -287,16 +288,8 @@ public class RuntimeProcessor {
             LOGGER.error("terminateProcess exception.||flowInstanceId={}, ", flowInstanceId, e);
             terminateResult = new TerminateResult(ErrorEnum.SYSTEM_ERROR);
             terminateResult.setFlowInstanceId(flowInstanceId);
-        } finally {
         }
         return terminateResult;
-    }
-
-    ////////////////////////////////////////updateInstanceData////////////////////////////////////////
-    public CommonResult updateInstanceData(String flowInstanceId, Map<String, InstanceData> dataMap) throws Exception {
-        InstanceDataPO instanceDataPO = instanceDataDAO.selectRecentOne(flowInstanceId);
-        CommonResult commonResult = new CommonResult(ErrorEnum.SUCCESS);
-        return commonResult;
     }
 
     ////////////////////////////////////////getHistoryUserTaskList////////////////////////////////////////
