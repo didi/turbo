@@ -30,15 +30,15 @@ Turbo是Didi公司开发的轻量级的Java实现的流程引擎
 
 *考虑兼容性问题，流程元素设计参考了BPMN规范。
 
-构成流程中的各种元素通称为流程元素（FlowElement），包括节点（FlowNode）和顺序流（SequenceFlow）。
+构成流程中的各种元素通称为流程元素 (FlowElement)，包括节点 (FlowNode)和顺序流 (SequenceFlow)。
 
 #### 3.1 节点 (FlowNode)
 
 ##### 3.1.1 事件节点 (EventNode)
 
 例如：
-* 开始节点 (StartEvent)：标识流程的开始
-* 结束节点 (EndEvent)：标识流程的结束
+* 开始节点 (StartEvent)：标识流程的开始；
+* 结束节点 (EndEvent)：标识流程的结束；
 
 ##### 3.1.2 活动节点 (ActivityNode)
 
@@ -50,10 +50,10 @@ Turbo是Didi公司开发的轻量级的Java实现的流程引擎
 
 ##### 3.1.3 网关节点 (Gateway)
 
-与SequenceFlow配合使用，用于描述SequenceFlow的执行策略
+与SequenceFlow配合使用，用于描述SequenceFlow的执行策略。
 
 例如：
-* 排他网关 (ExclusiveGateway)：同一时刻的同一个实例中，根据指定输入，有且只有一条路径(SequenceFlow)被命中。
+* 排他网关 (ExclusiveGateway)：同一时刻的同一个实例中，根据指定输入，有且只有一条路径(SequenceFlow)被命中；
 
 #### 3.2 顺序流 (SequenceFlow)
 
