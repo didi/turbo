@@ -6,6 +6,7 @@ import com.didiglobal.turbo.engine.runner.BaseTest;
 import com.didiglobal.turbo.engine.util.EntityBuilder;
 import org.junit.Assert;
 import org.junit.Test;
+
 import javax.annotation.Resource;
 
 public class ModelValidatorTest extends BaseTest {

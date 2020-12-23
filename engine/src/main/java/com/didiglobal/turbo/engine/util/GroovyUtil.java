@@ -20,7 +20,8 @@ public class GroovyUtil {
 
     private static final Map<String, Class> SCRIPT_CLASS_CACHE = new ConcurrentHashMap<String, Class>();
 
-    private GroovyUtil() {}
+    private GroovyUtil() {
+    }
 
     public static Object execute(String expression, Map<String, Object> dataMap) throws Exception {
         if (StringUtils.isBlank(expression)) {

@@ -1,20 +1,20 @@
 package com.didiglobal.turbo.engine.validator;
 
 import com.didiglobal.turbo.engine.common.FlowElementType;
+import com.didiglobal.turbo.engine.exception.DefinitionException;
+import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.FlowModel;
 import com.didiglobal.turbo.engine.model.SequenceFlow;
 import com.didiglobal.turbo.engine.model.StartEvent;
-import com.didiglobal.turbo.engine.common.FlowElementType;
-import com.didiglobal.turbo.engine.exception.DefinitionException;
-import com.didiglobal.turbo.engine.exception.ProcessException;
-import com.didiglobal.turbo.engine.model.*;
 import com.didiglobal.turbo.engine.runner.BaseTest;
 import com.didiglobal.turbo.engine.util.EntityBuilder;
 import org.junit.Assert;
 import org.junit.Test;
+
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FlowModelValidatorTest extends BaseTest {
 

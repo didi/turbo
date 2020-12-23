@@ -1,11 +1,11 @@
 package com.didiglobal.turbo.engine.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Maps;
 import com.didiglobal.turbo.engine.common.Constants;
 import com.didiglobal.turbo.engine.common.FlowElementType;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.FlowModel;
+import com.google.common.collect.Maps;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +17,10 @@ import java.util.Map;
 
 public class FlowModelUtil {
     protected static final Logger LOGGER = LoggerFactory.getLogger(FlowModelUtil.class);
-    private FlowModelUtil() {}
+
+    private FlowModelUtil() {
+    }
+
     /**
      * Parse flowModelStr to flowModel, put flowElement into map, with key=key and value=flowElement
      *

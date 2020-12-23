@@ -2,9 +2,6 @@ package com.didiglobal.turbo.engine.dao.mapper;
 
 import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
-import com.didiglobal.turbo.engine.util.EntityBuilder;
-import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
-import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import com.didiglobal.turbo.engine.runner.BaseTest;
 import com.didiglobal.turbo.engine.util.EntityBuilder;
 import org.junit.Assert;

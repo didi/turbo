@@ -1,7 +1,5 @@
 package com.didiglobal.turbo.engine.util;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import com.google.common.base.Stopwatch;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -13,6 +11,8 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;

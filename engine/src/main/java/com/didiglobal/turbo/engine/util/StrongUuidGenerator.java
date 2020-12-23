@@ -6,7 +6,6 @@ import com.fasterxml.uuid.impl.TimeBasedGenerator;
 
 public final class StrongUuidGenerator implements IdGenerator {
 
-    // different ProcessEngines on the same classloader share one generator.
     private static volatile TimeBasedGenerator timeBasedGenerator;
 
     public StrongUuidGenerator() {

@@ -2,8 +2,6 @@ package com.didiglobal.turbo.engine.validator;
 
 import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.model.FlowElement;
-import com.didiglobal.turbo.engine.common.ErrorEnum;
-import com.didiglobal.turbo.engine.model.FlowElement;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
