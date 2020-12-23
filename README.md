@@ -30,29 +30,32 @@ Turbo是Didi公司开发的轻量级的Java实现的流程引擎
 
 *考虑兼容性问题，流程元素设计参考了BPMN规范。
 
-构成流程中的各种元素通称为流程元素（FlowElement），包括节点（FlowNode）和顺序流（SequenceFlow）。
+构成流程中的各种元素通称为流程元素 (FlowElement)，包括节点 (FlowNode)和顺序流 (SequenceFlow)。
 
 #### 3.1 节点 (FlowNode)
 
 ##### 3.1.1 事件节点 (EventNode)
 
 例如：
-* StartEvent：标识流程的开始；
-* EndEvent：标识流程的结束；
+* 开始节点 (StartEvent)：标识流程的开始；
+* 结束节点 (EndEvent)：标识流程的结束；
 
 ##### 3.1.2 活动节点 (ActivityNode)
 
 例如：
-* 任务(Task)：需要处理的节点，例如：
-    * 用户任务节点(UserTask)：使用方执行任务的节点，比如需要用户提交信息；
-    * 系统任务节点(ServiceTask)：系统内部自行执行任务的节点；
-* 子流程(SubProcess)；将流程作为另一个流程的节点来处理；
+* 任务 (Task)：需要处理的节点，例如：
+    * 用户任务节点 (UserTask)：使用方执行任务的节点，比如需要用户提交信息；
+    * 系统任务节点 (ServiceTask)：系统内部自行执行任务的节点；
+* 子流程 (SubProcess)；将流程作为另一个流程的节点来处理；
 
-##### 3.1.3 网关节点(Gateway)
+##### 3.1.3 网关节点 (Gateway)
 
-与SequenceFlow配合使用，用于描述SequenceFlow的执行策略，例如：ExclusiveGateway：排他网关，同一时刻的同一个实例中，根据指定输入，有且只有一条路径(SequenceFlow)被命中。
+与SequenceFlow配合使用，用于描述SequenceFlow的执行策略。
 
-#### 3.2 顺序流（SequenceFlow）
+例如：
+* 排他网关 (ExclusiveGateway)：同一时刻的同一个实例中，根据指定输入，有且只有一条路径(SequenceFlow)被命中；
+
+#### 3.2 顺序流 (SequenceFlow)
 
 记录节点之间的执行顺序，可以配置执行的条件conditions（比如用户点击了“同意”作为输入），conditions只有在与网关节点Gateway配合使用时生效，由Gateway决定conditions的执行策略。
 
