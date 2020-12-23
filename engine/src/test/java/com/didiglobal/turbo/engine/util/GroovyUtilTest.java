@@ -33,8 +33,6 @@ public class GroovyUtilTest {
             LOGGER.warn("result:{}:{}", result.getClass().getSimpleName(), result);
         } catch (Exception e) {
             LOGGER.warn("catch exception", e);
-        } catch (Throwable t) {
-            LOGGER.warn("catch throwable", t);
         }
     }
 }
