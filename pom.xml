@@ -95,21 +95,6 @@
         </dependency>
     </dependencies>
 
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <name>libs-release</name>
-            <url>http://artifactory.intra.xiaojukeji.com:80/artifactory/libs-release</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>libs-snapshot</name>
-            <url>http://artifactory.intra.xiaojukeji.com:80/artifactory/libs-snapshot</url>
-        </snapshotRepository>
-
-    </distributionManagement>
-
     <build>
         <plugins>
             <plugin>
