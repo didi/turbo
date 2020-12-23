@@ -466,7 +466,7 @@ public class EntityBuilder {
     }
 
     public static CreateFlowParam buildCreateFlowParam() {
-        CreateFlowParam createFlowParam = new CreateFlowParam("company", "serviceName");
+        CreateFlowParam createFlowParam = new CreateFlowParam("testTenant", "testCaller");
         createFlowParam.setOperator(operator);
         createFlowParam.setFlowKey(flowKey);
         createFlowParam.setFlowName(flowName);
@@ -475,7 +475,7 @@ public class EntityBuilder {
     }
 
     public static UpdateFlowParam buildUpdateFlowParam() {
-        UpdateFlowParam updateFlowParam = new UpdateFlowParam("company", "serviceName");
+        UpdateFlowParam updateFlowParam = new UpdateFlowParam("testTenant", "testCaller");
         updateFlowParam.setOperator(operator);
         updateFlowParam.setFlowKey(flowKey);
         updateFlowParam.setFlowName(flowName);
@@ -484,7 +484,7 @@ public class EntityBuilder {
         return updateFlowParam;
     }
     public static DeployFlowParam buildDeployFlowParm() {
-        DeployFlowParam deployFlowParam = new DeployFlowParam("company", "serviceName");
+        DeployFlowParam deployFlowParam = new DeployFlowParam("testTenant", "testCaller");
         deployFlowParam.setFlowModuleId(flowModuleId);
         return deployFlowParam;
     }

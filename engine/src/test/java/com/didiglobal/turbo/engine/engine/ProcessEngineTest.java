@@ -48,7 +48,7 @@ public class ProcessEngineTest extends BaseTest {
 
     @Test
     public void deployFlowTest() {
-        DeployFlowParam deployFlowParam = new DeployFlowParam("company", "serviceName");
+        DeployFlowParam deployFlowParam = new DeployFlowParam("testTenant", "testCaller");
         deployFlowParam.setFlowModuleId("76bb65d9-35ef-11ea-a4cd-5ef9e2914105");
         deployFlowParam.setOperator("liming");
         try {
