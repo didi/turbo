@@ -466,7 +466,7 @@ public class EntityBuilder {
     }
 
     public static CreateFlowParam buildCreateFlowParam() {
-        CreateFlowParam createFlowParam = new CreateFlowParam("didi", "optimus-prime");
+        CreateFlowParam createFlowParam = new CreateFlowParam("company", "serviceName");
         createFlowParam.setOperator(operator);
         createFlowParam.setFlowKey(flowKey);
         createFlowParam.setFlowName(flowName);
@@ -475,7 +475,7 @@ public class EntityBuilder {
     }
 
     public static UpdateFlowParam buildUpdateFlowParam() {
-        UpdateFlowParam updateFlowParam = new UpdateFlowParam("didi", "optimus-prime");
+        UpdateFlowParam updateFlowParam = new UpdateFlowParam("company", "serviceName");
         updateFlowParam.setOperator(operator);
         updateFlowParam.setFlowKey(flowKey);
         updateFlowParam.setFlowName(flowName);
@@ -484,7 +484,7 @@ public class EntityBuilder {
         return updateFlowParam;
     }
     public static DeployFlowParam buildDeployFlowParm() {
-        DeployFlowParam deployFlowParam = new DeployFlowParam("didi", "optimus-prime");
+        DeployFlowParam deployFlowParam = new DeployFlowParam("company", "serviceName");
         deployFlowParam.setFlowModuleId(flowModuleId);
         return deployFlowParam;
     }

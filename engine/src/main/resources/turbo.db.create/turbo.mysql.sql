@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS `em_flow_definition` (
   `operator` varchar(32) NOT NULL DEFAULT '' COMMENT '操作人',
   `remark` varchar(512) NOT NULL DEFAULT '' COMMENT '备注',
   `archive` tinyint(4) NOT NULL DEFAULT '0' COMMENT '归档状态(0未删除，1删除)',
-  `tenant` varchar(100) NOT NULL DEFAULT 'didi' COMMENT '租户',
-  `caller` varchar(100) NOT NULL DEFAULT 'optimus-prime' COMMENT '调用方',
+  `tenant` varchar(100) NOT NULL DEFAULT '' COMMENT '租户',
+  `caller` varchar(100) NOT NULL DEFAULT '' COMMENT '调用方',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_flow_module_id` (`flow_module_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='流程定义表';
@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS `em_flow_deployment` (
   `operator` varchar(32) NOT NULL DEFAULT '' COMMENT '操作人',
   `remark` varchar(512) NOT NULL DEFAULT '' COMMENT '备注',
   `archive` tinyint(4) NOT NULL DEFAULT '0' COMMENT '归档状态(0未删除，1删除)',
-  `tenant` varchar(100) NOT NULL DEFAULT 'didi' COMMENT '租户',
-  `caller` varchar(100) NOT NULL DEFAULT 'optimus-prime' COMMENT '调用方',
+  `tenant` varchar(100) NOT NULL DEFAULT '' COMMENT '租户',
+  `caller` varchar(100) NOT NULL DEFAULT '' COMMENT '调用方',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_flow_deploy_id` (`flow_deploy_id`),
   KEY `idx_flow_module_id` (`flow_module_id`)
@@ -51,8 +51,8 @@ CREATE TABLE IF NOT EXISTS `ei_flow_instance` (
   `create_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程创建时间',
   `modify_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程修改时间',
   `archive` tinyint(4) NOT NULL DEFAULT '0' COMMENT '归档状态(0未删除，1删除)',
-  `tenant` varchar(100) NOT NULL DEFAULT 'didi' COMMENT '租户',
-  `caller` varchar(100) NOT NULL DEFAULT 'optimus-prime' COMMENT '调用方',
+  `tenant` varchar(100) NOT NULL DEFAULT '' COMMENT '租户',
+  `caller` varchar(100) NOT NULL DEFAULT '' COMMENT '调用方',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_flow_instance_id` (`flow_instance_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='流程执行实例表';
@@ -72,8 +72,8 @@ CREATE TABLE IF NOT EXISTS `ei_node_instance` (
   `create_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程创建时间',
   `modify_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程修改时间',
   `archive` tinyint(4) NOT NULL DEFAULT '0' COMMENT '归档状态(0未删除，1删除)',
-  `tenant` varchar(100) NOT NULL DEFAULT 'didi' COMMENT '租户',
-  `caller` varchar(100) NOT NULL DEFAULT 'optimus-prime' COMMENT '调用方',
+  `tenant` varchar(100) NOT NULL DEFAULT '' COMMENT '租户',
+  `caller` varchar(100) NOT NULL DEFAULT '' COMMENT '调用方',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_node_instance_id` (`node_instance_id`),
   KEY `idx_fiid_sniid_nk` (`flow_instance_id`,`source_node_instance_id`,`node_key`)
@@ -91,8 +91,8 @@ CREATE TABLE IF NOT EXISTS `ei_node_instance_log` (
   `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态(1.处理成功 2.处理中 3.处理失败 4.处理已撤销)',
   `create_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程创建时间',
   `archive` tinyint(4) NOT NULL DEFAULT '0' COMMENT '归档状态(0未删除，1删除)',
-  `tenant` varchar(100) NOT NULL DEFAULT 'didi' COMMENT '租户',
-  `caller` varchar(100) NOT NULL DEFAULT 'optimus-prime' COMMENT '调用方',
+  `tenant` varchar(100) NOT NULL DEFAULT '' COMMENT '租户',
+  `caller` varchar(100) NOT NULL DEFAULT '' COMMENT '调用方',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='节点执行记录表';
 
@@ -110,8 +110,8 @@ CREATE TABLE IF NOT EXISTS `ei_instance_data` (
   `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT '操作类型(1.实例初始化 2.系统执行 3.系统主动获取 4.上游更新 5.任务提交 6.任务撤回)',
   `create_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程创建时间',
   `archive` tinyint(4) NOT NULL DEFAULT '0' COMMENT '归档状态(0未删除，1删除)',
-  `tenant` varchar(100) CHARACTER SET utf8 NOT NULL DEFAULT 'didi' COMMENT '租户',
-  `caller` varchar(100) CHARACTER SET utf8 NOT NULL DEFAULT 'optimus-prime' COMMENT '调用方',
+  `tenant` varchar(100) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '租户',
+  `caller` varchar(100) CHARACTER SET utf8 NOT NULL DEFAULT '' COMMENT '调用方',
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_instance_data_id` (`instance_data_id`),
   KEY `idx_flow_instance_id` (`flow_instance_id`)
