@@ -4,9 +4,6 @@ import com.fasterxml.uuid.EthernetAddress;
 import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.TimeBasedGenerator;
 
-/**
- * Created by Stefanie on 2019/11/26.
- */
 public final class StrongUuidGenerator implements IdGenerator {
 
     private static volatile TimeBasedGenerator timeBasedGenerator;
