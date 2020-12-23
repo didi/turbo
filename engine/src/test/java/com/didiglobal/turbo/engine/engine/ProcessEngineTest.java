@@ -48,9 +48,9 @@ public class ProcessEngineTest extends BaseTest {
 
     @Test
     public void deployFlowTest() {
-        DeployFlowParam deployFlowParam = new DeployFlowParam("didi", "optimus-prime");
+        DeployFlowParam deployFlowParam = new DeployFlowParam("company", "serviceName");
         deployFlowParam.setFlowModuleId("76bb65d9-35ef-11ea-a4cd-5ef9e2914105");
-        deployFlowParam.setOperator("didiwangxing");
+        deployFlowParam.setOperator("liming");
         try {
             DeployFlowResult deployFlowResult = processEngineImpl.deployFlow(deployFlowParam);
             LOGGER.info("deployFlowResult={}", deployFlowResult);
