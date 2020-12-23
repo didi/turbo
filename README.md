@@ -80,15 +80,15 @@ Turbo是Didi公司开发的轻量级的Java实现的流程引擎
 
 ```
 <dependency>
-    <groupId>com.xiaoju.uemc</groupId>
-    <artifactId>turbo-engine</artifactId>
+    <groupId>com.didiglobal</groupId>
+    <artifactId>engine</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
 ### 2. 配置必要信息
 
-执行[建表语句](turbo-engine/src/main/resources/turbo.db.create/turbo.mysql.sql)，在属性文件中配置属性信息
+执行[建表语句](engine/src/main/resources/turbo.db.create/turbo.mysql.sql)，在属性文件中配置属性信息
 
 ```
 # 必要属性
