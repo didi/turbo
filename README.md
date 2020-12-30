@@ -79,17 +79,7 @@ Turbo是Didi公司开发的轻量级的Java实现的流程引擎
 
 # 快速开始
 
-### 1. 引入Maven依赖
-
-```
-<dependency>
-    <groupId>com.didiglobal</groupId>
-    <artifactId>engine</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-</dependency>
-```
-
-### 2. 配置必要信息
+### 1. 配置必要信息
 
 执行[建表语句](engine/src/main/resources/turbo.db.create/turbo.mysql.sql)，在属性文件中配置属性信息
 
@@ -108,13 +98,13 @@ hook.timeout=3000
 
 ```
 
-### 3. 根据demo开始你的Turbo之旅吧
+### 2. 根据demo开始你的Turbo之旅吧
 
 # demo介绍
 
 demo模型
 
-![avatar](file/demo.png)
+![avatar](https://dpubstatic.udache.com/static/dpubimg/Uw78A6b_UY/demo.png)
 
 步骤1
 
@@ -125,7 +115,7 @@ StartProcessParam startProcessParam = EntityBuilder.buildStartProcessParam();
 StartProcessResult startProcessResult = processEngine.startProcess(startProcessParam);
 ```
 
-![avatar](file/startProcessToUserTask1.png)
+![avatar](https://dpubstatic.udache.com/static/dpubimg/n_fGkY_BM1/startProcessToUserTask1.png)
 
 步骤2
 
@@ -136,7 +126,7 @@ CommitTaskParam commitTaskParam = EntityBuilder.buildCommitTaskParam();
 CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
 ```
 
-![avatar](file/commitToUserTask2.png)
+![avatar](https://dpubstatic.udache.com/static/dpubimg/cj9ZSG0YMF/commitToUserTask2.png)
 
 步骤3
 
@@ -147,7 +137,7 @@ RollbackTaskParam rollbackTaskParam = EntityBuilder.buildRollbackTaskParam();
 RollbackTaskResult rollbackTaskResult = processEngine.rollbackTask(rollbackTaskParam);
 ```
 
-![avatar](file/rollbackToUserTask1.png)
+![avatar](https://dpubstatic.udache.com/static/dpubimg/4-72cEltvs/rollbackToUserTask1.png)
 
 步骤4
 
@@ -158,7 +148,7 @@ CommitTaskParam commitTaskParam = EntityBuilder.buildCommitTaskParam();
 CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
 ```
 
-![avatar](file/commitToUserTask3.png)
+![avatar](https://dpubstatic.udache.com/static/dpubimg/4NHWAJqYO7/commitToUserTask3.png)
 
 步骤5
 
@@ -169,4 +159,4 @@ CommitTaskParam commitTaskParam = EntityBuilder.buildCommitTaskParam();
 CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
 ```
 
-![avatar](file/commitToEndEvent2.png)
+![avatar](https://dpubstatic.udache.com/static/dpubimg/hixl2O6URT/commitToEndEvent2.png)
