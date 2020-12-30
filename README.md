@@ -114,7 +114,7 @@ hook.timeout=3000
 
 demo模型
 
-![avatar](file/demo.png)
+![avatar](https://dpubstatic.udache.com/static/dpubimg/0ZIb6_fvyM/demo.png)
 
 步骤1
 
