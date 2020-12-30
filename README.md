@@ -137,7 +137,7 @@ RollbackTaskParam rollbackTaskParam = EntityBuilder.buildRollbackTaskParam();
 RollbackTaskResult rollbackTaskResult = processEngine.rollbackTask(rollbackTaskParam);
 ```
 
-![avatar](https://dpubstatic.udache.com/static/dpubimg/4-72cEltvs/rollbackToUserTask1.png)
+![avatar](https://dpubstatic.udache.com/static/dpubimg/qGLvbqCiLg/rollbackToUserTask1.png)
 
 步骤4
 
