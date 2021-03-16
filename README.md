@@ -104,6 +104,10 @@ demo模型
 
 ![avatar](https://dpubstatic.udache.com/static/dpubimg/Uw78A6b_UY/demo.png)
 
+模型元素描述
+
+![avatar](https://dpubstatic.udache.com/static/dpubimg/zhLwWWn8jk/clipboard_image_1615899950028.png)
+
 步骤1
 
 > 调用引擎的接口`starProcess`，Demo实现方法是`startProcessToUserTask1`，流程从开始节点开始执行，执行到用户节点1挂起并且返回，如下图1
