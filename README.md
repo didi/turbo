@@ -106,7 +106,7 @@ demo模型
 
 模型元素描述
 
-![avatar](https://dpubstatic.udache.com/static/dpubimg/zhLwWWn8jk/clipboard_image_1615899950028.png)
+![avatar](https://dpubstatic.udache.com/static/dpubimg/tuxqscJC9z/flowElementDescribe.png)
 
 步骤1
 
