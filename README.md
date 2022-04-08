@@ -2,7 +2,98 @@
 
 Turbo是一款Java实现的轻量级流程引擎
 
-#
+# 为什么选择Turbo
+
+### 1. 什么时候使用Turbo
+
+业务支持**模块化**拆分、**有序**执行，并且有**多变**的编排诉求时，可以考虑采用Turbo作为底层引擎，同时可以配合使用 [logicflow](https://github.com/didi/LogicFlow) 进行可视化配置。
+
+**案例1：某团购售后流程**
+
+用户A在订单列表中选择订单，判断订单状态，如果状态为未发货，则直接跳转至退款申请页，如果状态为待收货则提示不支持售后，跳转至物流信息页，如果状态为已收货，则跳转至售后页填写售后信息并提交。
+
+![](https://cooper.didichuxing.com/cooper_gateway/cn/shimo-images/gAJqzSy0A4gIe8uv/image.png)
+
+**案例2：请假审批流程**
+
+员工A输入请假天数，判断请假天数是否大于等于3天，是的话由间接领导审批，否的话则由直属领导批准。
+
+![](/Users/liangchenhui/Library/Application%20Support/marktext/images/2022-04-08-11-45-56-image.png)
+
+### 2. Turbo有什么不同
+
+谈到流程引擎，当前市面上大部分是**Activiti**、**Flowable**、**Camunda**等面向OA场景，功能强大且有比较完整的生态的工作流引擎（平台），同时因为OA复杂的场景，库表关联操作非常多，但是对于其它业务场景，引擎运维以及学习成本较高，性能不可避免有一定损失，不适用于C端场景。  
+
+同时还有部分专注于纯内存执行、无状态的流程引擎，比如阿里的**Compileflow**，这类引擎不支持人机交互场景，适用于执行业务规则。举例：N个人去ktv唱歌，每人唱首歌，ktv消费原价为30元/人，如果总价超过300打九折，小于300按原价付款。
+
+Turbo的定位是兼容BPMN2.0的轻量级流程引擎（而非平台），支持可重入交互，主要负责提供稳定而高效的核心能力：**流程定义**、**流程驱动**，而节点的具体执行由接入方实现，可以快速搭建面向各种场景的流程编排类系统或产品，接入简单，支持灵活扩展，引擎扩展能力通过插件或组件的形式进行补充，支持按需使用，大大降低了用户的运维以及学习成本。
+
+### 3. 开源流程引擎对比
+
+<table>
+    <tr>
+        <td></td>
+        <td></td>
+        <td>Activiti</td>
+        <td>Camunda</td>
+        <td>Compileflow</td>
+        <td>turbo</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>核心表量</td>
+        <td>28</td>
+        <td>22</td>
+        <td>0</td>
+        <td>5</td>
+    </tr>
+    <tr>
+        <td  rowspan = "3"> 特性 </td>
+        <td>中断可重入</td>
+        <td>√</td>
+        <td>√</td>
+        <td>×</td>
+        <td>√</td>
+    </tr>
+    <tr>
+        <td>支持回滚</td>
+        <td>×</td>
+        <td>√</td>
+        <td>×</td>
+        <td>√</td>
+    </tr>
+    <tr>
+        <td>运行模式</td>
+        <td>独立运行和内嵌</td>    
+        <td>独立运行和内嵌</td>
+        <td>内嵌</td>
+        <td>内嵌</td>
+    </tr>
+    <tr>
+        <td rowspan = "3">兼容性</td>
+        <td>流程格式</td>
+        <td>BPMN2.0、XPDL、PDL</td>
+        <td>BPMN2.0、XPDL、PDL</td>
+        <td>BPMN2.0</td>
+        <td>BPMN2.0</td>
+    </tr>
+    <tr>
+        <td>支持脚本</td>
+        <td>JUEL、groovy</td>    
+        <td>python、ruby、groovy、JUEL</td>
+        <td>QlExpress</td>
+        <td>groovy</td>
+    </tr>
+    <tr>
+        <td>支持数据库</td>
+        <td>Oracle、SQL Server、MySQL</td>    
+        <td>Oracle、SQL Server、MySQL、postgre</td>
+        <td>无</td>
+        <td>MySQL</td>
+    </tr>
+</table>
+
+# 
 
 # 特性
 
@@ -12,7 +103,7 @@ Turbo是一款Java实现的轻量级流程引擎
 
 3. 支持流程回滚操作
 
-#
+# 
 
 # 关键模型
 
@@ -35,15 +126,17 @@ Turbo是一款Java实现的轻量级流程引擎
 ##### 3.1.1 事件节点 (EventNode)
 
 例如：
+
 * 开始节点 (StartEvent)：标识流程的开始；
 * 结束节点 (EndEvent)：标识流程的结束；
 
 ##### 3.1.2 活动节点 (ActivityNode)
 
 例如：
+
 * 任务 (Task)：需要处理的节点，例如：
-    * 用户任务节点 (UserTask)：使用方执行任务的节点，比如需要用户提交信息；
-    * 系统任务节点 (ServiceTask)：系统内部自行执行任务的节点；
+  * 用户任务节点 (UserTask)：使用方执行任务的节点，比如需要用户提交信息；
+  * 系统任务节点 (ServiceTask)：系统内部自行执行任务的节点；
 * 子流程 (SubProcess)；将流程作为另一个流程的节点来处理；
 
 ##### 3.1.3 网关节点 (Gateway)
@@ -51,13 +144,14 @@ Turbo是一款Java实现的轻量级流程引擎
 与SequenceFlow配合使用，用于描述SequenceFlow的执行策略。
 
 例如：
+
 * 排他网关 (ExclusiveGateway)：同一时刻的同一个实例中，根据指定输入，有且只有一条路径(SequenceFlow)被命中；
 
 #### 3.2 顺序流 (SequenceFlow)
 
 记录节点之间的执行顺序，可以配置执行的条件conditions（比如用户点击了“同意”作为输入），conditions只有在与网关节点Gateway配合使用时生效，由Gateway决定conditions的执行策略。
 
-#
+# 
 
 # 核心能力
 
@@ -77,7 +171,19 @@ Turbo是一款Java实现的轻量级流程引擎
 
 # 快速开始
 
-### 1. 配置必要信息
+## 1.运行环境
+
+1. JDK1.8
+2. mysql
+
+## 2.开发环境
+
+1. JDK1.8
+2. mysql
+3. maven 3.1+
+4. IntelliJ IDEA
+
+### 3. 配置必要信息
 
 执行[建表语句](engine/src/main/resources/turbo.db.create/turbo.mysql.sql)，在属性文件中配置属性信息
 
@@ -93,68 +199,30 @@ spring.datasource.dynamic.datasource.engine.url=jdbc:mysql://127.0.0.1:3306/db_e
 # 非必要属性
 hook.url=http://127.0.0.1:8031/data/refresh
 hook.timeout=3000
-
 ```
 
-### 2. 根据demo开始你的Turbo之旅吧
+### 4. 根据demo开始你的Turbo之旅吧
 
-# demo介绍
+根据上文提到的turbo支持的特性，给出了两个例子，其中整体的流程如下图所示：
 
-demo模型
+![](https://cooper.didichuxing.com/cooper_gateway/cn/shimo-images/b2wmNBxrgVUUgaKl/image.png)
 
-![avatar](https://dpubstatic.udache.com/static/dpubimg/Uw78A6b_UY/demo.png)
+其中与业务相关的是流程的定义和流程的执行，跟着下面的两个例子来看流程引擎的使用：
 
-步骤1
+Demo1：团购售后
 
-> 调用引擎的接口`starProcess`，Demo实现方法是`startProcessToUserTask1`，流程从开始节点开始执行，执行到用户节点1挂起并且返回，如下图1
+![](https://cooper.didichuxing.com/cooper_gateway/cn/shimo-images/rvAqeLr7pcMnNwBJ/image.png)
 
-```
-StartProcessParam startProcessParam = EntityBuilder.buildStartProcessParam();
-StartProcessResult startProcessResult = processEngine.startProcess(startProcessParam);
-```
+代码：[AfterSaleServiceImpl](demo/src/main/java/com/didiglobal/turbo/demo/service/AfterSaleServiceImpl.java)
 
-![avatar](https://dpubstatic.udache.com/static/dpubimg/n_fGkY_BM1/startProcessToUserTask1.png)
+Demo2:请假流程
 
-步骤2
+小T是桔厂的员工，本周三有事想请假，提交了一个请假流程，根据公司规定，3天及以内的假期需要直属领导审批，超过3天需要间接领导审批。
 
-> 调用引擎的接口`commitTask`，Demo实现方法是`commitToUserTask2`方法，我们开始提交，并且传入想要流入到用户节点2的参数，这时执行到了用户节点2挂起并且返回，如下图2
+针对这个请假的流程，我们可以画出以下的流程图
 
-```
-CommitTaskParam commitTaskParam = EntityBuilder.buildCommitTaskParam();
-CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
-```
+![](/Users/liangchenhui/Library/Application%20Support/marktext/images/2022-04-08-11-46-08-image.png)
 
-![avatar](https://dpubstatic.udache.com/static/dpubimg/cj9ZSG0YMF/commitToUserTask2.png)
+代码：[LeaveServiceImpl](demo/src/main/java/com/didiglobal/turbo/demo/service/LeaveServiceImpl.java)
 
-步骤3
-
-> 调用引擎的接口`rollbackTask`，Demo实现方法是`rollbackToUserTask1`方法，我们开始回滚，引擎会在最后一个完成的用户节点挂起，也就是用户节点1，如下图3
-
-```
-RollbackTaskParam rollbackTaskParam = EntityBuilder.buildRollbackTaskParam();
-RollbackTaskResult rollbackTaskResult = processEngine.rollbackTask(rollbackTaskParam);
-```
-
-![avatar](https://dpubstatic.udache.com/static/dpubimg/qGLvbqCiLg/rollbackToUserTask1.png)
-
-步骤4
-
-> 调用引擎的接口`commitTask`，Demo实现方法是`commitToUserTask3`方法，我们进行了提交，并且传入想要流入到用户节点3的参数，执行到了用户节点3挂起并且返回，如下图4
-
-```
-CommitTaskParam commitTaskParam = EntityBuilder.buildCommitTaskParam();
-CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
-```
-
-![avatar](https://dpubstatic.udache.com/static/dpubimg/4NHWAJqYO7/commitToUserTask3.png)
-
-步骤5
-
-> 调用引擎的接口`commitTask`，Demo实现方法是`commitToEndEvent2`方法，我们进行提交，在结束节点2完成，如下图5
-
-```
-CommitTaskParam commitTaskParam = EntityBuilder.buildCommitTaskParam();
-CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
-```
-
-![avatar](https://dpubstatic.udache.com/static/dpubimg/hixl2O6URT/commitToEndEvent2.png)
+注：例子使用两个service是为了封装sop，在实际开发中sop是有前端页面传递进入，并非是必须再次开发。
