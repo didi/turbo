@@ -12,13 +12,13 @@ Turbo是一款Java实现的轻量级流程引擎
 
 用户A在订单列表中选择订单，判断订单状态，如果状态为未发货，则直接跳转至退款申请页，如果状态为待收货则提示不支持售后，跳转至物流信息页，如果状态为已收货，则跳转至售后页填写售后信息并提交。
 
-![](https://cooper.didichuxing.com/cooper_gateway/cn/shimo-images/gAJqzSy0A4gIe8uv/image.png)
+![](http://img-ys011.didistatic.com/static/didi_opensource/do1_QgkUdghWFBdTaSVLWvnV)
 
 **案例2：请假审批流程**
 
 员工A输入请假天数，判断请假天数是否大于等于3天，是的话由间接领导审批，否的话则由直属领导批准。
 
-![](/Users/liangchenhui/Library/Application%20Support/marktext/images/2022-04-08-11-45-56-image.png)
+![](http://img-ys011.didistatic.com/static/didi_opensource/do1_fr7DzABANKQ3CLFtVtCB)
 
 ### 2. Turbo有什么不同
 
@@ -183,7 +183,7 @@ Turbo的定位是兼容BPMN2.0的轻量级流程引擎（而非平台），支�
 3. maven 3.1+
 4. IntelliJ IDEA
 
-### 3. 配置必要信息
+## 3. 配置必要信息
 
 执行[建表语句](engine/src/main/resources/turbo.db.create/turbo.mysql.sql)，在属性文件中配置属性信息
 
@@ -201,17 +201,17 @@ hook.url=http://127.0.0.1:8031/data/refresh
 hook.timeout=3000
 ```
 
-### 4. 根据demo开始你的Turbo之旅吧
+## 4. 根据demo开始你的Turbo之旅吧
 
 根据上文提到的turbo支持的特性，给出了两个例子，其中整体的流程如下图所示：
 
-![](https://cooper.didichuxing.com/cooper_gateway/cn/shimo-images/b2wmNBxrgVUUgaKl/image.png)
+![](http://img-ys011.didistatic.com/static/didi_opensource/do1_nR4XrLhyuruDqj9pQtlJ)
 
 其中与业务相关的是流程的定义和流程的执行，跟着下面的两个例子来看流程引擎的使用：
 
 Demo1：团购售后
 
-![](https://cooper.didichuxing.com/cooper_gateway/cn/shimo-images/rvAqeLr7pcMnNwBJ/image.png)
+![](http://img-ys011.didistatic.com/static/didi_opensource/do1_QgkUdghWFBdTaSVLWvnV)
 
 代码：[AfterSaleServiceImpl](demo/src/main/java/com/didiglobal/turbo/demo/service/AfterSaleServiceImpl.java)
 
@@ -221,7 +221,7 @@ Demo2:请假流程
 
 针对这个请假的流程，我们可以画出以下的流程图
 
-![](/Users/liangchenhui/Library/Application%20Support/marktext/images/2022-04-08-11-46-08-image.png)
+![](http://img-ys011.didistatic.com/static/didi_opensource/do1_fr7DzABANKQ3CLFtVtCB)
 
 代码：[LeaveServiceImpl](demo/src/main/java/com/didiglobal/turbo/demo/service/LeaveServiceImpl.java)
 
