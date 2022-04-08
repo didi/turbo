@@ -90,15 +90,15 @@ public class LeaveServiceImpl {
     }
 
     private void startProcessToEnd() {
-        StartProcessResult startProcessResult = startProcessToUserTask1();
-        CommitTaskResult commitTaskResult = commitToUserTask2(startProcessResult);
-        RollbackTaskResult rollbackTaskResult = rollbackToUserTask1(commitTaskResult);
-        CommitTaskResult commitTaskResult1 = commitToUserTask3(rollbackTaskResult);
-        CommitTaskResult commitTaskResult2 = commitToEndEvent2(commitTaskResult1);
+        StartProcessResult startProcess = startProcess();
+        CommitTaskResult commitTaskResult = inputTime(startProcess);
+        RollbackTaskResult rollbackTaskResult = rollbackToInputTime(commitTaskResult);
+        CommitTaskResult result = inputTimeAgain(rollbackTaskResult);
+        inputTimeBadCase(result);
     }
 
-    // StartEvent1 -> UserTask1：用户拉起请假sop
-    private StartProcessResult startProcessToUserTask1() {
+    // 用户拉起请假sop
+    private StartProcessResult startProcess() {
         StartProcessParam startProcessParam = new StartProcessParam();
         startProcessParam.setFlowDeployId(deployFlowResult.getFlowDeployId());
         List<InstanceData> variables = new ArrayList<>();
@@ -106,12 +106,12 @@ public class LeaveServiceImpl {
         startProcessParam.setVariables(variables);
         StartProcessResult startProcessResult = processEngine.startProcess(startProcessParam);
 
-        LOGGER.info("startProcessToUserTask1.||startProcessResult={}", startProcessResult);
+        LOGGER.info("startProcess.||startProcessResult={}", startProcessResult);
         return startProcessResult;
     }
 
-    // UserTask1 -> ExclusiveGateway1 -> UserTask2
-    private CommitTaskResult commitToUserTask2(StartProcessResult startProcessResult) {
+    // 输入请假天数
+    private CommitTaskResult inputTime(StartProcessResult startProcessResult) {
         CommitTaskParam commitTaskParam = new CommitTaskParam();
         commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
         commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
@@ -121,23 +121,23 @@ public class LeaveServiceImpl {
         commitTaskParam.setVariables(variables);
 
         CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
-        LOGGER.info("commitToUserTask2.||commitTaskResult={}", commitTaskResult);
+        LOGGER.info("inputTime.||commitTaskResult={}", commitTaskResult);
         return commitTaskResult;
     }
 
-    // UserTask1 <- ExclusiveGateway1 <- UserTask2
-    private RollbackTaskResult rollbackToUserTask1(CommitTaskResult commitTaskResult) {
+    // 请假撤回
+    private RollbackTaskResult rollbackToInputTime(CommitTaskResult commitTaskResult) {
         RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
         rollbackTaskParam.setFlowInstanceId(commitTaskResult.getFlowInstanceId());
         rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
         RollbackTaskResult rollbackTaskResult = processEngine.rollbackTask(rollbackTaskParam);
 
-        LOGGER.info("rollbackToUserTask1.||rollbackTaskResult={}", rollbackTaskResult);
+        LOGGER.info("rollbackToInputTime.||rollbackTaskResult={}", rollbackTaskResult);
         return rollbackTaskResult;
     }
 
-    // UserTask1 -> ExclusiveGateway1 -> UserTask3
-    private CommitTaskResult commitToUserTask3(RollbackTaskResult rollbackTaskResult) {
+    // 填写请假天数
+    private CommitTaskResult inputTimeAgain(RollbackTaskResult rollbackTaskResult) {
         CommitTaskParam commitTaskParam = new CommitTaskParam();
         commitTaskParam.setFlowInstanceId(rollbackTaskResult.getFlowInstanceId());
         commitTaskParam.setTaskInstanceId(rollbackTaskResult.getActiveTaskInstance().getNodeInstanceId());
@@ -147,12 +147,12 @@ public class LeaveServiceImpl {
         commitTaskParam.setVariables(variables);
 
         CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
-        LOGGER.info("commitToUserTask3.||commitTaskResult={}", commitTaskResult);
+        LOGGER.info("inputTimeAgain.||commitTaskResult={}", commitTaskResult);
         return commitTaskResult;
     }
 
-    // UserTask3 -> EndEvent2
-    private CommitTaskResult commitToEndEvent2(CommitTaskResult commitTaskResult) {
+    // 已完成流程：再次输入请假天数
+    private CommitTaskResult inputTimeBadCase(CommitTaskResult commitTaskResult) {
         CommitTaskParam commitTaskParam = new CommitTaskParam();
         commitTaskParam.setFlowInstanceId(commitTaskResult.getFlowInstanceId());
         commitTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
@@ -161,9 +161,9 @@ public class LeaveServiceImpl {
         variables.add(new InstanceData("n", 4));
         commitTaskParam.setVariables(variables);
 
-        CommitTaskResult commitTaskResult1 = processEngine.commitTask(commitTaskParam);
-        LOGGER.info("commitToEndEvent2.||commitTaskResult1={}", commitTaskResult1);
-        return commitTaskResult1;
+        CommitTaskResult result = processEngine.commitTask(commitTaskParam);
+        LOGGER.info("inputTimeBadCase.||CommitTaskResult={}", result);
+        return result;
     }
 
 }

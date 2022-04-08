@@ -93,15 +93,15 @@ public class AfterSaleServiceImpl {
     }
 
     private void startProcessToEnd() {
-        StartProcessResult startProcessResult = startProcessToUserTask1();
-        CommitTaskResult commitTaskResult = commitToUserTask2(startProcessResult);
-        RollbackTaskResult rollbackTaskResult = rollbackToUserTask1(commitTaskResult);
-        CommitTaskResult commitTaskResult1 = commitToUserTask3(rollbackTaskResult);
-        CommitTaskResult commitTaskResult2 = commitToEndEvent2(commitTaskResult1);
+        StartProcessResult startProcessResult = startProcess();
+        CommitTaskResult commitTaskResult = chooseUnreleaseOrder(startProcessResult);
+        RollbackTaskResult rollbackTaskResult = rollbackToChoose(commitTaskResult);
+        CommitTaskResult result = chooseReleaseOrder(rollbackTaskResult);
+        chooseReceivedOrderBadCase(result);
     }
 
-    // StartEvent1 -> UserTask1：用户拉起售后sop
-    private StartProcessResult startProcessToUserTask1() {
+    // 用户拉起售后sop
+    private StartProcessResult startProcess() {
         StartProcessParam startProcessParam = new StartProcessParam();
         startProcessParam.setFlowDeployId(deployFlowResult.getFlowDeployId());
         List<InstanceData> variables = new ArrayList<>();
@@ -109,12 +109,12 @@ public class AfterSaleServiceImpl {
         startProcessParam.setVariables(variables);
         StartProcessResult startProcessResult = processEngine.startProcess(startProcessParam);
 
-        LOGGER.info("startProcessToUserTask1.||startProcessResult={}", startProcessResult);
+        LOGGER.info("startProcess.||startProcessResult={}", startProcessResult);
         return startProcessResult;
     }
 
     // 选择未发货的订单
-    private CommitTaskResult commitToUserTask2(StartProcessResult startProcessResult) {
+    private CommitTaskResult chooseUnreleaseOrder(StartProcessResult startProcessResult) {
         CommitTaskParam commitTaskParam = new CommitTaskParam();
         commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
         commitTaskParam.setTaskInstanceId(startProcessResult.getActiveTaskInstance().getNodeInstanceId());
@@ -124,23 +124,23 @@ public class AfterSaleServiceImpl {
         commitTaskParam.setVariables(variables);
 
         CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
-        LOGGER.info("commitToUserTask2.||commitTaskResult={}", commitTaskResult);
+        LOGGER.info("chooseUnrelesseOrder.||commitTaskResult={}", commitTaskResult);
         return commitTaskResult;
     }
 
     // 回退，重新选取订单
-    private RollbackTaskResult rollbackToUserTask1(CommitTaskResult commitTaskResult) {
+    private RollbackTaskResult rollbackToChoose(CommitTaskResult commitTaskResult) {
         RollbackTaskParam rollbackTaskParam = new RollbackTaskParam();
         rollbackTaskParam.setFlowInstanceId(commitTaskResult.getFlowInstanceId());
         rollbackTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
         RollbackTaskResult rollbackTaskResult = processEngine.rollbackTask(rollbackTaskParam);
 
-        LOGGER.info("rollbackToUserTask1.||rollbackTaskResult={}", rollbackTaskResult);
+        LOGGER.info("rollbackToChoose.||rollbackTaskResult={}", rollbackTaskResult);
         return rollbackTaskResult;
     }
 
     //选取已发货，未收到货 订单
-    private CommitTaskResult commitToUserTask3(RollbackTaskResult rollbackTaskResult) {
+    private CommitTaskResult chooseReleaseOrder(RollbackTaskResult rollbackTaskResult) {
         CommitTaskParam commitTaskParam = new CommitTaskParam();
         commitTaskParam.setFlowInstanceId(rollbackTaskResult.getFlowInstanceId());
         commitTaskParam.setTaskInstanceId(rollbackTaskResult.getActiveTaskInstance().getNodeInstanceId());
@@ -150,12 +150,12 @@ public class AfterSaleServiceImpl {
         commitTaskParam.setVariables(variables);
 
         CommitTaskResult commitTaskResult = processEngine.commitTask(commitTaskParam);
-        LOGGER.info("commitToUserTask3.||commitTaskResult={}", commitTaskResult);
+        LOGGER.info("chooseReleaseOrder.||commitTaskResult={}", commitTaskResult);
         return commitTaskResult;
     }
 
-    //选取已收到货 订单
-    private CommitTaskResult commitToEndEvent2(CommitTaskResult commitTaskResult) {
+    //已完成流程：选取已收到货 订单
+    private CommitTaskResult chooseReceivedOrderBadCase(CommitTaskResult commitTaskResult) {
         CommitTaskParam commitTaskParam = new CommitTaskParam();
         commitTaskParam.setFlowInstanceId(commitTaskResult.getFlowInstanceId());
         commitTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
@@ -164,8 +164,8 @@ public class AfterSaleServiceImpl {
         variables.add(new InstanceData("status", "2"));
         commitTaskParam.setVariables(variables);
 
-        CommitTaskResult commitTaskResult1 = processEngine.commitTask(commitTaskParam);
-        LOGGER.info("commitToEndEvent2.||commitTaskResult1={}", commitTaskResult1);
-        return commitTaskResult1;
+        CommitTaskResult result = processEngine.commitTask(commitTaskParam);
+        LOGGER.info("chooseReceivedOrderBadCase.||commitTaskResult={}", result);
+        return result;
     }
 }
