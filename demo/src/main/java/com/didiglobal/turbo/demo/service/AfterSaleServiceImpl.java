@@ -97,7 +97,7 @@ public class AfterSaleServiceImpl {
         CommitTaskResult commitTaskResult = chooseUnreleaseOrder(startProcessResult);
         RollbackTaskResult rollbackTaskResult = rollbackToChoose(commitTaskResult);
         CommitTaskResult result = chooseReleaseOrder(rollbackTaskResult);
-        chooseReceivedOrderBadCase(result);
+        commitCompleteProcess(result);
     }
 
     // 用户拉起售后sop
@@ -154,8 +154,8 @@ public class AfterSaleServiceImpl {
         return commitTaskResult;
     }
 
-    //已完成流程：选取已收到货 订单
-    private CommitTaskResult chooseReceivedOrderBadCase(CommitTaskResult commitTaskResult) {
+    //BadCase:已完成流程,再次提交订单和状态，此时流程已经结束会报错。
+    private CommitTaskResult commitCompleteProcess(CommitTaskResult commitTaskResult) {
         CommitTaskParam commitTaskParam = new CommitTaskParam();
         commitTaskParam.setFlowInstanceId(commitTaskResult.getFlowInstanceId());
         commitTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());

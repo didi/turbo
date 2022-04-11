@@ -94,7 +94,7 @@ public class LeaveServiceImpl {
         CommitTaskResult commitTaskResult = inputTime(startProcess);
         RollbackTaskResult rollbackTaskResult = rollbackToInputTime(commitTaskResult);
         CommitTaskResult result = inputTimeAgain(rollbackTaskResult);
-        inputTimeBadCase(result);
+        commitCompleteProcess(result);
     }
 
     // 用户拉起请假sop
@@ -151,8 +151,8 @@ public class LeaveServiceImpl {
         return commitTaskResult;
     }
 
-    // 已完成流程：再次输入请假天数
-    private CommitTaskResult inputTimeBadCase(CommitTaskResult commitTaskResult) {
+    // BadCase：已完成流程，继续执行流程会失败。
+    private CommitTaskResult commitCompleteProcess(CommitTaskResult commitTaskResult) {
         CommitTaskParam commitTaskParam = new CommitTaskParam();
         commitTaskParam.setFlowInstanceId(commitTaskResult.getFlowInstanceId());
         commitTaskParam.setTaskInstanceId(commitTaskResult.getActiveTaskInstance().getNodeInstanceId());
