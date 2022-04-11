@@ -46,85 +46,90 @@ public class EntityBuilder {
 
     private static Object buildAfterSaleFlowModelEntity() {
         List<FlowElement> flowElementList = Lists.newArrayList();
-        //start node
-        StartEvent startEvent1 = new StartEvent();
-        startEvent1.setKey("StartEvent_0ofi5hg");
-        startEvent1.setType(FlowElementType.START_EVENT);
+        //开始节点
+        StartEvent startNode = new StartEvent();
+        startNode.setKey("StartEvent_0ofi5hg");
+        startNode.setType(FlowElementType.START_EVENT);
         List<String> outgoings = new ArrayList<>();
         outgoings.add("SequenceFlow_1udf5vg");
-        startEvent1.setOutgoing(outgoings);
-        flowElementList.add(startEvent1);
-        //user node
-        UserTask userTask1 = new UserTask();
-        userTask1.setKey("UserTask_1625vn7");
-        userTask1.setType(FlowElementType.USER_TASK);
+        startNode.setOutgoing(outgoings);
+        flowElementList.add(startNode);
+
+        //用户节点（输入订单相关信息)
+        UserTask orderInfo = new UserTask();
+        orderInfo.setKey("UserTask_1625vn7");
+        orderInfo.setType(FlowElementType.USER_TASK);
         List<String> utIncomings = new ArrayList<>();
         utIncomings.add("SequenceFlow_1udf5vg");
-        userTask1.setIncoming(utIncomings);
+        orderInfo.setIncoming(utIncomings);
         List<String> utOutgoings = new ArrayList<>();
         utOutgoings.add("SequenceFlow_06uq82c");
-        userTask1.setOutgoing(utOutgoings);
-        flowElementList.add(userTask1);
-        //Exclusive node
-        ExclusiveGateway exclusiveGateway1 = new ExclusiveGateway();
-        exclusiveGateway1.setKey("ExclusiveGateway_1l0d11b");
-        exclusiveGateway1.setType(FlowElementType.EXCLUSIVE_GATEWAY);
+        orderInfo.setOutgoing(utOutgoings);
+        flowElementList.add(orderInfo);
+
+        //排他节点(判断订单状态)
+        ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
+        exclusiveGateway.setKey("ExclusiveGateway_1l0d11b");
+        exclusiveGateway.setType(FlowElementType.EXCLUSIVE_GATEWAY);
         List<String> egIncomings = new ArrayList<>();
         egIncomings.add("SequenceFlow_06uq82c");
-        exclusiveGateway1.setIncoming(egIncomings);
+        exclusiveGateway.setIncoming(egIncomings);
         List<String> egOutgoings = new ArrayList<>();
         egOutgoings.add("SequenceFlow_15vyyaj");
         egOutgoings.add("SequenceFlow_168uou3");
         egOutgoings.add("SequenceFlow_168uou4");
-        exclusiveGateway1.setOutgoing(egOutgoings);
+        exclusiveGateway.setOutgoing(egOutgoings);
         Map<String, Object> properties = new HashMap<>();
         properties.put("hookInfoIds", "");
-        exclusiveGateway1.setProperties(properties);
-        flowElementList.add(exclusiveGateway1);
+        exclusiveGateway.setProperties(properties);
+        flowElementList.add(exclusiveGateway);
 
-        //未收到货
-        UserTask userTask2 = new UserTask();
-        userTask2.setKey("UserTask_0j0wc1o");
-        userTask2.setType(FlowElementType.USER_TASK);
+        //未收到货触发的用户节点
+        UserTask unreleaseTriggerUserNode = new UserTask();
+        unreleaseTriggerUserNode.setKey("UserTask_0j0wc1o");
+        unreleaseTriggerUserNode.setType(FlowElementType.USER_TASK);
         List<String> utIncomings2 = new ArrayList<>();
         utIncomings2.add("SequenceFlow_15vyyaj");
-        userTask2.setIncoming(utIncomings2);
+        unreleaseTriggerUserNode.setIncoming(utIncomings2);
         List<String> utOutgoings2 = new ArrayList<>();
         utOutgoings2.add("SequenceFlow_18y740t");//结束
-        userTask2.setOutgoing(utOutgoings2);
-        flowElementList.add(userTask2);
-        //已发货
-        UserTask userTask3 = new UserTask();
-        userTask3.setKey("UserTask_05t37q8");
-        userTask3.setType(FlowElementType.USER_TASK);
+        unreleaseTriggerUserNode.setOutgoing(utOutgoings2);
+        flowElementList.add(unreleaseTriggerUserNode);
+
+        //已发货触发的用户节点
+        UserTask releaseOrderTriggerUserNode = new UserTask();
+        releaseOrderTriggerUserNode.setKey("UserTask_05t37q8");
+        releaseOrderTriggerUserNode.setType(FlowElementType.USER_TASK);
         List<String> utIncomings3 = new ArrayList<>();
         utIncomings3.add("SequenceFlow_168uou3");
-        userTask3.setIncoming(utIncomings3);
+        releaseOrderTriggerUserNode.setIncoming(utIncomings3);
         List<String> utOutgoings3 = new ArrayList<>();
         utOutgoings3.add("SequenceFlow_18y740t");
-        userTask3.setOutgoing(utOutgoings3);
-        flowElementList.add(userTask3);
-        //已收到货
-        UserTask userTask4 = new UserTask();
-        userTask4.setKey("UserTask_05p38q9");
-        userTask4.setType(FlowElementType.USER_TASK);
+        releaseOrderTriggerUserNode.setOutgoing(utOutgoings3);
+        flowElementList.add(releaseOrderTriggerUserNode);
+
+        //已收到货触发的用户节点
+        UserTask receivedOrderTriggerUserNode = new UserTask();
+        receivedOrderTriggerUserNode.setKey("UserTask_05p38q9");
+        receivedOrderTriggerUserNode.setType(FlowElementType.USER_TASK);
         List<String> utIncomings4 = new ArrayList<>();
         utIncomings4.add("SequenceFlow_168uou4");
-        userTask4.setIncoming(utIncomings4);
+        receivedOrderTriggerUserNode.setIncoming(utIncomings4);
         List<String> utOutgoings4 = new ArrayList<>();
         utOutgoings4.add("SequenceFlow_18y740t");
-        userTask4.setOutgoing(utOutgoings4);
-        flowElementList.add(userTask4);
+        receivedOrderTriggerUserNode.setOutgoing(utOutgoings4);
+        flowElementList.add(receivedOrderTriggerUserNode);
 
-        EndEvent endEvent1 = new EndEvent();
-        endEvent1.setKey("EndEvent_1m02l29");
-        endEvent1.setType(FlowElementType.END_EVENT);
+        //结束节点
+        EndEvent endEvent = new EndEvent();
+        endEvent.setKey("EndEvent_1m02l29");
+        endEvent.setType(FlowElementType.END_EVENT);
         List<String> incomings = new ArrayList<>();
         incomings.add("SequenceFlow_18y740t");
         incomings.add("SequenceFlow_086u2jq");
         incomings.add("SequenceFlow_086u3jq");
-        endEvent1.setIncoming(incomings);
-        flowElementList.add(endEvent1);
+        endEvent.setIncoming(incomings);
+        flowElementList.add(endEvent);
 
 
         // sequence flow
@@ -256,71 +261,76 @@ public class EntityBuilder {
 
     public static FlowModel buildLeaveFlowModelEntity() {
         List<FlowElement> flowElementList = Lists.newArrayList();
-        //start node
-        StartEvent startEvent1 = new StartEvent();
-        startEvent1.setKey("StartEvent_0ofi5hg");
-        startEvent1.setType(FlowElementType.START_EVENT);
+
+        //开始节点
+        StartEvent startEvent = new StartEvent();
+        startEvent.setKey("StartEvent_0ofi5hg");
+        startEvent.setType(FlowElementType.START_EVENT);
         List<String> outgoings = new ArrayList<>();
         outgoings.add("SequenceFlow_1udf5vg");
-        startEvent1.setOutgoing(outgoings);
-        flowElementList.add(startEvent1);
-        //user node
-        UserTask userTask1 = new UserTask();
-        userTask1.setKey("UserTask_1625vn7");
-        userTask1.setType(FlowElementType.USER_TASK);
+        startEvent.setOutgoing(outgoings);
+        flowElementList.add(startEvent);
+
+        //用户节点（输入请假天数）
+        UserTask inputTimeUserNode = new UserTask();
+        inputTimeUserNode.setKey("UserTask_1625vn7");
+        inputTimeUserNode.setType(FlowElementType.USER_TASK);
         List<String> utIncomings = new ArrayList<>();
         utIncomings.add("SequenceFlow_1udf5vg");
-        userTask1.setIncoming(utIncomings);
+        inputTimeUserNode.setIncoming(utIncomings);
         List<String> utOutgoings = new ArrayList<>();
         utOutgoings.add("SequenceFlow_06uq82c");
-        userTask1.setOutgoing(utOutgoings);
-        flowElementList.add(userTask1);
-        //Exclusive node
-        ExclusiveGateway exclusiveGateway1 = new ExclusiveGateway();
-        exclusiveGateway1.setKey("ExclusiveGateway_1l0d11b");
-        exclusiveGateway1.setType(FlowElementType.EXCLUSIVE_GATEWAY);
+        inputTimeUserNode.setOutgoing(utOutgoings);
+        flowElementList.add(inputTimeUserNode);
+
+        //排他节点
+        ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
+        exclusiveGateway.setKey("ExclusiveGateway_1l0d11b");
+        exclusiveGateway.setType(FlowElementType.EXCLUSIVE_GATEWAY);
         List<String> egIncomings = new ArrayList<>();
         egIncomings.add("SequenceFlow_06uq82c");
-        exclusiveGateway1.setIncoming(egIncomings);
+        exclusiveGateway.setIncoming(egIncomings);
         List<String> egOutgoings = new ArrayList<>();
         egOutgoings.add("SequenceFlow_15vyyaj");
         egOutgoings.add("SequenceFlow_168uou3");
-        exclusiveGateway1.setOutgoing(egOutgoings);
+        exclusiveGateway.setOutgoing(egOutgoings);
         Map<String, Object> properties = new HashMap<>();
         properties.put("hookInfoIds", "");
-        exclusiveGateway1.setProperties(properties);
-        flowElementList.add(exclusiveGateway1);
+        exclusiveGateway.setProperties(properties);
+        flowElementList.add(exclusiveGateway);
 
-        UserTask userTask2 = new UserTask();
-        userTask2.setKey("UserTask_0j0wc1o");
-        userTask2.setType(FlowElementType.USER_TASK);
+        //用户节点（直属领导审批）
+        UserTask directLeaderUserNode = new UserTask();
+        directLeaderUserNode.setKey("UserTask_0j0wc1o");
+        directLeaderUserNode.setType(FlowElementType.USER_TASK);
         List<String> utIncomings2 = new ArrayList<>();
         utIncomings2.add("SequenceFlow_15vyyaj");
-        userTask2.setIncoming(utIncomings2);
+        directLeaderUserNode.setIncoming(utIncomings2);
         List<String> utOutgoings2 = new ArrayList<>();
         utOutgoings2.add("SequenceFlow_18y740t");
-        userTask2.setOutgoing(utOutgoings2);
-        flowElementList.add(userTask2);
+        directLeaderUserNode.setOutgoing(utOutgoings2);
+        flowElementList.add(directLeaderUserNode);
 
-        UserTask userTask3 = new UserTask();
-        userTask3.setKey("UserTask_05t37q8");
-        userTask3.setType(FlowElementType.USER_TASK);
+        //用户节点（间接领导审批）
+        UserTask indirectLeaderUserNode = new UserTask();
+        indirectLeaderUserNode.setKey("UserTask_05t37q8");
+        indirectLeaderUserNode.setType(FlowElementType.USER_TASK);
         List<String> utIncomings3 = new ArrayList<>();
         utIncomings3.add("SequenceFlow_168uou3");
-        userTask3.setIncoming(utIncomings3);
+        indirectLeaderUserNode.setIncoming(utIncomings3);
         List<String> utOutgoings3 = new ArrayList<>();
         utOutgoings3.add("SequenceFlow_086u2jq");
-        userTask3.setOutgoing(utOutgoings3);
-        flowElementList.add(userTask3);
+        indirectLeaderUserNode.setOutgoing(utOutgoings3);
+        flowElementList.add(indirectLeaderUserNode);
 
-        EndEvent endEvent1 = new EndEvent();
-        endEvent1.setKey("EndEvent_1m02l29");
-        endEvent1.setType(FlowElementType.END_EVENT);
+        EndEvent endEvent = new EndEvent();
+        endEvent.setKey("EndEvent_1m02l29");
+        endEvent.setType(FlowElementType.END_EVENT);
         List<String> incomings = new ArrayList<>();
         incomings.add("SequenceFlow_18y740t");
         incomings.add("SequenceFlow_086u2jq");
-        endEvent1.setIncoming(incomings);
-        flowElementList.add(endEvent1);
+        endEvent.setIncoming(incomings);
+        flowElementList.add(endEvent);
 
         // sequence flow
 
