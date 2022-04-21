@@ -50,7 +50,7 @@ this.lf = new LogicFlow({
 后端提供样例接口包含创建流程接口，保存流程模型接口，发布流程接口，查询单个流程接口，查询流程列表接口，使用方可以根据自身业务特点合理编排使用
 代码参考com.didiglobal.turbo.demo.logicflow.LogicFlowController
 
-## 3.2 服务启动
+## 3.3 服务启动
 后端服务打包并启动 
 打包命令  mvn install;
 启动命令  nohup java -jar demo-1.0.0-SNAPSHOT.jar > test.txt &;
