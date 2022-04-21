@@ -215,7 +215,7 @@ Demo2：<a href="#demo2">请假流程</a>
 
 ## 5. turbo与logicFlow交互demo
 
-使用logicFlow与trubo接口交互实现流程图创建，编辑，保存，发布功能，发布完成流程图即可参考第四部分文档，执行流程
+使用logicFlow与turbo接口交互实现流程图创建，编辑，保存，发布功能，发布完成流程图即可参考第四部分文档，执行流程
 
 后端代码：[LogicFlowController](demo/src/main/java/com/didiglobal/turbo/demo/logicflow/LogicFlowController.java)
 
