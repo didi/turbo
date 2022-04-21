@@ -212,3 +212,16 @@ Demo2：<a href="#demo2">请假流程</a>
 代码：[LeaveServiceImpl](demo/src/main/java/com/didiglobal/turbo/demo/service/LeaveServiceImpl.java)
 
 注：例子使用两个service是为了封装sop，在实际开发中sop是有前端页面传递进入，并非是必须再次开发。
+
+## 5. turbo与logicFlow交互demo
+
+使用logicFlow与trubo接口交互实现流程图创建，编辑，保存，发布功能，发布完成流程图即可参考第四部分文档，执行流程
+
+后端代码：[LogicFlowController](demo/src/main/java/com/didiglobal/turbo/demo/logicflow/LogicFlowController.java)
+
+前端代码：https://github.com/Logic-Flow/turbo-client
+
+使用文档：[LogicFlowGuide](docs/LogicFlowGuide.md)
+
+代码提供基本用法示例，使用方可以根据自己的业务场景酌情使用
+
