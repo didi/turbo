@@ -19,7 +19,7 @@ logicFlow 与 turbo接口配合使用，用于流程配置及管理，根据前�
 ![在这里插入图片描述](http://img-ys011.didistatic.com/static/didi_opensource/do1_pgrJUKQu93n4MjVjZMT1?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9saWRvbmcxNjY1LmJsb2cuY3Nkbi5uZXQ=,size_16,color_FFFFFF,t_70)
 
 
-上述4部操作完成以后，流程图处理已发布状态（列表中可以根据流程名称查询流程信息），配置侧操作完成，可以驱动执行，具体样例参考 LeaveServiceImpl 与 AfterSaleServiceImpl
+上述4步操作完成以后，流程图处于已发布状态（列表中可以根据流程名称查询流程信息），配置侧操作完成，可以驱动执行，具体样例参考 LeaveServiceImpl 与 AfterSaleServiceImpl
 
 ![在这里插入图片描述](http://img-ys011.didistatic.com/static/didi_opensource/do1_DebAsQlNb4nLbeSaM7kj?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9saWRvbmcxNjY1LmJsb2cuY3Nkbi5uZXQ=,size_16,color_FFFFFF,t_70)
 
