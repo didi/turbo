@@ -7,15 +7,12 @@ import com.didiglobal.turbo.engine.common.ErrorEnum;
  * @Date: 4/6/22
  * @Description:
  */
-public class BaseResponse<T>{
+public class BaseResponse<T> {
 
     int errCode;
     String errMsg;
     T data;
 
-    public static <T> BaseResponse<T> make(T data) {
-        return (new BaseResponse<T>()).setData(data);
-    }
     public BaseResponse() {
         super();
     }
@@ -23,6 +20,10 @@ public class BaseResponse<T>{
     public BaseResponse(ErrorEnum errorEnum) {
         this.errCode = errorEnum.getErrNo();
         this.errMsg = errorEnum.getErrMsg();
+    }
+
+    public static <T> BaseResponse<T> make(T data) {
+        return (new BaseResponse<T>()).setData(data);
     }
 
     public int getErrCode() {

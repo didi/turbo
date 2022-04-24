@@ -10,7 +10,7 @@ import com.didiglobal.turbo.engine.param.CreateFlowParam;
 public class CreateFlowRequest extends CreateFlowParam {
 
     public CreateFlowRequest() {
-        super(null,null);
+        super(null, null);
     }
 
 }

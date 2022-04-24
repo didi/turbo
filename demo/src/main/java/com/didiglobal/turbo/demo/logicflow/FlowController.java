@@ -2,7 +2,7 @@ package com.didiglobal.turbo.demo.logicflow;
 
 import com.didiglobal.turbo.demo.pojo.request.*;
 import com.didiglobal.turbo.demo.pojo.response.*;
-import com.didiglobal.turbo.demo.service.LogicFlowServiceImpl;
+import com.didiglobal.turbo.demo.service.FlowServiceImpl;
 import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.result.CreateFlowResult;
 import com.didiglobal.turbo.engine.result.DeployFlowResult;
@@ -27,11 +27,11 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("/logicFlow")
-public class LogicFlowController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LogicFlowController.class);
+public class FlowController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FlowController.class);
 
     @Resource
-    private LogicFlowServiceImpl logicFlowService;
+    private FlowServiceImpl logicFlowService;
     /**
      * 创建流程
      * @param createFlowParam
