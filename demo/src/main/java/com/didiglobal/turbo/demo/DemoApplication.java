@@ -17,11 +17,13 @@ import org.springframework.context.annotation.ComponentScan;
 @MapperScan(basePackages = {"com.didiglobal.turbo.engine.dao"})
 public class DemoApplication {
     private static final Logger LOGGER = LoggerFactory.getLogger(DemoApplication.class);
+
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
     }
+
     @Bean
-    public PaginationInterceptor paginationInterceptor(){
+    public PaginationInterceptor paginationInterceptor() {
         PaginationInterceptor page = new PaginationInterceptor();
         page.setDialectType("mysql");
         return page;
