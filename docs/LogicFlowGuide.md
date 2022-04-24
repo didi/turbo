@@ -52,18 +52,18 @@ this.lf = new LogicFlow({
 
 ## 3.3 服务启动
 
-后端服务打包并启动 
+a: 后端服务打包并启动 
 
 打包命令  mvn install;
 启动命令  nohup java -jar demo-1.0.0-SNAPSHOT.jar > test.txt &;
 
-后端服务启动完成后，将前端代码中.env.development中的VITE_SERVER_ADDR地址改成后端服务地址;
+b: 后端服务启动完成后，将前端代码中.env.development中的VITE_SERVER_ADDR地址改成后端服务地址;
 
-前端代码安装依赖并启动
+c: 前端代码安装依赖并启动
 
 安装依赖命令 npm install ;
 启动命令 npm run dev;
 
-最后根据日志中提示地址访问即可
+d: 最后根据日志中提示地址访问即可
 
 
