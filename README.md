@@ -215,9 +215,7 @@ Demo2：<a href="#demo2">请假流程</a>
 
 ## 5. Turbo与LogicFlow交互demo
 
-LogicFlow 是一款流程图编辑框架，提供了一系列流程图交互、编辑所必需的功能和灵活的节点自定义、插件等拓展机制。
-
-使用LogicFlow与Turbo接口交互可实现流程图创建，编辑，保存，发布功能，发布完成流程图即可参考第四部分文档，执行流程。
+LogicFlow 是一款流程图编辑框架，提供了一系列流程图交互、编辑所必需的功能和灵活的节点自定义、插件等拓展机制。使用LogicFlow与Turbo接口交互可实现流程图创建，编辑，保存，发布功能，发布完成流程图即可参考第四部分文档，执行流程。
 
 后端代码：[FlowController](demo/src/main/java/com/didiglobal/turbo/demo/logicflow/FlowController.java)
 
@@ -225,5 +223,5 @@ LogicFlow 是一款流程图编辑框架，提供了一系列流程图交互、�
 
 使用文档：[LogicFlowGuide](docs/LogicFlowGuide.md)
 
-代码提供基本用法示例，使用方可以根据自己的业务场景酌情使用
+代码提供基本用法示例，使用方可以根据自己的业务场景酌情参考
 
