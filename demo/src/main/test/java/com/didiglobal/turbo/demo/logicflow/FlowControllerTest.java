@@ -57,8 +57,8 @@ public class FlowControllerTest {
         createFlowRequest.setFlowKey("testFlowKey");  //流程业务标识 非必需
         createFlowRequest.setTenant("didi");// 租户标识 必需
         createFlowRequest.setCaller("testCaller");// 使用方标识 必需
-        createFlowRequest.setOperator("didiOperator");// 操作人 选填
-        createFlowRequest.setRemark("备注test");  //备注  选填
+        createFlowRequest.setOperator("didiOperator");// 操作人 非必需
+        createFlowRequest.setRemark("备注test");  //备注  非必需
         BaseResponse<CreateFlowResponse> res = flowController.createFlow(createFlowRequest);
         if (res.getErrCode() == 1000) {
             flowModuleId = res.getData().getFlowModuleId();//模型唯一标识  必需
@@ -80,10 +80,10 @@ public class FlowControllerTest {
         updateFlowRequest.setFlowModel(flowModel);//模型内容 必需
         updateFlowRequest.setCaller("testCaller");// 使用方标识  必需
         updateFlowRequest.setTenant("didi");// 租户标识 必需
-        updateFlowRequest.setFlowKey("testFlowKey");//流程业务标识 选填
-        updateFlowRequest.setFlowName("测试流程"); // 模型名称  选填
-        updateFlowRequest.setRemark("备注test");//备注  选填
-        updateFlowRequest.setOperator("didiOperator");// 操作人 选填
+        updateFlowRequest.setFlowKey("testFlowKey");//流程业务标识 非必需
+        updateFlowRequest.setFlowName("测试流程"); // 模型名称  非必需
+        updateFlowRequest.setRemark("备注test");//备注  非必需
+        updateFlowRequest.setOperator("didiOperator");// 操作人 非必需
         BaseResponse<String> res = flowController.saveFlowModel(updateFlowRequest);
         if (res.getErrCode() == 1000) {
             System.out.println("saveFlowModel 处理成功");
@@ -103,7 +103,7 @@ public class FlowControllerTest {
         deployFlowRequest.setFlowModuleId(flowModuleId);//模型唯一标识 必需
         deployFlowRequest.setTenant("didi"); //租户标识   必需
         deployFlowRequest.setCaller("testCaller");// 使用方标识  必需
-        deployFlowRequest.setOperator("didiOperator"); // 操作人 选填
+        deployFlowRequest.setOperator("didiOperator"); // 操作人 非必需
         BaseResponse<DeployFlowResponse> res = flowController.deployFlow(deployFlowRequest);
         if (res.getErrCode() == 1000) {
             String flowModuleId = res.getData().getFlowModuleId();//模型唯一标识  必需
@@ -148,11 +148,11 @@ public class FlowControllerTest {
     @Test
     public void queryFlowList() {
         GetFlowModuleListRequest getFlowModuleListRequest = new GetFlowModuleListRequest();
-        getFlowModuleListRequest.setFlowName("测试流程");  // 模型名称  选填
-        getFlowModuleListRequest.setFlowModuleId(null);//模型唯一标识  选填
-        getFlowModuleListRequest.setFlowDeployId(null);//模型一次部署唯一标识 选填
-        getFlowModuleListRequest.setCurrent(1);//当前页  选填 默认为1
-        getFlowModuleListRequest.setSize(10);//每页条数   选填 默认为10
+        getFlowModuleListRequest.setFlowName("测试流程");  // 模型名称  非必需
+        getFlowModuleListRequest.setFlowModuleId(null);//模型唯一标识 非必需
+        getFlowModuleListRequest.setFlowDeployId(null);//模型一次部署唯一标识 非必需
+        getFlowModuleListRequest.setCurrent(1);//当前页  非必需 默认为1
+        getFlowModuleListRequest.setSize(10);//每页条数   非必需 默认为10
         BaseResponse<FlowModuleListResponse> res = flowController.queryFlowList(getFlowModuleListRequest);
         if (res.getErrCode() == 1000) {
             String str = "queryFlowList 处理成功   总条数:%s  当前页：%s 每页条数：%s";
