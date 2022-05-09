@@ -1,4 +1,4 @@
-package com.didiglobal.turbo.demo.logicflow;
+package com.didiglobal.turbo.demo;
 
 import com.didiglobal.turbo.demo.DemoApplication;
 import com.didiglobal.turbo.demo.service.AfterSaleServiceImpl;
