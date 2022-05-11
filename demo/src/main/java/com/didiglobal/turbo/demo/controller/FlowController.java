@@ -61,7 +61,7 @@ public class FlowController {
     public BaseResponse<String> saveFlowModel(@RequestBody UpdateFlowRequest updateFlowRequest) {
         try{
             UpdateFlowResult updateFlowResult = logicFlowService.updateFlow(updateFlowRequest);
-            BaseResponse<String> baseResponse = new BaseResponse<>();
+            BaseResponse<String> baseResponse = new BaseResponse<>(ErrorEnum.SUCCESS);
             BeanUtils.copyProperties(updateFlowResult,baseResponse);
             return baseResponse;
         }catch(Exception e){
