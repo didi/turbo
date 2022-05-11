@@ -29,8 +29,11 @@ this.lf = new LogicFlow({
 如上源码所示：TurboAdapter默认将Turbo数据转换为bpmn节点，在实际项目中，可以完全自定义节点，而不是使用bpmn节点。具体用法请参考LogicFlow自定义节点(http://logic-flow.org/guide/basic/node.html)
 插件代码以及文档地址：https://github.com/Logic-Flow/turbo-client
 
-### 3.2 后端接口
-后端提供样例接口包含创建流程接口，保存流程模型接口，发布流程接口，查询单个流程接口，查询流程列表接口，使用方可以根据自身业务特点合理编排使用。代码参考 com.didiglobal.turbo.demo.logicflow.FlowController  &emsp;   com.didiglobal.turbo.demo.logicflow.FlowControllerTest
+
+## 3.2 后端接口
+后端提供样例接口包含创建流程接口，保存流程模型接口，发布流程接口，查询单个流程接口，查询流程列表接口，使用方可以根据自身业务特点合理编排使用。代码参考 
+[FlowController](../demo/src/main/java/com/didiglobal/turbo/demo/controller/FlowController.java) 
+[FlowControllerTest](../demo/src/main/test/java/com/didiglobal/turbo/demo/FlowControllerTest.java)
 
 ### 3.3 服务启动
 
@@ -58,7 +61,7 @@ d: 最后根据日志中提示地址访问即可
 
 ### 4.2 编辑流程图
 ![在这里插入图片描述](http://img-ys011.didistatic.com/static/didi_opensource/do1_DCMEWFfvHV8rX2mKP8mV?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9saWRvbmcxNjY1LmJsb2cuY3Nkbi5uZXQ=,size_16,color_FFFFFF,t_70)
-如果流程图中用到网关节点，则需要根据业务需要添加groovy表达式来决定流程走向
+用户任务节点（使用方执行任务的节点，比如需要用户提交信息）需要使用方实现。如果流程图中用到网关节点，则根据业务需要添加groovy表达式来决定流程走向，表达式中参数需要使用方传递
 
 ### 4.3 保存流程信息
 ![在这里插入图片描述](http://img-ys011.didistatic.com/static/didi_opensource/do1_W25efwUYGlFRwEJ6EQdb?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9saWRvbmcxNjY1LmJsb2cuY3Nkbi5uZXQ=,size_16,color_FFFFFF,t_70)
@@ -67,7 +70,10 @@ d: 最后根据日志中提示地址访问即可
 ![在这里插入图片描述](http://img-ys011.didistatic.com/static/didi_opensource/do1_pgrJUKQu93n4MjVjZMT1?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9saWRvbmcxNjY1LmJsb2cuY3Nkbi5uZXQ=,size_16,color_FFFFFF,t_70)
 
 
-上述4步操作完成以后，流程图处于已发布状态（列表中可以根据流程名称查询流程信息），配置侧操作完成，可以驱动执行，具体样例参考 LeaveServiceImpl 与 AfterSaleServiceImpl
+上述4步操作完成以后，流程图处于已发布状态（列表中可以根据流程名称查询流程信息），配置侧操作完成，可以驱动执行，具体样例参考
+[LeaveServiceImpl](../demo/src/main/java/com/didiglobal/turbo/demo/service/LeaveServiceImpl.java)
+[AfterSaleServiceImpl](../demo/src/main/java/com/didiglobal/turbo/demo/service/AfterSaleServiceImpl.java)
+
 
 ![在这里插入图片描述](http://img-ys011.didistatic.com/static/didi_opensource/do1_DebAsQlNb4nLbeSaM7kj?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9saWRvbmcxNjY1LmJsb2cuY3Nkbi5uZXQ=,size_16,color_FFFFFF,t_70)
 
