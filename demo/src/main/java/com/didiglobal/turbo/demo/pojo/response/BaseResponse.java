@@ -13,9 +13,6 @@ public class BaseResponse<T> {
     String errMsg;
     T data;
 
-    public BaseResponse() {
-        super();
-    }
 
     public BaseResponse(ErrorEnum errorEnum) {
         this.errCode = errorEnum.getErrNo();
@@ -23,7 +20,7 @@ public class BaseResponse<T> {
     }
 
     public static <T> BaseResponse<T> make(T data) {
-        return (new BaseResponse<T>()).setData(data);
+        return (new BaseResponse<T>(ErrorEnum.SUCCESS)).setData(data);
     }
 
     public int getErrCode() {

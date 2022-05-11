@@ -11,6 +11,7 @@ import com.didiglobal.turbo.demo.pojo.response.CreateFlowResponse;
 import com.didiglobal.turbo.demo.pojo.response.DeployFlowResponse;
 import com.didiglobal.turbo.demo.pojo.response.FlowModuleListResponse;
 import com.didiglobal.turbo.demo.pojo.response.GetFlowModuleResponse;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,8 +20,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 
 /**
- *
  * demo页面中没有呈现但接口中支持的字段（例如租户标识），使用方可以根据自己业务需求酌情添加
+ *
  * @Author: james zhangxiao
  * @Date: 5/7/22
  * @Description: 接口测试类
@@ -37,15 +38,6 @@ public class FlowControllerTest {
 
     private String flowDeployId = null;
 
-    @Test
-    public void run() {
-        createFlow();
-        saveFlowModel();
-        deployFlow();
-        queryFlow();
-        queryFlowList();
-    }
-
     /**
      * 创建流程接口
      */
@@ -54,18 +46,16 @@ public class FlowControllerTest {
         CreateFlowRequest createFlowRequest = new CreateFlowRequest();
         createFlowRequest.setFlowName("测试流程"); // 模型名称  非必需
         createFlowRequest.setFlowKey("testFlowKey");  //流程业务标识 非必需
-        createFlowRequest.setTenant("didi");// 租户标识 必需
+        createFlowRequest.setTenant("testTenant");// 租户标识 必需
         createFlowRequest.setCaller("testCaller");// 使用方标识 必需
-        createFlowRequest.setOperator("didiOperator");// 操作人 非必需
+        createFlowRequest.setOperator("testOperator");// 操作人 非必需
         createFlowRequest.setRemark("备注test");  //备注  非必需
         BaseResponse<CreateFlowResponse> res = flowController.createFlow(createFlowRequest);
-        if (res.getErrCode() == 1000) {
-            flowModuleId = res.getData().getFlowModuleId();//模型唯一标识  必需
-            String str = "createFlow 处理成功 flowModuleId:%s";
-            System.out.println(String.format(str,flowModuleId));
-        } else {
-            throw new RuntimeException("createFlow error");
-        }
+        Assert.assertTrue(res.getErrCode() == 1000); //1000 成功
+        flowModuleId = res.getData().getFlowModuleId();//模型唯一标识  必需
+        String str = "createFlow 处理成功 flowModuleId:%s";
+        System.out.println(String.format(str, flowModuleId));
+
     }
 
     /**
@@ -78,17 +68,13 @@ public class FlowControllerTest {
         updateFlowRequest.setFlowModuleId(flowModuleId); //模型唯一标识  必需 （使用createFlow中返回的flowModuleId）
         updateFlowRequest.setFlowModel(flowModel);//模型内容 必需
         updateFlowRequest.setCaller("testCaller");// 使用方标识  必需
-        updateFlowRequest.setTenant("didi");// 租户标识 必需
+        updateFlowRequest.setTenant("testTenant");// 租户标识 必需
         updateFlowRequest.setFlowKey("testFlowKey");//流程业务标识 非必需
         updateFlowRequest.setFlowName("测试流程"); // 模型名称  非必需
         updateFlowRequest.setRemark("备注test");//备注  非必需
-        updateFlowRequest.setOperator("didiOperator");// 操作人 非必需
+        updateFlowRequest.setOperator("testOperator");// 操作人 非必需
         BaseResponse<String> res = flowController.saveFlowModel(updateFlowRequest);
-        if (res.getErrCode() == 1000) {
-            System.out.println("saveFlowModel 处理成功");
-        } else {
-            throw new RuntimeException("saveFlowModel error");
-        }
+        Assert.assertTrue(res.getErrCode() == 1000); //1000 成功
 
     }
 
@@ -100,18 +86,17 @@ public class FlowControllerTest {
     public void deployFlow() {
         DeployFlowRequest deployFlowRequest = new DeployFlowRequest();
         deployFlowRequest.setFlowModuleId(flowModuleId);//模型唯一标识 必需
-        deployFlowRequest.setTenant("didi"); //租户标识   必需
+        deployFlowRequest.setTenant("testTenant"); //租户标识   必需
         deployFlowRequest.setCaller("testCaller");// 使用方标识  必需
-        deployFlowRequest.setOperator("didiOperator"); // 操作人 非必需
+        deployFlowRequest.setOperator("testOperator"); // 操作人 非必需
         BaseResponse<DeployFlowResponse> res = flowController.deployFlow(deployFlowRequest);
-        if (res.getErrCode() == 1000) {
-            String flowModuleId = res.getData().getFlowModuleId();//模型唯一标识  必需
-                   flowDeployId = res.getData().getFlowDeployId();//模型一次部署唯一标识  必需
-            String str = "deployFlow 处理成功 flowModuleId:%s flowDeployId：%s";
-            System.out.println(String.format(str,flowModuleId,flowDeployId));
-        } else {
-            throw new RuntimeException("deployFlow error");
-        }
+        Assert.assertTrue(res.getErrCode() == 1000); //1000 成功
+
+        String flowModuleId = res.getData().getFlowModuleId();//模型唯一标识  必需
+        flowDeployId = res.getData().getFlowDeployId();//模型一次部署唯一标识  必需
+        String str = "deployFlow 处理成功 flowModuleId:%s flowDeployId：%s";
+        System.out.println(String.format(str, flowModuleId, flowDeployId));
+
     }
 
     /**
@@ -123,22 +108,21 @@ public class FlowControllerTest {
         getFlowModuleRequest.setFlowModuleId(flowModuleId);//模型唯一标识 两个参数必须传入一个
         getFlowModuleRequest.setFlowDeployId(flowDeployId);//模型一次部署唯一标识 两个参数必须传入一个
         BaseResponse<GetFlowModuleResponse> res = flowController.queryFlow(getFlowModuleRequest);
-        if (res.getErrCode() == 1000) {
-            GetFlowModuleResponse getFlowModuleResponse = res.getData();
-            getFlowModuleResponse.getFlowModel();//模型内容 必需
-            getFlowModuleResponse.getFlowModuleId();////模型唯一标识 必需
-            getFlowModuleResponse.getCaller();// 使用方标识  必需
-            getFlowModuleResponse.getTenant();//租户标识   必需
-            getFlowModuleResponse.getFlowName();// 模型名称  非必需
-            getFlowModuleResponse.getFlowKey();//流程业务标识  非必需
-            getFlowModuleResponse.getStatus();//状态码  非必需
-            getFlowModuleResponse.getOperator();// 操作人  非必需
-            getFlowModuleResponse.getRemark();//备注   非必需
-            getFlowModuleResponse.getModifyTime();// 必需
-            System.out.println("queryFlow 处理成功 ");
-        } else {
-            throw new RuntimeException("queryFlow error");
-        }
+        Assert.assertTrue(res.getErrCode() == 1000); //1000 成功
+
+        GetFlowModuleResponse getFlowModuleResponse = res.getData();
+        getFlowModuleResponse.getFlowModel();//模型内容 必需
+        getFlowModuleResponse.getFlowModuleId();////模型唯一标识 必需
+        getFlowModuleResponse.getCaller();// 使用方标识  必需
+        getFlowModuleResponse.getTenant();//租户标识   必需
+        getFlowModuleResponse.getFlowName();// 模型名称  非必需
+        getFlowModuleResponse.getFlowKey();//流程业务标识  非必需
+        getFlowModuleResponse.getStatus();//状态码  非必需
+        getFlowModuleResponse.getOperator();// 操作人  非必需
+        getFlowModuleResponse.getRemark();//备注   非必需
+        getFlowModuleResponse.getModifyTime();// 必需
+        System.out.println("queryFlow 处理成功 ");
+
     }
 
     /**
@@ -153,13 +137,12 @@ public class FlowControllerTest {
         getFlowModuleListRequest.setCurrent(1);//当前页  非必需 默认为1
         getFlowModuleListRequest.setSize(10);//每页条数   非必需 默认为10
         BaseResponse<FlowModuleListResponse> res = flowController.queryFlowList(getFlowModuleListRequest);
-        if (res.getErrCode() == 1000) {
-            String str = "queryFlowList 处理成功   总条数:%s  当前页：%s 每页条数：%s";
-            str= String.format(str, res.getData().getTotal(),res.getData().getCurrent(),res.getData().getSize());
-            System.out.println(str);
-        } else {
-            throw new RuntimeException("queryFlowList error");
-        }
+        Assert.assertTrue(res.getErrCode() == 1000); //1000 成功
+
+        String str = "queryFlowList 处理成功   总条数:%s  当前页：%s 每页条数：%s";
+        str = String.format(str, res.getData().getTotal(), res.getData().getCurrent(), res.getData().getSize());
+        System.out.println(str);
+
     }
 
 }

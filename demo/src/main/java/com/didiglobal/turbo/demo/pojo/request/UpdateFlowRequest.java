@@ -1,5 +1,6 @@
 package com.didiglobal.turbo.demo.pojo.request;
 
+import com.didiglobal.turbo.demo.util.Constant;
 import com.didiglobal.turbo.engine.param.UpdateFlowParam;
 
 /**
@@ -10,6 +11,6 @@ import com.didiglobal.turbo.engine.param.UpdateFlowParam;
 public class UpdateFlowRequest extends UpdateFlowParam {
 
     public UpdateFlowRequest() {
-        super(null, null);
+        super(Constant.tenant, Constant.caller);
     }
 }

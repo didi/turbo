@@ -4,6 +4,7 @@ package com.didiglobal.turbo.demo.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.didiglobal.turbo.demo.enums.FlowModuleStatusEnum;
 import com.didiglobal.turbo.demo.pojo.request.CreateFlowRequest;
 import com.didiglobal.turbo.demo.pojo.request.DeployFlowRequest;
 import com.didiglobal.turbo.demo.pojo.request.GetFlowModuleListRequest;
@@ -106,7 +107,7 @@ public class FlowServiceImpl {
             int count = flowDeploymentDAO.count(flowDeployQuery);
             if (count >= 1) {
                 //4 已发布
-                getFlowModuleResponse.setStatus(4);
+                getFlowModuleResponse.setStatus(FlowModuleStatusEnum.PUBLISHED.getValue());
             }
             flowModuleList.add(getFlowModuleResponse);
         }

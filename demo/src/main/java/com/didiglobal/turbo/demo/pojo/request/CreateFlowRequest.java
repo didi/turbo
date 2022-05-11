@@ -1,5 +1,6 @@
 package com.didiglobal.turbo.demo.pojo.request;
 
+import com.didiglobal.turbo.demo.util.Constant;
 import com.didiglobal.turbo.engine.param.CreateFlowParam;
 
 /**
@@ -10,7 +11,7 @@ import com.didiglobal.turbo.engine.param.CreateFlowParam;
 public class CreateFlowRequest extends CreateFlowParam {
 
     public CreateFlowRequest() {
-        super(null, null);
+        super(Constant.tenant, Constant.caller);
     }
 
 }
