@@ -59,6 +59,7 @@ output/
 .idea/
 *.iml
 */target/
+target/*
 readme_data
 readme_dev.md
 scripts
