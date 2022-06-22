@@ -77,6 +77,27 @@ Turbo是一款Java实现的轻量级流程引擎
 
 # 快速开始
 
+## maven
+
+流程引擎核心功能集合
+```
+<dependency>
+  <groupId>com.didiglobal.turbo</groupId>
+  <artifactId>engine</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+
+开发demo，非必须依赖
+```
+<dependency>
+  <groupId>com.didiglobal.turbo</groupId>
+  <artifactId>demo</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
 ### 1. 配置必要信息
 
 执行[建表语句](engine/src/main/resources/turbo.db.create/turbo.mysql.sql)，在属性文件中配置属性信息
