@@ -177,7 +177,28 @@ Turbo的定位是兼容BPMN2.0的轻量级流程引擎（而非平台），支�
 3. maven 3.1+
 4. IntelliJ IDEA
 
-## 3. 配置必要信息
+## maven
+
+流程引擎核心功能集合
+```
+<dependency>
+  <groupId>com.didiglobal.turbo</groupId>
+  <artifactId>engine</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+
+开发demo，非必须依赖
+```
+<dependency>
+  <groupId>com.didiglobal.turbo</groupId>
+  <artifactId>demo</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+## 1. 配置必要信息
 
 执行[建表语句](engine/src/main/resources/turbo.db.create/turbo.mysql.sql)，在属性文件中配置属性信息
 
