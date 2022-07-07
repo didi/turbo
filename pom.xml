@@ -51,6 +51,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <groovy.version>2.3.7</groovy.version>
+        <spring-boot-starter.version>1.5.10.RELEASE</spring-boot-starter.version>
     </properties>
 
     <dependencies>
@@ -62,12 +63,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>1.5.10.RELEASE</version>
+            <version>${spring-boot-starter.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <version>1.5.10.RELEASE</version>
+            <version>${spring-boot-starter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
