@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>engine</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <parent>
         <artifactId>turbo</artifactId>
         <groupId>com.didiglobal.turbo</groupId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
     <properties>
         <groovy.version>2.3.7</groovy.version>
