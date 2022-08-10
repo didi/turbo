@@ -249,5 +249,6 @@ LogicFlow 是一款流程图编辑框架，提供了一系列流程图交互、�
 代码提供基本用法示例，使用方可以根据自己的业务场景参考使用
 
 ## 6. 联系我们
-<img width="283" alt="turboWX" src="https://user-images.githubusercontent.com/30490037/182805551-e063cc15-aa2e-481f-9612-a5b017f9f98f.png">
+<img width="273" alt="20220810@2x" src="https://user-images.githubusercontent.com/30490037/183801225-65a3cf78-214c-4d24-b889-d0ed2ace922f.png">
+
 
