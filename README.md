@@ -211,9 +211,6 @@ spring.datasource.dynamic.datasource.engine.password=password
 spring.datasource.dynamic.datasource.engine.driver-class-name=com.mysql.jdbc.Driver
 spring.datasource.dynamic.datasource.engine.url=jdbc:mysql://127.0.0.1:3306/db_engine
 
-# 非必要属性
-hook.url=http://127.0.0.1:8031/data/refresh
-hook.timeout=3000
 ```
 
 ## 4. 根据demo开始你的Turbo之旅吧

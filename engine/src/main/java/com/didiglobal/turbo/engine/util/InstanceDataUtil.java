@@ -6,8 +6,8 @@ import com.didiglobal.turbo.engine.common.DataType;
 import com.didiglobal.turbo.engine.model.InstanceData;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public class InstanceDataUtil {
 
     public static Map<String, InstanceData> getInstanceDataMap(List<InstanceData> instanceDataList) {
         if (CollectionUtils.isEmpty(instanceDataList)) {
-            return MapUtils.EMPTY_MAP;
+            return Maps.newHashMap();
         }
         Map<String, InstanceData> instanceDataMap = Maps.newHashMap();
         instanceDataList.forEach(instanceData -> {
@@ -30,7 +30,7 @@ public class InstanceDataUtil {
 
     public static Map<String, InstanceData> getInstanceDataMap(String instanceDataStr) {
         if (StringUtils.isBlank(instanceDataStr)) {
-            return MapUtils.EMPTY_MAP;
+            return Maps.newHashMap();
         }
         List<InstanceData> instanceDataList = JSON.parseArray(instanceDataStr, InstanceData.class);
         return getInstanceDataMap(instanceDataList);
@@ -56,7 +56,7 @@ public class InstanceDataUtil {
 
     public static Map<String, Object> parseInstanceDataMap(Map<String, InstanceData> instanceDataMap) {
         if (MapUtils.isEmpty(instanceDataMap)) {
-            return MapUtils.EMPTY_MAP;
+            return Maps.newHashMap();
         }
         Map<String, Object> dataMap = Maps.newHashMap();
         instanceDataMap.forEach((keyName, instanceData) -> {

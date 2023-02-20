@@ -80,7 +80,7 @@ public class EntityBuilder {
         egOutgoings.add("SequenceFlow_168uou4");
         exclusiveGateway.setOutgoing(egOutgoings);
         Map<String, Object> properties = new HashMap<>();
-        properties.put("hookInfoIds", "");
+        properties.put("hookInfoIds", "testInfo");
         exclusiveGateway.setProperties(properties);
         flowElementList.add(exclusiveGateway);
 

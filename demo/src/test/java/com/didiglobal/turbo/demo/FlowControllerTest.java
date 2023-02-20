@@ -34,9 +34,9 @@ public class FlowControllerTest {
     @Resource
     private FlowController flowController;
 
-    private String flowModuleId = null;
+    private String flowModuleId = "e7f6a27e-7cc3-11ec-b11c-02420abe030c";
 
-    private String flowDeployId = null;
+    private String flowDeployId = "450a101f-ae74-11ed-a29f-42f50c2c0006";
 
     /**
      * 创建流程接口
@@ -64,6 +64,7 @@ public class FlowControllerTest {
     @Test
     public void saveFlowModel() {
         String flowModel = "{\"flowElementList\":[{\"incoming\":[],\"outgoing\":[\"Flow_3599vu7\"],\"dockers\":[],\"type\":2,\"properties\":{\"name\":\"开始\",\"x\":310,\"y\":200,\"text\":{\"x\":310,\"y\":240,\"value\":\"开始\"}},\"key\":\"Event_0vbtunu\"},{\"incoming\":[\"Flow_3599vu7\"],\"outgoing\":[\"Flow_1f2ei89\"],\"dockers\":[],\"type\":4,\"properties\":{\"name\":\"\",\"x\":520,\"y\":200,\"text\":\"\"},\"key\":\"Activity_0ivtksn\"},{\"incoming\":[\"Flow_1f2ei89\"],\"outgoing\":[\"Flow_1rkk099\"],\"dockers\":[],\"type\":6,\"properties\":{\"name\":\"\",\"x\":730,\"y\":200,\"text\":\"\"},\"key\":\"Gateway_2qj55i1\"},{\"incoming\":[\"Flow_1rkk099\"],\"outgoing\":[],\"dockers\":[],\"type\":3,\"properties\":{\"name\":\"结束\",\"x\":950,\"y\":200,\"text\":{\"x\":950,\"y\":240,\"value\":\"结束\"}},\"key\":\"Event_03pjf39\"},{\"incoming\":[\"Event_0vbtunu\"],\"outgoing\":[\"Activity_0ivtksn\"],\"type\":1,\"dockers\":[],\"properties\":{\"name\":\"\",\"text\":\"\",\"startPoint\":\"{\\\"x\\\":328,\\\"y\\\":200}\",\"endPoint\":\"{\\\"x\\\":470,\\\"y\\\":200}\",\"pointsList\":\"\\\"\\\"\"},\"key\":\"Flow_3599vu7\"},{\"incoming\":[\"Activity_0ivtksn\"],\"outgoing\":[\"Gateway_2qj55i1\"],\"type\":1,\"dockers\":[],\"properties\":{\"name\":\"\",\"text\":\"\",\"startPoint\":\"{\\\"x\\\":570,\\\"y\\\":200}\",\"endPoint\":\"{\\\"x\\\":705,\\\"y\\\":200}\",\"pointsList\":\"\\\"\\\"\"},\"key\":\"Flow_1f2ei89\"},{\"incoming\":[\"Gateway_2qj55i1\"],\"outgoing\":[\"Event_03pjf39\"],\"type\":1,\"dockers\":[],\"properties\":{\"conditionsequenceflow\":\"a==1\",\"name\":\"\",\"text\":\"\",\"startPoint\":\"{\\\"x\\\":755,\\\"y\\\":200}\",\"endPoint\":\"{\\\"x\\\":932,\\\"y\\\":200}\",\"pointsList\":\"\\\"\\\"\"},\"key\":\"Flow_1rkk099\"}]}";
+        System.out.println(flowModel);
         UpdateFlowRequest updateFlowRequest = new UpdateFlowRequest();
         updateFlowRequest.setFlowModuleId(flowModuleId); //模型唯一标识  必需 （使用createFlow中返回的flowModuleId）
         updateFlowRequest.setFlowModel(flowModel);//模型内容 必需
@@ -74,10 +75,8 @@ public class FlowControllerTest {
         updateFlowRequest.setRemark("备注test");//备注  非必需
         updateFlowRequest.setOperator("testOperator");// 操作人 非必需
         BaseResponse<String> res = flowController.saveFlowModel(updateFlowRequest);
-        Assert.assertTrue(res.getErrCode() == 1000); //1000 成功
-
+        Assert.assertEquals(1000, res.getErrCode()); //1000 成功
     }
-
 
     /**
      * 发布流程接口
@@ -142,7 +141,5 @@ public class FlowControllerTest {
         String str = "queryFlowList 处理成功   总条数:%s  当前页：%s 每页条数：%s";
         str = String.format(str, res.getData().getTotal(), res.getData().getCurrent(), res.getData().getSize());
         System.out.println(str);
-
     }
-
 }

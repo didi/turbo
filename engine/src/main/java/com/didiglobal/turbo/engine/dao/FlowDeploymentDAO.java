@@ -2,9 +2,9 @@ package com.didiglobal.turbo.engine.dao;
 
 import com.didiglobal.turbo.engine.dao.mapper.FlowDeploymentMapper;
 import com.didiglobal.turbo.engine.entity.FlowDeploymentPO;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
+@Repository
 public class FlowDeploymentDAO extends BaseDAO<FlowDeploymentMapper, FlowDeploymentPO> {
 
     /**

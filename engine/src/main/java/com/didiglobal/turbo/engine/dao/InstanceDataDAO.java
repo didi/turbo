@@ -2,9 +2,9 @@ package com.didiglobal.turbo.engine.dao;
 
 import com.didiglobal.turbo.engine.dao.mapper.InstanceDataMapper;
 import com.didiglobal.turbo.engine.entity.InstanceDataPO;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-@Service
+@Repository
 public class InstanceDataDAO extends BaseDAO<InstanceDataMapper, InstanceDataPO> {
 
     public InstanceDataPO select(String flowInstanceId, String instanceDataId) {

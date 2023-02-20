@@ -41,7 +41,8 @@ import java.util.List;
  */
 @Service
 public class AfterSaleServiceImpl {
-    private static final Logger LOGGER = LoggerFactory.getLogger(LeaveServiceImpl.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AfterSaleServiceImpl.class);
 
     @Resource
     private ProcessEngine processEngine;

@@ -15,9 +15,11 @@ import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,8 @@ import java.util.Map;
 
 @Service
 public class FlowExecutor extends RuntimeExecutor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FlowExecutor.class);
 
     @Resource
     private ProcessInstanceDAO processInstanceDAO;
