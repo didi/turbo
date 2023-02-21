@@ -27,8 +27,8 @@ import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import com.didiglobal.turbo.engine.validator.ParamValidator;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,10 +126,6 @@ public class RuntimeProcessor {
 
             //2.get flowInstance
             FlowInstanceBO flowInstanceBO = getFlowInstanceBO(commitTaskParam.getFlowInstanceId());
-            if (flowInstanceBO == null) {
-                LOGGER.warn("commit failed: cannot find flowInstanceBO.||flowInstanceId={}", commitTaskParam.getFlowInstanceId());
-                throw new ProcessException(ErrorEnum.GET_FLOW_INSTANCE_FAILED);
-            }
 
             //3.check status
             if (flowInstanceBO.getStatus() == FlowInstanceStatus.TERMINATED) {
@@ -204,10 +200,6 @@ public class RuntimeProcessor {
 
             //2.get flowInstance
             FlowInstanceBO flowInstanceBO = getFlowInstanceBO(rollbackTaskParam.getFlowInstanceId());
-            if (flowInstanceBO == null) {
-                LOGGER.warn("rollback failed: flowInstanceBO is null.||flowInstanceId={}", rollbackTaskParam.getFlowInstanceId());
-                throw new ProcessException(ErrorEnum.GET_FLOW_INSTANCE_FAILED);
-            }
 
             //3.check status
             if (flowInstanceBO.getStatus() != FlowInstanceStatus.RUNNING) {

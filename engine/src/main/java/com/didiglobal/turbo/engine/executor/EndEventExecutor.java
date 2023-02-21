@@ -8,12 +8,16 @@ import com.didiglobal.turbo.engine.common.RuntimeContext;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 
 @Service
 public class EndEventExecutor extends ElementExecutor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EndEventExecutor.class);
 
     @Override
     protected void postExecute(RuntimeContext runtimeContext) throws ProcessException {

@@ -9,6 +9,8 @@ import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.exception.SuspendException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ import java.util.Map;
 
 @Service
 public class UserTaskExecutor extends ElementExecutor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserTaskExecutor.class);
 
     @Override
     protected void doExecute(RuntimeContext runtimeContext) throws ProcessException {
