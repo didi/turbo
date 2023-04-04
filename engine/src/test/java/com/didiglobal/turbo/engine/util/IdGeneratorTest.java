@@ -1,5 +1,7 @@
 package com.didiglobal.turbo.engine.util;
 
+import com.didiglobal.turbo.engine.spi.generator.IdGenerator;
+import com.didiglobal.turbo.engine.spi.generator.StrongUuidGenerator;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

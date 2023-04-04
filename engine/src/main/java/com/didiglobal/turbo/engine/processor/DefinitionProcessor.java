@@ -17,8 +17,7 @@ import com.didiglobal.turbo.engine.param.DeployFlowParam;
 import com.didiglobal.turbo.engine.param.GetFlowModuleParam;
 import com.didiglobal.turbo.engine.param.UpdateFlowParam;
 import com.didiglobal.turbo.engine.result.*;
-import com.didiglobal.turbo.engine.util.IdGenerator;
-import com.didiglobal.turbo.engine.util.StrongUuidGenerator;
+import com.didiglobal.turbo.engine.spi.generator.IdGenerateManager;
 import com.didiglobal.turbo.engine.validator.ModelValidator;
 import com.didiglobal.turbo.engine.validator.ParamValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +34,8 @@ public class DefinitionProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefinitionProcessor.class);
 
-    private static final IdGenerator idGenerator = new StrongUuidGenerator();
+    @Resource
+    private IdGenerateManager idGenerateManager;
 
     @Resource
     private ModelValidator modelValidator;
@@ -53,7 +53,7 @@ public class DefinitionProcessor {
 
             FlowDefinitionPO flowDefinitionPO = new FlowDefinitionPO();
             BeanUtils.copyProperties(createFlowParam, flowDefinitionPO);
-            String flowModuleId = idGenerator.getNextId();
+            String flowModuleId = idGenerateManager.getIdGenerator().getNextId();
             flowDefinitionPO.setFlowModuleId(flowModuleId);
             flowDefinitionPO.setStatus(FlowDefinitionStatus.INIT);
             Date date = new Date();
@@ -118,7 +118,7 @@ public class DefinitionProcessor {
 
             FlowDeploymentPO flowDeploymentPO = new FlowDeploymentPO();
             BeanUtils.copyProperties(flowDefinitionPO, flowDeploymentPO);
-            String flowDeployId = idGenerator.getNextId();
+            String flowDeployId = idGenerateManager.getIdGenerator().getNextId();
             flowDeploymentPO.setFlowDeployId(flowDeployId);
             flowDeploymentPO.setStatus(FlowDeploymentStatus.DEPLOYED);
 

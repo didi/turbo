@@ -1,19 +1,19 @@
-package com.didiglobal.turbo.engine.util.impl;
+package com.didiglobal.turbo.engine.spi.calulator;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.exception.ProcessException;
-import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.GroovyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.Map;
 
-@Service
+/**
+ * Implementation of calculator that uses script based on `Groovy`
+ */
 public class GroovyExpressionCalculator implements ExpressionCalculator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroovyExpressionCalculator.class);
@@ -30,7 +30,7 @@ public class GroovyExpressionCalculator implements ExpressionCalculator {
                 return (Boolean) result;
             } else {
                 LOGGER.warn("the result of expression is not boolean.||expression={}||result={}||dataMap={}",
-                        expression, result, JSON.toJSONString(dataMap));
+                    expression, result, JSON.toJSONString(dataMap));
                 throw new ProcessException(ErrorEnum.GROOVY_CALCULATE_FAILED.getErrNo(), "expression is not instanceof bool.");
             }
         } catch (Exception e) {
