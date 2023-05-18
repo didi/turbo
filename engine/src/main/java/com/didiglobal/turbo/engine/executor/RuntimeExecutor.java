@@ -8,14 +8,10 @@ import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.util.IdGenerator;
 import com.didiglobal.turbo.engine.util.StrongUuidGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 
 public abstract class RuntimeExecutor {
-
-    protected static final Logger LOGGER = LoggerFactory.getLogger(RuntimeExecutor.class);
 
     @Resource
     protected ExecutorFactory executorFactory;
@@ -29,11 +25,11 @@ public abstract class RuntimeExecutor {
     @Resource
     protected NodeInstanceLogDAO nodeInstanceLogDAO;
 
-    private static final IdGenerator idGenerator = new StrongUuidGenerator();
+    private static final IdGenerator ID_GENERATOR = new StrongUuidGenerator();
 
 
     protected String genId() {
-        return idGenerator.getNextId();
+        return ID_GENERATOR.getNextId();
     }
 
     public abstract void execute(RuntimeContext runtimeContext) throws ProcessException;

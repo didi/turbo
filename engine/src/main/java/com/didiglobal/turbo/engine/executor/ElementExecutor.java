@@ -16,6 +16,8 @@ import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 import javax.annotation.Resource;
@@ -23,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class ElementExecutor extends RuntimeExecutor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElementExecutor.class);
 
     @Resource
     protected ExpressionCalculator expressionCalculator;

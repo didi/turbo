@@ -4,13 +4,13 @@ import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
 import com.didiglobal.turbo.engine.dao.mapper.NodeInstanceMapper;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.stereotype.Service;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
 
-@Service
+@Repository
 public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO> {
 
     /**

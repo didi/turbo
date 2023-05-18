@@ -6,8 +6,8 @@ import com.didiglobal.turbo.engine.common.FlowElementType;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.FlowModel;
 import com.google.common.collect.Maps;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,19 +29,19 @@ public class FlowModelUtil {
      */
     public static Map<String, FlowElement> getFlowElementMap(String flowModelStr) {
         if (StringUtils.isBlank(flowModelStr)) {
-            return MapUtils.EMPTY_MAP;
+            return Maps.newHashMap();
         }
 
         FlowModel flowModel = parseModelFromString(flowModelStr);
         if (flowModel == null) {
-            return MapUtils.EMPTY_MAP;
+            return Maps.newHashMap();
         }
         return getFlowElementMap(flowModel.getFlowElementList());
     }
 
     public static Map<String, FlowElement> getFlowElementMap(List<FlowElement> flowElementList) {
         if (CollectionUtils.isEmpty(flowElementList)) {
-            return MapUtils.EMPTY_MAP;
+            return Maps.newHashMap();
         }
         Map<String, FlowElement> flowElementMap = Maps.newHashMap();
         flowElementList.forEach(flowElement -> {
