@@ -33,6 +33,9 @@ public class ElementValidatorFactory {
     @Resource
     private ExclusiveGatewayValidator exclusiveGatewayValidator;
 
+    @Resource
+    private CallActivityValidator callActivityValidator;
+
     public ElementValidator getElementValidator(FlowElement flowElement) throws ProcessException {
         int elementType = flowElement.getType();
         ElementValidator elementValidator = getElementValidator(elementType);
@@ -40,8 +43,8 @@ public class ElementValidatorFactory {
         if (elementValidator == null) {
             LOGGER.warn("getElementValidator failed: unsupported elementType.||elementType={}", elementType);
             throw new ProcessException(ErrorEnum.UNSUPPORTED_ELEMENT_TYPE,
-                    MessageFormat.format(Constants.NODE_INFO_FORMAT, flowElement.getKey(),
-                            FlowModelUtil.getElementName(flowElement), elementType));
+                MessageFormat.format(Constants.NODE_INFO_FORMAT, flowElement.getKey(),
+                    FlowModelUtil.getElementName(flowElement), elementType));
         }
         return elementValidator;
     }
@@ -58,6 +61,8 @@ public class ElementValidatorFactory {
                 return userTaskValidator;
             case FlowElementType.EXCLUSIVE_GATEWAY:
                 return exclusiveGatewayValidator;
+            case FlowElementType.CALL_ACTIVITY:
+                return callActivityValidator;
             default:
                 return null;
         }

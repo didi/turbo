@@ -140,7 +140,7 @@ public class RuntimeProcessorTest extends BaseTest {
     public void testCommitTerminatedFlowInstance() throws Exception {
         StartProcessResult startProcessResult = startProcess();
 
-        runtimeProcessor.terminateProcess(startProcessResult.getFlowInstanceId());
+        runtimeProcessor.terminateProcess(startProcessResult.getFlowInstanceId(), false);
 
         CommitTaskParam commitTaskParam = new CommitTaskParam();
         commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
@@ -296,7 +296,7 @@ public class RuntimeProcessorTest extends BaseTest {
     @Test
     public void testTerminateProcess() throws Exception {
         StartProcessResult startProcessResult = startProcess();
-        TerminateResult terminateResult = runtimeProcessor.terminateProcess(startProcessResult.getFlowInstanceId());
+        TerminateResult terminateResult = runtimeProcessor.terminateProcess(startProcessResult.getFlowInstanceId(), false);
         LOGGER.info("testTerminateProcess.||terminateResult={}", terminateResult);
         Assert.assertTrue(terminateResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo());
     }
@@ -314,7 +314,7 @@ public class RuntimeProcessorTest extends BaseTest {
         // UserTask -> ExclusiveGateway -> UserTask
         CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
-        NodeInstanceListResult nodeInstanceListResult = runtimeProcessor.getHistoryUserTaskList(commitTaskResult.getFlowInstanceId());
+        NodeInstanceListResult nodeInstanceListResult = runtimeProcessor.getHistoryUserTaskList(commitTaskResult.getFlowInstanceId(), false);
         LOGGER.info("testGetHistoryUserTaskList.||nodeInstanceListResult={}", nodeInstanceListResult);
         StringBuilder sb = new StringBuilder();
         for (NodeInstance elementInstanceResult : nodeInstanceListResult.getNodeInstanceList()) {
@@ -347,7 +347,7 @@ public class RuntimeProcessorTest extends BaseTest {
         LOGGER.info("testGetFailedHistoryElementList.||commitTaskResult={}", commitTaskResult);
         Assert.assertTrue(commitTaskResult.getErrCode() == ErrorEnum.GET_OUTGOING_FAILED.getErrNo());
 
-        ElementInstanceListResult elementInstanceListResult = runtimeProcessor.getHistoryElementList(commitTaskResult.getFlowInstanceId());
+        ElementInstanceListResult elementInstanceListResult = runtimeProcessor.getHistoryElementList(commitTaskResult.getFlowInstanceId(), false);
         LOGGER.info("testGetHistoryElementList.||elementInstanceListResult={}", elementInstanceListResult);
         StringBuilder sb = new StringBuilder();
         for (ElementInstance elementInstanceResult : elementInstanceListResult.getElementInstanceList()) {
@@ -376,7 +376,7 @@ public class RuntimeProcessorTest extends BaseTest {
         // UserTask -> EndEvent
         CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
-        ElementInstanceListResult elementInstanceListResult = runtimeProcessor.getHistoryElementList(commitTaskResult.getFlowInstanceId());
+        ElementInstanceListResult elementInstanceListResult = runtimeProcessor.getHistoryElementList(commitTaskResult.getFlowInstanceId(), false);
         LOGGER.info("testGetHistoryElementList.||elementInstanceListResult={}", elementInstanceListResult);
         StringBuilder sb = new StringBuilder();
         for (ElementInstance elementInstanceResult : elementInstanceListResult.getElementInstanceList()) {
@@ -397,7 +397,7 @@ public class RuntimeProcessorTest extends BaseTest {
     public void testGetInstanceData() throws Exception {
         StartProcessResult startProcessResult = startProcess();
         String flowInstanceId = startProcessResult.getFlowInstanceId();
-        InstanceDataListResult instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
+        InstanceDataListResult instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId, false);
         LOGGER.info("testGetInstanceData 1.||instanceDataList={}", instanceDataList);
 
         CommitTaskParam commitTaskParam = new CommitTaskParam();
@@ -421,7 +421,7 @@ public class RuntimeProcessorTest extends BaseTest {
         commitTaskParam1.setVariables(variables1);
         CommitTaskResult commitTaskResult1 = runtimeProcessor.commit(commitTaskParam1);
 
-        instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
+        instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId, false);
         LOGGER.info("testGetInstanceData 2.||instanceDataList={}", instanceDataList);
 
         // UserTask <- UserTask
@@ -438,7 +438,7 @@ public class RuntimeProcessorTest extends BaseTest {
         RollbackTaskResult rollbackTaskResult1 = runtimeProcessor.rollback(rollbackTaskParam1);
         LOGGER.info("rollbackTaskResult 4.||rollbackTaskResult.variables={}", rollbackTaskResult1.getVariables());
 
-        instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId);
+        instanceDataList = runtimeProcessor.getInstanceData(flowInstanceId, false);
         LOGGER.info("testGetInstanceData 5.||instanceDataList={}", instanceDataList);
         String initData = JSON.toJSONString(startProcessResult.getVariables());
         String rollbackData = JSON.toJSONString(rollbackTaskResult1.getVariables());
@@ -449,7 +449,7 @@ public class RuntimeProcessorTest extends BaseTest {
     public void testGetNodeInstance() throws Exception {
         StartProcessResult startProcessResult = startProcess();
         String flowInstanceId = startProcessResult.getFlowInstanceId();
-        NodeInstanceResult nodeInstanceResult = runtimeProcessor.getNodeInstance(flowInstanceId, startProcessResult.getActiveTaskInstance().getNodeInstanceId());
+        NodeInstanceResult nodeInstanceResult = runtimeProcessor.getNodeInstance(flowInstanceId, startProcessResult.getActiveTaskInstance().getNodeInstanceId(), false);
         LOGGER.info("testGetNodeInstance.||nodeInstanceResult={}", nodeInstanceResult);
 
         Assert.assertTrue(StringUtils.equals(nodeInstanceResult.getNodeInstance().getNodeInstanceId(), startProcessResult.getActiveTaskInstance().getNodeInstanceId()));

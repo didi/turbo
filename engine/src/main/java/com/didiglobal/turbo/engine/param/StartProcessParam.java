@@ -1,11 +1,15 @@
 package com.didiglobal.turbo.engine.param;
 
+import com.didiglobal.turbo.engine.common.RuntimeContext;
 import com.didiglobal.turbo.engine.model.InstanceData;
 import com.google.common.base.MoreObjects;
 
 import java.util.List;
 
 public class StartProcessParam {
+    // For internal transmission runtimeContext
+    private RuntimeContext runtimeContext;
+
     private String flowModuleId;
     private String flowDeployId;
     private List<InstanceData> variables;
@@ -34,12 +38,20 @@ public class StartProcessParam {
         this.variables = variables;
     }
 
+    public void setRuntimeContext(RuntimeContext runtimeContext) {
+        this.runtimeContext = runtimeContext;
+    }
+
+    public RuntimeContext getRuntimeContext() {
+        return runtimeContext;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("flowModuleId", flowModuleId)
-                .add("flowDeployId", flowDeployId)
-                .add("variables", variables)
-                .toString();
+            .add("flowModuleId", flowModuleId)
+            .add("flowDeployId", flowDeployId)
+            .add("variables", variables)
+            .toString();
     }
 }

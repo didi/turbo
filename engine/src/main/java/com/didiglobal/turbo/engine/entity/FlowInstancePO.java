@@ -9,6 +9,7 @@ public class FlowInstancePO extends CommonPO {
     private String flowInstanceId;
     private String flowDeployId;
     private String flowModuleId;
+    private String parentFlowInstanceId;
     private Integer status;
     private Date modifyTime;
 
@@ -34,6 +35,14 @@ public class FlowInstancePO extends CommonPO {
 
     public void setFlowModuleId(String flowModuleId) {
         this.flowModuleId = flowModuleId;
+    }
+
+    public String getParentFlowInstanceId() {
+        return parentFlowInstanceId;
+    }
+
+    public void setParentFlowInstanceId(String parentFlowInstanceId) {
+        this.parentFlowInstanceId = parentFlowInstanceId;
     }
 
     public Integer getStatus() {

@@ -4,6 +4,7 @@ import com.didiglobal.turbo.engine.common.Constants;
 import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.exception.DefinitionException;
 import com.didiglobal.turbo.engine.model.FlowElement;
+import com.didiglobal.turbo.engine.param.CommonParam;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class ElementValidator {
         }
     }
 
-    protected void validate(Map<String, FlowElement> flowElementMap, FlowElement flowElement) throws DefinitionException {
+    protected void validate(Map<String, FlowElement> flowElementMap, FlowElement flowElement, CommonParam commonParam) throws DefinitionException {
         checkIncoming(flowElementMap, flowElement);
         checkOutgoing(flowElementMap, flowElement);
     }

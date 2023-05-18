@@ -66,6 +66,9 @@ public interface ProcessEngine {
      * until it reaches an {@link UserTask} node or
      * an {@link EndEvent} node.
      *
+     * <p>
+     * Effective for SubFlowInstance by default
+     *
      * @param startProcessParam flowDeployId / flowModuleId: specify the flow to process
      *                          variables: input data to drive the process if required
      * @return {@link StartProcessResult} mainly contains flowInstanceId and activeTaskInstance({@link NodeInstance})
@@ -75,6 +78,9 @@ public interface ProcessEngine {
 
     /**
      * Commit suspended userTask of the flow instance previously created specified by flowInstanceId and continue to process.
+     *
+     * <p>
+     * Effective for SubFlowInstance by default
      *
      * @param commitTaskParam flowInstanceId: specify the flowInstance of the task
      *                        nodeInstanceId: specify the task to commit
@@ -89,6 +95,9 @@ public interface ProcessEngine {
      * According to the historical node instance list, it'll rollback the suspended userTask of the flow instance
      * specified by flowInstanceId forward until it reaches an UserTask node or an StartEvent node.
      *
+     * <p>
+     * Effective for SubFlowInstance by default
+     *
      * @param rollbackTaskParam flowInstanceId / nodeInstanceId similar to {@link #commitTask(CommitTaskParam)}
      * @return {@link RollbackTaskResult} similar to {@link #commitTask(CommitTaskParam)}
      */
@@ -99,10 +108,37 @@ public interface ProcessEngine {
      * <p>
      * If the specified flow instance has been completed, ignore. Otherwise, set status to terminated of the flow instance.
      *
+     * <p>
+     * Effective for SubFlowInstance by default
+     *
      * @param flowInstanceId
      * @return {@link TerminateResult} similar to {@link #commitTask(CommitTaskParam)} without activeTaskInstance.
      */
     TerminateResult terminateProcess(String flowInstanceId);
+
+    /**
+     * Terminate process
+     * <p>
+     * If the specified flow instance has been completed, ignore. Otherwise, set status to terminated of the flow instance.
+     *
+     * @param flowInstanceId
+     * @param effectiveForSubFlowInstance
+     * @return {@link TerminateResult} similar to {@link #commitTask(CommitTaskParam)} without activeTaskInstance.
+     */
+    TerminateResult terminateProcess(String flowInstanceId, boolean effectiveForSubFlowInstance);
+
+    /**
+     * Get historical UserTask list
+     * <p>
+     * Get the list of processed UserTask of the specified flow instance order by processed time desc.
+     * Attention: it'll include active userTask(s) and completed userTask(s) in the list without disabled userTask(s).
+     *
+     * <p>
+     * Effective for SubFlowInstance by default
+     *
+     * @param flowInstanceId
+     */
+    NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId);
 
     /**
      * Get historical UserTask list
@@ -111,11 +147,15 @@ public interface ProcessEngine {
      * Attention: it'll include active userTask(s) and completed userTask(s) in the list without disabled userTask(s).
      *
      * @param flowInstanceId
+     * @param effectiveForSubFlowInstance
      */
-    NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId);
+    NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId, boolean effectiveForSubFlowInstance);
 
     /**
      * Get processed element instance list for the specified flow instance, and mainly used to show the view of the snapshot.
+     *
+     * <p>
+     * Effective for SubFlowInstance by default
      *
      * @param flowInstanceId flowInstance ID
      * @return {@link ElementInstanceListResult} the list of nodes executed in history
@@ -123,19 +163,76 @@ public interface ProcessEngine {
     ElementInstanceListResult getHistoryElementList(String flowInstanceId);
 
     /**
+     * Get processed element instance list for the specified flow instance, and mainly used to show the view of the snapshot.
+     *
+     * @param flowInstanceId              flowInstance ID
+     * @param effectiveForSubFlowInstance
+     * @return {@link ElementInstanceListResult} the list of nodes executed in history
+     */
+    ElementInstanceListResult getHistoryElementList(String flowInstanceId, boolean effectiveForSubFlowInstance);
+
+    /**
      * Get latest {@link InstanceData} list of the specified flow instance.
+     *
+     * <p>
+     * Effective for SubFlowInstance by default
      *
      * @param flowInstanceId
      */
     InstanceDataListResult getInstanceData(String flowInstanceId);
 
     /**
+     * Get latest {@link InstanceData} list of the specified flow instance.
+     *
+     * @param flowInstanceId
+     * @param effectiveForSubFlowInstance
+     */
+    InstanceDataListResult getInstanceData(String flowInstanceId, boolean effectiveForSubFlowInstance);
+
+    /**
+     * Get {@link InstanceData} list of the specified instance data.
+     *
+     * <p>
+     * Effective for SubFlowInstance by default
+     *
+     * @param flowInstanceId
+     * @param instanceDataId
+     */
+    InstanceDataListResult getInstanceData(String flowInstanceId, String instanceDataId);
+
+    /**
+     * Get {@link InstanceData} list of the specified instance data.
+     *
+     * @param flowInstanceId
+     * @param instanceDataId
+     * @param effectiveForSubFlowInstance
+     */
+    InstanceDataListResult getInstanceData(String flowInstanceId, String instanceDataId, boolean effectiveForSubFlowInstance);
+
+    /**
      * According to the flow instance and node instance given in, get node instance info.
+     *
+     * <p>
+     * Effective for SubFlowInstance by default
      *
      * @param flowInstanceId
      * @param nodeInstanceId
      */
     NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId);
 
-}
+    /**
+     * According to the flow instance and node instance given in, get node instance info.
+     *
+     * @param flowInstanceId
+     * @param nodeInstanceId
+     * @param effectiveForSubFlowInstance
+     */
+    NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance);
 
+    /**
+     * According to the flow instance given in, get flow instance info.
+     *
+     * @param flowInstanceId
+     */
+    FlowInstanceResult getFlowInstance(String flowInstanceId);
+}
