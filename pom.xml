@@ -45,6 +45,11 @@
             <organization>Didi</organization>
             <organizationUrl>http://www.didiglobal.com</organizationUrl>
         </developer>
+        <developer>
+            <name>zuokai</name>
+            <organization>Didi</organization>
+            <organizationUrl>http://www.didiglobal.com</organizationUrl>
+        </developer>
     </developers>
 
     <modules>
