@@ -2,10 +2,15 @@ package com.didiglobal.turbo.engine.model;
 
 import com.google.common.base.MoreObjects;
 
-public class InstanceData {
+import java.io.Serializable;
+
+public class InstanceData implements Serializable {
     private String key;
     private String type;
     private Object value;
+
+    public InstanceData() {
+    }
 
     public InstanceData(String key, Object value) {
         this.key = key;

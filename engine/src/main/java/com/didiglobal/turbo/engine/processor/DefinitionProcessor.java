@@ -114,7 +114,7 @@ public class DefinitionProcessor {
             }
 
             String flowModel = flowDefinitionPO.getFlowModel();
-            modelValidator.validate(flowModel);
+            modelValidator.validate(flowModel, deployFlowParam);
 
             FlowDeploymentPO flowDeploymentPO = new FlowDeploymentPO();
             BeanUtils.copyProperties(flowDefinitionPO, flowDeploymentPO);

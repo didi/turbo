@@ -4,6 +4,7 @@ import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.exception.DefinitionException;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.model.FlowModel;
+import com.didiglobal.turbo.engine.param.CommonParam;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,10 @@ public class ModelValidator {
     private FlowModelValidator flowModelValidator;
 
     public void validate(String flowModelStr) throws DefinitionException, ProcessException {
+        this.validate(flowModelStr, null);
+    }
+
+    public void validate(String flowModelStr, CommonParam commonParam) throws DefinitionException, ProcessException {
         if (StringUtils.isBlank(flowModelStr)) {
             LOGGER.warn("message={}", ErrorEnum.MODEL_EMPTY.getErrMsg());
             throw new DefinitionException(ErrorEnum.MODEL_EMPTY);
@@ -32,6 +37,6 @@ public class ModelValidator {
             LOGGER.warn("message={}||flowModelStr={}", ErrorEnum.MODEL_EMPTY.getErrMsg(), flowModelStr);
             throw new DefinitionException(ErrorEnum.MODEL_EMPTY);
         }
-        flowModelValidator.validate(flowModel);
+        flowModelValidator.validate(flowModel, commonParam);
     }
 }

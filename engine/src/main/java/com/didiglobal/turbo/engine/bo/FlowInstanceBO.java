@@ -5,7 +5,9 @@ import com.google.common.base.MoreObjects;
 public class FlowInstanceBO {
     private String flowInstanceId;
     private String flowDeployId;
+    private String flowModuleId;
     private Integer status;
+    private String parentFlowInstanceId;
 
     public String getFlowInstanceId() {
         return flowInstanceId;
@@ -23,6 +25,14 @@ public class FlowInstanceBO {
         this.flowDeployId = flowDeployId;
     }
 
+    public String getFlowModuleId() {
+        return flowModuleId;
+    }
+
+    public void setFlowModuleId(String flowModuleId) {
+        this.flowModuleId = flowModuleId;
+    }
+
     public Integer getStatus() {
         return status;
     }
@@ -31,12 +41,22 @@ public class FlowInstanceBO {
         this.status = status;
     }
 
+    public String getParentFlowInstanceId() {
+        return parentFlowInstanceId;
+    }
+
+    public void setParentFlowInstanceId(String parentFlowInstanceId) {
+        this.parentFlowInstanceId = parentFlowInstanceId;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("flowInstanceId", flowInstanceId)
-                .add("flowDeployId", flowDeployId)
-                .add("status", status)
-                .toString();
+            .add("flowInstanceId", flowInstanceId)
+            .add("flowDeployId", flowDeployId)
+            .add("flowModuleId", flowModuleId)
+            .add("status", status)
+            .add("parentFlowInstanceId", parentFlowInstanceId)
+            .toString();
     }
 }

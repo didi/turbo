@@ -10,6 +10,8 @@ public enum ErrorEnum {
 
     //2000~2999 通用业务错误
     PARAM_INVALID(2001, "Invalid param"),
+    FLOW_NESTED_LEVEL_EXCEEDED(2002, "Flow nested level exceeded"),
+    FLOW_NESTED_DEAD_LOOP(2003, "Flow nested dead loop"),
 
     //3000~3999 流程定义错误
     DEFINITION_INSERT_INVALID(3001, "Definition insert failed"),
@@ -33,6 +35,8 @@ public enum ErrorEnum {
     ELEMENT_TOO_MUCH_OUTGOING(3213, "Too many outgoing"),
     ELEMENT_LACK_INCOMING(3214, "Element lack incoming"),
     ELEMENT_LACK_OUTGOING(3215, "Element lack outgoing"),
+    REQUIRED_ELEMENT_ATTRIBUTES(3216, "required element attributes"),
+    MODEL_UNKNOWN_ELEMENT_VALUE(3217, "Unknown element value"),
 
     //4000~4999 流程执行错误
     COMMIT_FAILED(4001, "Commit task failed"),
@@ -53,6 +57,9 @@ public enum ErrorEnum {
     SAVE_FLOW_INSTANCE_FAILED(4016, "Save flowInstance failed"),
     SAVE_INSTANCE_DATA_FAILED(4017, "Save instanceData failed"),
     GROOVY_CALCULATE_FAILED(4018, "Groovy calculate failed"),
+    GET_CALL_ACTIVITY_MODEL_FAILED(4019, "Get CallActivity model failed"),
+    NO_RECEIVE_SUB_FLOW_INSTANCE(4020, "Do not receive subFlowInstanceId"),
+
 
     //5000~5999 系统错误
     //保留错误码
@@ -81,6 +88,15 @@ public enum ErrorEnum {
 
     public void setErrMsg(String errMsg) {
         this.errMsg = errMsg;
+    }
+
+    public static ErrorEnum getErrorEnum(int errNo) {
+        for (ErrorEnum e : ErrorEnum.values()) {
+            if (e.getErrNo() == errNo) {
+                return e;
+            }
+        }
+        return null;
     }
 
     public static boolean isSuccess(int errNo) {

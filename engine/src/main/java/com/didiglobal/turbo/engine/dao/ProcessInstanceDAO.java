@@ -10,7 +10,11 @@ import java.util.Date;
 public class ProcessInstanceDAO extends BaseDAO<ProcessInstanceMapper, FlowInstancePO> {
 
     public FlowInstancePO selectByFlowInstanceId(String flowInstanceId) {
-        return baseMapper.selectByFlowInstanceId(flowInstanceId);
+        FlowInstancePO po = baseMapper.selectByFlowInstanceId(flowInstanceId);
+        if (po != null) {
+            return po;
+        }
+        return baseMapper.selectByFlowInstanceIdFromMaster(flowInstanceId);
     }
 
     /**
@@ -30,7 +34,7 @@ public class ProcessInstanceDAO extends BaseDAO<ProcessInstanceMapper, FlowInsta
     }
 
     public void updateStatus(String flowInstanceId, int status) {
-        FlowInstancePO flowInstancePO = baseMapper.selectByFlowInstanceId(flowInstanceId);
+        FlowInstancePO flowInstancePO = selectByFlowInstanceId(flowInstanceId);
         updateStatus(flowInstancePO, status);
     }
 

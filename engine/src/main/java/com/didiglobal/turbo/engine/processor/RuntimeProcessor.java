@@ -2,13 +2,24 @@ package com.didiglobal.turbo.engine.processor;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
-import com.didiglobal.turbo.engine.bo.*;
-import com.didiglobal.turbo.engine.common.*;
+import com.didiglobal.turbo.engine.bo.ElementInstance;
+import com.didiglobal.turbo.engine.bo.FlowInfo;
+import com.didiglobal.turbo.engine.bo.FlowInstanceBO;
+import com.didiglobal.turbo.engine.bo.NodeInstance;
+import com.didiglobal.turbo.engine.bo.NodeInstanceBO;
+import com.didiglobal.turbo.engine.common.ErrorEnum;
+import com.didiglobal.turbo.engine.common.FlowElementType;
+import com.didiglobal.turbo.engine.common.FlowInstanceMappingType;
+import com.didiglobal.turbo.engine.common.FlowInstanceStatus;
+import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
+import com.didiglobal.turbo.engine.common.ProcessStatus;
+import com.didiglobal.turbo.engine.common.RuntimeContext;
 import com.didiglobal.turbo.engine.dao.FlowDeploymentDAO;
-import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
+import com.didiglobal.turbo.engine.dao.FlowInstanceMappingDAO;
 import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
 import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
 import com.didiglobal.turbo.engine.entity.FlowDeploymentPO;
+import com.didiglobal.turbo.engine.entity.FlowInstanceMappingPO;
 import com.didiglobal.turbo.engine.entity.FlowInstancePO;
 import com.didiglobal.turbo.engine.entity.InstanceDataPO;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
@@ -21,7 +32,19 @@ import com.didiglobal.turbo.engine.model.InstanceData;
 import com.didiglobal.turbo.engine.param.CommitTaskParam;
 import com.didiglobal.turbo.engine.param.RollbackTaskParam;
 import com.didiglobal.turbo.engine.param.StartProcessParam;
-import com.didiglobal.turbo.engine.result.*;
+import com.didiglobal.turbo.engine.result.CommitTaskResult;
+import com.didiglobal.turbo.engine.result.ElementInstanceListResult;
+import com.didiglobal.turbo.engine.result.FlowInstanceResult;
+import com.didiglobal.turbo.engine.result.InstanceDataListResult;
+import com.didiglobal.turbo.engine.result.NodeInstanceListResult;
+import com.didiglobal.turbo.engine.result.NodeInstanceResult;
+import com.didiglobal.turbo.engine.result.RollbackTaskResult;
+import com.didiglobal.turbo.engine.result.RuntimeResult;
+import com.didiglobal.turbo.engine.result.StartProcessResult;
+import com.didiglobal.turbo.engine.result.TerminateResult;
+import com.didiglobal.turbo.engine.service.FlowInstanceService;
+import com.didiglobal.turbo.engine.service.InstanceDataService;
+import com.didiglobal.turbo.engine.service.NodeInstanceService;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import com.didiglobal.turbo.engine.validator.ParamValidator;
@@ -36,8 +59,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 @Component
 public class RuntimeProcessor {
@@ -54,10 +81,19 @@ public class RuntimeProcessor {
     private NodeInstanceDAO nodeInstanceDAO;
 
     @Resource
-    private InstanceDataDAO instanceDataDAO;
+    private FlowInstanceMappingDAO flowInstanceMappingDAO;
 
     @Resource
     private FlowExecutor flowExecutor;
+
+    @Resource
+    private FlowInstanceService flowInstanceService;
+
+    @Resource
+    private InstanceDataService instanceDataService;
+
+    @Resource
+    private NodeInstanceService nodeInstanceService;
 
     ////////////////////////////////////////startProcess////////////////////////////////////////
 
@@ -71,7 +107,7 @@ public class RuntimeProcessor {
             FlowInfo flowInfo = getFlowInfo(startProcessParam);
 
             //3.init context for runtime
-            runtimeContext = buildStartProcessContext(flowInfo, startProcessParam.getVariables());
+            runtimeContext = buildStartProcessContext(flowInfo, startProcessParam.getVariables(), startProcessParam.getRuntimeContext());
 
             //4.process
             flowExecutor.execute(runtimeContext);
@@ -81,7 +117,7 @@ public class RuntimeProcessor {
         } catch (TurboException e) {
             if (!ErrorEnum.isSuccess(e.getErrNo())) {
                 LOGGER.warn("startProcess ProcessException.||startProcessParam={}||runtimeContext={}, ",
-                        startProcessParam, runtimeContext, e);
+                    startProcessParam, runtimeContext, e);
             }
             return buildStartProcessResult(runtimeContext, e);
         }
@@ -100,8 +136,8 @@ public class RuntimeProcessor {
      * 1.flowInfo: flowDeployId, flowModuleId, tenantId, flowModel(FlowElementList)
      * 2.variables: inputDataList fr. param
      */
-    private RuntimeContext buildStartProcessContext(FlowInfo flowInfo, List<InstanceData> variables) {
-        return buildRuntimeContext(flowInfo, variables);
+    private RuntimeContext buildStartProcessContext(FlowInfo flowInfo, List<InstanceData> variables, RuntimeContext parentRuntimeContext) {
+        return buildRuntimeContext(flowInfo, variables, parentRuntimeContext);
     }
 
     private StartProcessResult buildStartProcessResult(RuntimeContext runtimeContext) {
@@ -159,16 +195,31 @@ public class RuntimeProcessor {
 
     private RuntimeContext buildCommitContext(CommitTaskParam commitTaskParam, FlowInfo flowInfo, int flowInstanceStatus) {
         //1. set flow info
-        RuntimeContext runtimeContext = buildRuntimeContext(flowInfo, commitTaskParam.getVariables());
+        RuntimeContext runtimeContext = buildRuntimeContext(flowInfo, commitTaskParam.getVariables(), commitTaskParam.getRuntimeContext());
 
         //2. init flowInstance with flowInstanceId
         runtimeContext.setFlowInstanceId(commitTaskParam.getFlowInstanceId());
         runtimeContext.setFlowInstanceStatus(flowInstanceStatus);
 
-        //3. set suspendNodeInstance with taskInstance in param
+        //3.set suspendNodeInstance stack
+        RuntimeContext parentRuntimeContext = runtimeContext.getParentRuntimeContext();
+        String realNodeInstanceId = null;
+        if (parentRuntimeContext == null) {
+            Stack<String> nodeInstanceId2RootStack = flowInstanceService.getNodeInstanceIdStack(commitTaskParam.getFlowInstanceId(), commitTaskParam.getTaskInstanceId());
+            runtimeContext.setSuspendNodeInstanceStack(nodeInstanceId2RootStack);
+            realNodeInstanceId = nodeInstanceId2RootStack.isEmpty() ? commitTaskParam.getTaskInstanceId() : nodeInstanceId2RootStack.pop();
+        } else {
+            runtimeContext.setSuspendNodeInstanceStack(parentRuntimeContext.getSuspendNodeInstanceStack());
+            realNodeInstanceId = commitTaskParam.getTaskInstanceId();
+        }
+
+        //4. set suspendNodeInstance with taskInstance in param
         NodeInstanceBO suspendNodeInstance = new NodeInstanceBO();
-        suspendNodeInstance.setNodeInstanceId(commitTaskParam.getTaskInstanceId());
+        suspendNodeInstance.setNodeInstanceId(realNodeInstanceId);
         runtimeContext.setSuspendNodeInstance(suspendNodeInstance);
+
+        //5. set callActivity msg
+        runtimeContext.setCallActivityFlowModuleId(commitTaskParam.getCallActivityFlowModuleId());
 
         return runtimeContext;
     }
@@ -202,9 +253,9 @@ public class RuntimeProcessor {
             FlowInstanceBO flowInstanceBO = getFlowInstanceBO(rollbackTaskParam.getFlowInstanceId());
 
             //3.check status
-            if (flowInstanceBO.getStatus() != FlowInstanceStatus.RUNNING) {
+            if ((flowInstanceBO.getStatus() != FlowInstanceStatus.RUNNING) && (flowInstanceBO.getStatus() != FlowInstanceStatus.END)) {
                 LOGGER.warn("rollback failed: invalid status to rollback.||rollbackTaskParam={}||status={}",
-                        rollbackTaskParam, flowInstanceBO.getStatus());
+                    rollbackTaskParam, flowInstanceBO.getStatus());
                 throw new ProcessException(ErrorEnum.ROLLBACK_REJECTRD);
             }
             String flowDeployId = flowInstanceBO.getFlowDeployId();
@@ -236,9 +287,22 @@ public class RuntimeProcessor {
         runtimeContext.setFlowInstanceId(rollbackTaskParam.getFlowInstanceId());
         runtimeContext.setFlowInstanceStatus(flowInstanceStatus);
 
+        //3.set suspendNodeInstance stack
+        RuntimeContext parentRuntimeContext = rollbackTaskParam.getRuntimeContext();
+        String realNodeInstanceId = null;
+        if (parentRuntimeContext == null) {
+            Stack<String> nodeInstanceId2RootStack = flowInstanceService.getNodeInstanceIdStack(rollbackTaskParam.getFlowInstanceId(), rollbackTaskParam.getTaskInstanceId());
+            runtimeContext.setSuspendNodeInstanceStack(nodeInstanceId2RootStack);
+            realNodeInstanceId = nodeInstanceId2RootStack.isEmpty() ? rollbackTaskParam.getTaskInstanceId() : nodeInstanceId2RootStack.pop();
+        } else {
+            runtimeContext.setParentRuntimeContext(rollbackTaskParam.getRuntimeContext());
+            runtimeContext.setSuspendNodeInstanceStack(rollbackTaskParam.getRuntimeContext().getSuspendNodeInstanceStack());
+            realNodeInstanceId = rollbackTaskParam.getTaskInstanceId();
+        }
+
         //3. set suspendNodeInstance with taskInstance in param
         NodeInstanceBO suspendNodeInstance = new NodeInstanceBO();
-        suspendNodeInstance.setNodeInstanceId(rollbackTaskParam.getTaskInstanceId());
+        suspendNodeInstance.setNodeInstanceId(realNodeInstanceId);
         runtimeContext.setSuspendNodeInstance(suspendNodeInstance);
 
         return runtimeContext;
@@ -256,18 +320,27 @@ public class RuntimeProcessor {
 
     ////////////////////////////////////////terminate////////////////////////////////////////
 
-    public TerminateResult terminateProcess(String flowInstanceId) {
+    public TerminateResult terminateProcess(String flowInstanceId, boolean effectiveForSubFlowInstance) {
         TerminateResult terminateResult;
         try {
             int flowInstanceStatus;
 
             FlowInstancePO flowInstancePO = processInstanceDAO.selectByFlowInstanceId(flowInstanceId);
+            if (flowInstancePO == null) {
+                LOGGER.warn("terminateProcess failed: cannot find flowInstancePO from db.||flowInstanceId={}", flowInstanceId);
+                throw new ProcessException(ErrorEnum.GET_FLOW_INSTANCE_FAILED);
+            }
+
             if (flowInstancePO.getStatus() == FlowInstanceStatus.COMPLETED) {
                 LOGGER.warn("terminateProcess: flowInstance is completed.||flowInstanceId={}", flowInstanceId);
                 flowInstanceStatus = FlowInstanceStatus.COMPLETED;
             } else {
                 processInstanceDAO.updateStatus(flowInstancePO, FlowInstanceStatus.TERMINATED);
                 flowInstanceStatus = FlowInstanceStatus.TERMINATED;
+            }
+
+            if (effectiveForSubFlowInstance) {
+                terminateSubFlowInstance(flowInstanceId);
             }
 
             terminateResult = new TerminateResult(ErrorEnum.SUCCESS);
@@ -281,9 +354,16 @@ public class RuntimeProcessor {
         return terminateResult;
     }
 
+    public void terminateSubFlowInstance(String flowInstanceId) {
+        Set<String> allSubFlowInstanceIds = flowInstanceService.getAllSubFlowInstanceIds(flowInstanceId);
+        for (String subFlowInstanceId : allSubFlowInstanceIds) {
+            terminateProcess(subFlowInstanceId, false);
+        }
+    }
+
     ////////////////////////////////////////getHistoryUserTaskList////////////////////////////////////////
 
-    public NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId) {
+    public NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId, boolean effectiveForSubFlowInstance) {
 
         //1.get nodeInstanceList by flowInstanceId order by id desc
         List<NodeInstancePO> historyNodeInstanceList = getDescHistoryNodeInstanceList(flowInstanceId);
@@ -309,6 +389,16 @@ public class RuntimeProcessor {
             for (NodeInstancePO nodeInstancePO : historyNodeInstanceList) {
                 //ignore noneffective nodeInstance
                 if (!isEffectiveNodeInstance(nodeInstancePO.getStatus())) {
+                    continue;
+                }
+
+                if (effectiveForSubFlowInstance && isCallActivity(nodeInstancePO.getNodeKey(), flowElementMap)) {
+                    //handle subFlowInstance
+                    String subFlowInstanceId = getExecuteSubFlowInstanceId(flowInstanceId, nodeInstancePO.getNodeInstanceId());
+                    if (StringUtils.isNotBlank(subFlowInstanceId)) {
+                        NodeInstanceListResult historyUserTaskList = getHistoryUserTaskList(subFlowInstanceId, true);
+                        userTaskList.addAll(historyUserTaskList.getNodeInstanceList());
+                    }
                     continue;
                 }
 
@@ -351,18 +441,28 @@ public class RuntimeProcessor {
     }
 
     private boolean isUserTask(String nodeKey, Map<String, FlowElement> flowElementMap) throws ProcessException {
+        int type = getNodeType(nodeKey, flowElementMap);
+        return type == FlowElementType.USER_TASK;
+    }
+
+    private int getNodeType(String nodeKey, Map<String, FlowElement> flowElementMap) throws ProcessException {
         if (!flowElementMap.containsKey(nodeKey)) {
             LOGGER.warn("isUserTask: invalid nodeKey which is not in flowElementMap.||nodeKey={}||flowElementMap={}",
-                    nodeKey, flowElementMap);
+                nodeKey, flowElementMap);
             throw new ProcessException(ErrorEnum.GET_NODE_FAILED);
         }
         FlowElement flowElement = flowElementMap.get(nodeKey);
-        return flowElement.getType() == FlowElementType.USER_TASK;
+        return flowElement.getType();
+    }
+
+    private boolean isCallActivity(String nodeKey, Map<String, FlowElement> flowElementMap) throws ProcessException {
+        int type = getNodeType(nodeKey, flowElementMap);
+        return type == FlowElementType.CALL_ACTIVITY;
     }
 
     ////////////////////////////////////////getHistoryElementList////////////////////////////////////////
 
-    public ElementInstanceListResult getHistoryElementList(String flowInstanceId) {
+    public ElementInstanceListResult getHistoryElementList(String flowInstanceId, boolean effectiveForSubFlowInstance) {
         //1.getHistoryNodeList
         List<NodeInstancePO> historyNodeInstanceList = getHistoryNodeInstanceList(flowInstanceId);
 
@@ -386,13 +486,14 @@ public class RuntimeProcessor {
                 String nodeKey = nodeInstancePO.getNodeKey();
                 String sourceNodeKey = nodeInstancePO.getSourceNodeKey();
                 int nodeStatus = nodeInstancePO.getStatus();
-
+                String nodeInstanceId = nodeInstancePO.getNodeInstanceId();
+                String instanceDataId = nodeInstancePO.getInstanceDataId();
                 //4.1 build the source sequenceFlow instance
                 if (StringUtils.isNotBlank(sourceNodeKey)) {
                     FlowElement sourceFlowElement = FlowModelUtil.getSequenceFlow(flowElementMap, sourceNodeKey, nodeKey);
                     if (sourceFlowElement == null) {
                         LOGGER.error("getHistoryElementList failed: sourceFlowElement is null."
-                                + "||nodeKey={}||sourceNodeKey={}||flowElementMap={}", nodeKey, sourceNodeKey, flowElementMap);
+                            + "||nodeKey={}||sourceNodeKey={}||flowElementMap={}", nodeKey, sourceNodeKey, flowElementMap);
                         throw new ProcessException(ErrorEnum.MODEL_UNKNOWN_ELEMENT_KEY);
                     }
 
@@ -401,19 +502,47 @@ public class RuntimeProcessor {
                     if (nodeStatus == NodeInstanceStatus.ACTIVE) {
                         sourceSequenceFlowStatus = NodeInstanceStatus.COMPLETED;
                     }
-                    ElementInstance sequenceFlowInstance = new ElementInstance(sourceFlowElement.getKey(), sourceSequenceFlowStatus);
+                    ElementInstance sequenceFlowInstance = new ElementInstance(sourceFlowElement.getKey(), sourceSequenceFlowStatus, null, null);
                     elementInstanceList.add(sequenceFlowInstance);
                 }
 
                 //4.2 build nodeInstance
-                ElementInstance nodeInstance = new ElementInstance(nodeKey, nodeStatus);
+                ElementInstance nodeInstance = new ElementInstance(nodeKey, nodeStatus, nodeInstanceId, instanceDataId);
                 elementInstanceList.add(nodeInstance);
+
+                //4.3 handle callActivity
+                if (!FlowModelUtil.isElementType(nodeKey, flowElementMap, FlowElementType.CALL_ACTIVITY)) {
+                    continue;
+                }
+                if (!effectiveForSubFlowInstance) {
+                    continue;
+                }
+                List<FlowInstanceMappingPO> flowInstanceMappingPOS = flowInstanceMappingDAO.selectFlowInstanceMappingPOList(flowInstanceId, nodeInstanceId);
+                List<ElementInstance> subElementInstanceList = new ArrayList<>();
+                nodeInstance.setSubElementInstanceList(subElementInstanceList);
+                for (FlowInstanceMappingPO flowInstanceMappingPO : flowInstanceMappingPOS) {
+                    ElementInstanceListResult subElementInstanceListResult = getHistoryElementList(flowInstanceMappingPO.getSubFlowInstanceId(), effectiveForSubFlowInstance);
+                    subElementInstanceList.addAll(subElementInstanceListResult.getElementInstanceList());
+                }
             }
         } catch (ProcessException e) {
             elementInstanceListResult.setErrCode(e.getErrNo());
             elementInstanceListResult.setErrMsg(e.getErrMsg());
         }
         return elementInstanceListResult;
+    }
+
+    private String getExecuteSubFlowInstanceId(String flowInstanceId, String nodeInstanceId) {
+        List<FlowInstanceMappingPO> flowInstanceMappingPOList = flowInstanceMappingDAO.selectFlowInstanceMappingPOList(flowInstanceId, nodeInstanceId);
+        if (CollectionUtils.isEmpty(flowInstanceMappingPOList)) {
+            return null;
+        }
+        for (FlowInstanceMappingPO flowInstanceMappingPO : flowInstanceMappingPOList) {
+            if (FlowInstanceMappingType.EXECUTE == flowInstanceMappingPO.getType()) {
+                return flowInstanceMappingPO.getSubFlowInstanceId();
+            }
+        }
+        return flowInstanceMappingPOList.get(0).getSubFlowInstanceId();
     }
 
     private List<NodeInstancePO> getHistoryNodeInstanceList(String flowInstanceId) {
@@ -424,15 +553,23 @@ public class RuntimeProcessor {
         return nodeInstanceDAO.selectDescByFlowInstanceId(flowInstanceId);
     }
 
-    public NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId) {
+    public NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance) {
         NodeInstanceResult nodeInstanceResult = new NodeInstanceResult();
         try {
-            NodeInstancePO nodeInstancePO = nodeInstanceDAO.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
+            NodeInstancePO nodeInstancePO = nodeInstanceService.selectByNodeInstanceId(flowInstanceId, nodeInstanceId, effectiveForSubFlowInstance);
             String flowDeployId = nodeInstancePO.getFlowDeployId();
             Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
             NodeInstance nodeInstance = new NodeInstance();
             BeanUtils.copyProperties(nodeInstancePO, nodeInstance);
             FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
+            if (flowElement.getType() == FlowElementType.CALL_ACTIVITY) {
+                List<FlowInstanceMappingPO> flowInstanceMappingPOList = flowInstanceMappingDAO.selectFlowInstanceMappingPOList(flowInstanceId, nodeInstanceId);
+                List<String> subFlowInstanceIdList = new ArrayList<>();
+                for (FlowInstanceMappingPO flowInstanceMappingPO : flowInstanceMappingPOList) {
+                    subFlowInstanceIdList.add(flowInstanceMappingPO.getSubFlowInstanceId());
+                }
+                nodeInstance.setSubFlowInstanceIdList(subFlowInstanceIdList);
+            }
             nodeInstance.setModelKey(flowElement.getKey());
             nodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));
             if (MapUtils.isNotEmpty(flowElement.getProperties())) {
@@ -451,20 +588,42 @@ public class RuntimeProcessor {
     }
 
     ////////////////////////////////////////getInstanceData////////////////////////////////////////
-    public InstanceDataListResult getInstanceData(String flowInstanceId) {
-        InstanceDataPO instanceDataPO = instanceDataDAO.selectRecentOne(flowInstanceId);
+    public InstanceDataListResult getInstanceData(String flowInstanceId, boolean effectiveForSubFlowInstance) {
+        InstanceDataPO instanceDataPO = instanceDataService.select(flowInstanceId, effectiveForSubFlowInstance);
+        return packageInstanceDataResult(instanceDataPO);
+    }
 
+    public InstanceDataListResult getInstanceData(String flowInstanceId, String instanceDataId, boolean effectiveForSubFlowInstance) {
+        InstanceDataPO instanceDataPO = instanceDataService.select(flowInstanceId, instanceDataId, effectiveForSubFlowInstance);
+        return packageInstanceDataResult(instanceDataPO);
+    }
+
+    public InstanceDataListResult packageInstanceDataResult(InstanceDataPO instanceDataPO) {
         TypeReference<List<InstanceData>> typeReference = new TypeReference<List<InstanceData>>() {
         };
         List<InstanceData> instanceDataList = JSONObject.parseObject(instanceDataPO.getInstanceData(), typeReference);
         if (CollectionUtils.isEmpty(instanceDataList)) {
-            instanceDataList =  Lists.newArrayList();
+            instanceDataList = Lists.newArrayList();
         }
 
         InstanceDataListResult instanceDataListResult = new InstanceDataListResult(ErrorEnum.SUCCESS);
         instanceDataListResult.setVariables(instanceDataList);
         return instanceDataListResult;
     }
+
+
+    public FlowInstanceResult getFlowInstance(String flowInstanceId) {
+        FlowInstanceResult flowInstanceResult = new FlowInstanceResult();
+        try {
+            FlowInstanceBO flowInstanceBO = getFlowInstanceBO(flowInstanceId);
+            flowInstanceResult.setFlowInstanceBO(flowInstanceBO);
+        } catch (ProcessException e) {
+            flowInstanceResult.setErrCode(e.getErrNo());
+            flowInstanceResult.setErrMsg(e.getErrMsg());
+        }
+        return flowInstanceResult;
+    }
+
 
     ////////////////////////////////////////common////////////////////////////////////////
 
@@ -515,10 +674,11 @@ public class RuntimeProcessor {
         return runtimeContext;
     }
 
-    private RuntimeContext buildRuntimeContext(FlowInfo flowInfo, List<InstanceData> variables) {
+    private RuntimeContext buildRuntimeContext(FlowInfo flowInfo, List<InstanceData> variables, RuntimeContext parentRuntimeContext) {
         RuntimeContext runtimeContext = buildRuntimeContext(flowInfo);
         Map<String, InstanceData> instanceDataMap = InstanceDataUtil.getInstanceDataMap(variables);
         runtimeContext.setInstanceDataMap(instanceDataMap);
+        runtimeContext.setParentRuntimeContext(parentRuntimeContext);
         return runtimeContext;
     }
 
@@ -557,7 +717,23 @@ public class RuntimeProcessor {
         FlowElement flowElement = runtimeContext.getFlowElementMap().get(nodeInstanceBO.getNodeKey());
         activeNodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));
         activeNodeInstance.setProperties(flowElement.getProperties());
+        activeNodeInstance.setFlowElementType(flowElement.getType());
+        activeNodeInstance.setSubNodeResultList(runtimeContext.getCallActivityRuntimeResultList());
+
 
         return activeNodeInstance;
     }
+
+    public void checkIsSubFlowInstance(String flowInstanceId) {
+        FlowInstancePO flowInstancePO = processInstanceDAO.selectByFlowInstanceId(flowInstanceId);
+        if (flowInstancePO == null) {
+            LOGGER.warn("checkIsSubFlowInstance failed: cannot find flowInstancePO from db.||flowInstanceId={}", flowInstanceId);
+            throw new RuntimeException(ErrorEnum.GET_FLOW_INSTANCE_FAILED.getErrMsg());
+        }
+        if (StringUtils.isNotBlank(flowInstancePO.getParentFlowInstanceId())) {
+            LOGGER.error("checkIsSubFlowInstance failed: don't receive sub-processes.||flowInstanceId={}", flowInstanceId);
+            throw new RuntimeException(ErrorEnum.NO_RECEIVE_SUB_FLOW_INSTANCE.getErrMsg());
+        }
+    }
+
 }
