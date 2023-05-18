@@ -12,10 +12,6 @@ public interface InstanceDataMapper extends BaseMapper<InstanceDataPO> {
     InstanceDataPO select(@Param("flowInstanceId") String flowInstanceId,
                           @Param("instanceDataId") String instanceDataId);
 
-    @Select("/*{\"router\":\"m\"}*/SELECT * FROM ei_instance_data WHERE instance_data_id=#{instanceDataId}")
-    InstanceDataPO selectByMaster(@Param("flowInstanceId") String flowInstanceId,
-                                  @Param("instanceDataId") String instanceDataId);
-
     @Select("SELECT * FROM ei_instance_data WHERE flow_instance_id=#{flowInstanceId} ORDER BY id DESC LIMIT 1")
     InstanceDataPO selectRecentOne(@Param("flowInstanceId") String flowInstanceId);
 }

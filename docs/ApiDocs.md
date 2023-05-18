@@ -118,7 +118,7 @@ StartProcessResult startProcess(StartProcessParam startProcessParam);
 
 方法描述
 
-创建流程实例，从开始节点开始执行，直到用户任务节点挂起或者结束节点完成。
+创建流程实例，从开始节点开始执行，直到用户任务节点/同步单实例调用子流程节点挂起或者结束节点完成。
 
 调用参数
 
@@ -138,6 +138,8 @@ StartProcessResult startProcess(StartProcessParam startProcessParam);
 | status                            | int                | 流程实例状态                                             | 0：数据库默认值；1：执行完成；2：执行中；3：已终止                                                |
 | activeTaskInstance                | NodeInstance对象 | 活动节点实例信息，例如当前挂起的用户任务节点，完成时的结束节点 |                                                                                                                          |
 | activeTaskInstance.nodeInstanceId | string             | 节点实例唯一标识                                       | 0ce7544e-0dee-4975-85de-5bc14ad90d94                                                                                     |
+| activeTaskInstance.flowElementType| int             | 节点类型                                       | 8                                                                                     |
+| activeTaskInstance.subNodeResultList | List<RuntimeResult>             | 子流程实例结果                                       | 0ce7544e-0dee-4975-85de-5bc14ad90d94                                                                                     |
 | activeTaskInstance.status         | int                | 节点实例状态                                             | 0：数据库默认值；1：处理成功；2：处理中；3：处理失败；4：处理已撤销；                    |
 | activeTaskInstance.modelKey       | string             | 节点唯一标识                                             | UserTask_0cx5f72                                                                                                         |
 | activeTaskInstance.modelName      | string             | 节点名称                                                   | 用户节点                                                                                                             |
@@ -157,7 +159,7 @@ CommitTaskResult commitTask(CommitTaskParam commitTaskParam);
 
 方法描述
 
-引擎从指定的用户任务节点开始执行，直到用户任务节点挂起或者结束节点完成。
+引擎从指定的用户任务节点/同步单实例调用子流程节点开始执行，直到用户任务节点/同步单实例调用子流程节点挂起或者结束节点完成。
 
 调用参数
 
@@ -166,6 +168,7 @@ CommitTaskResult commitTask(CommitTaskParam commitTaskParam);
 | flowInstanceId | string             | 是  | 流程实例唯一标识                                                | ce0bae96-b996-47fa-a620-fed637ca0e81                                                                |
 | taskInstanceId | string             | 是  | 节点实例唯一标识，可以从上面的activeTaskInstance.nodeInstanceId中获取。 | 0ce7544e-0dee-4975-85de-5bc14ad90d94                                                                |
 | variables      | List<InstanceData> | 否  | 流程执行过程中所需的数据，例如条件表达式            | List<InstanceData> variables = new ArrayList<>();variables.add(new InstanceData("orderId", "456")); |
+| callActivityFlowModuleId | string | 否  | 用于在提交CallActivity节点时指定FlowModuleId            |  |
 
 返回结果
 
@@ -210,7 +213,9 @@ RollbackTaskResult rollbackTask(RollbackTaskParam rollbackTaskParam);
 
 方法调用
 
-TerminateResult terminateProcess(String flowInstanceId);
+TerminateResult terminateProcess(String flowInstanceId); // 默认对子流程实例生效
+
+TerminateResult terminateProcess(String flowInstanceId, boolean effectiveForSubFlowInstance); // 是否对子流程实例生效
 
 方法描述
 
@@ -235,7 +240,9 @@ TerminateResult terminateProcess(String flowInstanceId);
 
 方法调用
 
-NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId);
+NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId); // 默认对子流程实例生效
+
+NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId, boolean effectiveForSubFlowInstance); // 是否对子流程实例生效
 
 方法描述
 
@@ -259,7 +266,9 @@ NodeInstanceListResult getHistoryUserTaskList(String flowInstanceId);
 
 方法调用
 
-ElementInstanceListResult getHistoryElementList(String flowInstanceId);
+ElementInstanceListResult getHistoryElementList(String flowInstanceId); // 默认对子流程实例生效
+
+ElementInstanceListResult getHistoryElementList(String flowInstanceId, boolean effectiveForSubFlowInstance); // 是否对子流程实例生效
 
 方法描述
 
@@ -287,7 +296,9 @@ ElementInstanceListResult getHistoryElementList(String flowInstanceId);
 
 方法调用
 
-InstanceDataListResult getInstanceData(String flowInstanceId);
+InstanceDataListResult getInstanceData(String flowInstanceId); // 默认对子流程实例生效
+
+InstanceDataListResult getInstanceData(String flowInstanceId, boolean effectiveForSubFlowInstance); // 是否对子流程实例生效
 
 方法描述
 
@@ -311,7 +322,9 @@ InstanceDataListResult getInstanceData(String flowInstanceId);
 
 方法调用
 
-NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId);
+NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId); // 默认对子流程实例生效
+
+NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance); // 是否对子流程实例生效
 
 调用参数
 
@@ -327,6 +340,26 @@ NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId)
 | errCode      | int          | 错误码，枚举见下方 | 1000                     |
 | errMsg       | string       | 错误信息       | Success                  |
 | nodeInstance | NodeInstance | 节点实例信息 | NodeInstance的结构见上面 |
+
+13.获取流程实例信息（getFlowInstance）
+
+方法调用
+
+FlowInstanceResult getFlowInstance(String flowInstanceId);
+
+调用参数
+
+| 参数名      | 参数类型 | 必填 | 参数说明                                                            | 示例                               |
+| -------------- | -------- | ---- | ----------------------------------------------------------------------- | ------------------------------------ |
+| flowInstanceId | string   | 是  | 流程实例唯一标识                                                | ce0bae96-b996-47fa-a620-fed637ca0e81 |
+
+返回结果
+
+| 参数名    | 参数类型 | 参数说明       | 示例                   |
+| ------------ | ------------ | ------------------ | ------------------------ |
+| errCode      | int          | 错误码，枚举见下方 | 1000                     |
+| errMsg       | string       | 错误信息       | Success                  |
+| flowInstanceBO | FlowInstanceBO | 流程实例信息 |  |
 
 四、错误码
 
@@ -344,6 +377,8 @@ NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId)
 | 错误码 | 错误码信息 | 中文描述 |
 | ------ | ------------- | -------- |
 | 2001   | Invalid param | 参数错误 |
+| 2002   | Flow nested level exceeded | 超出配置的流程嵌套层数 |
+| 2003   | Flow nested dead loop | 流程嵌套死循环 |
 
 3.流程定义错误码，范围在3000~3999
 
@@ -368,6 +403,8 @@ NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId)
 | 3213   | Too many outgoing                  | 太多的出口分支                                  |
 | 3214   | Element lack incoming              | 元素缺少入口                                     |
 | 3215   | Element lack outgoing              | 元素缺少出口                                     |
+| 3216   | Required element attributes        | 缺少节点必要的属性                                     |
+| 3217   | Unknown element value              | 不识别的流程属性值                                     |
 
 4.流程执行错误码，范围在4000~4999
 
@@ -391,6 +428,8 @@ NodeInstanceResult getNodeInstance(String flowInstanceId, String nodeInstanceId)
 | 4016   | Save flowInstance failed                             | 保存流程实例失败                 |
 | 4017   | Save instanceData failed                             | 保存实例数据失败                 |
 | 4018   | Groovy calculate failed                              | 表达式执行失败                    |
+| 4019   | Get CallActivity model failed                        | 获取调用子流程模型失败                 |
+| 4020   | Do not receive subFlowInstanceId                     | 不接收提交子流程实例                    |
 
 5.系统错误码，范围在5000~5999
 

@@ -59,11 +59,7 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
     }
 
     public NodeInstancePO selectByNodeInstanceId(String flowInstanceId, String nodeInstanceId) {
-        NodeInstancePO po = baseMapper.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
-        if (po != null) {
-            return po;
-        }
-        return baseMapper.selectByNodeInstanceIdByMaster(flowInstanceId, nodeInstanceId);
+        return baseMapper.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
     }
 
     public NodeInstancePO selectBySourceInstanceId(String flowInstanceId, String sourceNodeInstanceId, String nodeKey) {

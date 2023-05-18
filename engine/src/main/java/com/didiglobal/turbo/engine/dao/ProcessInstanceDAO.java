@@ -10,11 +10,7 @@ import java.util.Date;
 public class ProcessInstanceDAO extends BaseDAO<ProcessInstanceMapper, FlowInstancePO> {
 
     public FlowInstancePO selectByFlowInstanceId(String flowInstanceId) {
-        FlowInstancePO po = baseMapper.selectByFlowInstanceId(flowInstanceId);
-        if (po != null) {
-            return po;
-        }
-        return baseMapper.selectByFlowInstanceIdFromMaster(flowInstanceId);
+        return baseMapper.selectByFlowInstanceId(flowInstanceId);
     }
 
     /**

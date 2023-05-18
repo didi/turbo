@@ -16,10 +16,6 @@ public interface NodeInstanceMapper extends BaseMapper<NodeInstancePO> {
     NodeInstancePO selectByNodeInstanceId(@Param("flowInstanceId") String flowInstanceId,
                                           @Param("nodeInstanceId") String nodeInstanceId);
 
-    @Select("/*{\"router\":\"m\"}*/SELECT * FROM ei_node_instance WHERE node_instance_id=#{nodeInstanceId}")
-    NodeInstancePO selectByNodeInstanceIdByMaster(@Param("flowInstanceId") String flowInstanceId,
-                                                  @Param("nodeInstanceId") String nodeInstanceId);
-
     @Select("SELECT * FROM ei_node_instance WHERE flow_instance_id=#{flowInstanceId} ORDER BY id DESC LIMIT 1")
     NodeInstancePO selectRecentOne(@Param("flowInstanceId") String flowInstanceId);
 
