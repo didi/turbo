@@ -9,7 +9,7 @@ import com.didiglobal.turbo.engine.spi.SingletonSPI;
 public interface IdGenerator {
 
     /**
-     * Get the next ID
+     * get the next ID
      *
      * @return ID
      */

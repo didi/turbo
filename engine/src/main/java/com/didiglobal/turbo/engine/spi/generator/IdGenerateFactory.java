@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
+ * id generate factory
+ *
  * @author lijinghao
  */
 public class IdGenerateFactory {
