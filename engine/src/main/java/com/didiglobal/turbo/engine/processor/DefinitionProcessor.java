@@ -16,8 +16,12 @@ import com.didiglobal.turbo.engine.param.CreateFlowParam;
 import com.didiglobal.turbo.engine.param.DeployFlowParam;
 import com.didiglobal.turbo.engine.param.GetFlowModuleParam;
 import com.didiglobal.turbo.engine.param.UpdateFlowParam;
-import com.didiglobal.turbo.engine.result.*;
-import com.didiglobal.turbo.engine.spi.generator.IdGenerateManager;
+import com.didiglobal.turbo.engine.result.CommonResult;
+import com.didiglobal.turbo.engine.result.CreateFlowResult;
+import com.didiglobal.turbo.engine.result.DeployFlowResult;
+import com.didiglobal.turbo.engine.result.FlowModuleResult;
+import com.didiglobal.turbo.engine.result.UpdateFlowResult;
+import com.didiglobal.turbo.engine.spi.generator.IdGenerateFactory;
 import com.didiglobal.turbo.engine.validator.ModelValidator;
 import com.didiglobal.turbo.engine.validator.ParamValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -27,15 +31,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+
 import java.util.Date;
 
 @Component
 public class DefinitionProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefinitionProcessor.class);
-
-    @Resource
-    private IdGenerateManager idGenerateManager;
 
     @Resource
     private ModelValidator modelValidator;
@@ -53,7 +55,7 @@ public class DefinitionProcessor {
 
             FlowDefinitionPO flowDefinitionPO = new FlowDefinitionPO();
             BeanUtils.copyProperties(createFlowParam, flowDefinitionPO);
-            String flowModuleId = idGenerateManager.getIdGenerator().getNextId();
+            String flowModuleId = IdGenerateFactory.getIdGenerator().getNextId();
             flowDefinitionPO.setFlowModuleId(flowModuleId);
             flowDefinitionPO.setStatus(FlowDefinitionStatus.INIT);
             Date date = new Date();
@@ -118,7 +120,7 @@ public class DefinitionProcessor {
 
             FlowDeploymentPO flowDeploymentPO = new FlowDeploymentPO();
             BeanUtils.copyProperties(flowDefinitionPO, flowDeploymentPO);
-            String flowDeployId = idGenerateManager.getIdGenerator().getNextId();
+            String flowDeployId = IdGenerateFactory.getIdGenerator().getNextId();
             flowDeploymentPO.setFlowDeployId(flowDeployId);
             flowDeploymentPO.setStatus(FlowDeploymentStatus.DEPLOYED);
 

@@ -1,7 +1,7 @@
 package com.didiglobal.turbo.demo.service;
 
 import com.didiglobal.turbo.engine.model.InstanceData;
-import com.didiglobal.turbo.engine.spi.HookService;
+import com.didiglobal.turbo.engine.hook.HookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

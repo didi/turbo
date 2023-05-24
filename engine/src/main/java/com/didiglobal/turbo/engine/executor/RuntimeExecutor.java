@@ -6,7 +6,7 @@ import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
 import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
 import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
 import com.didiglobal.turbo.engine.exception.ProcessException;
-import com.didiglobal.turbo.engine.spi.generator.IdGenerateManager;
+import com.didiglobal.turbo.engine.spi.generator.IdGenerateFactory;
 
 import javax.annotation.Resource;
 
@@ -27,11 +27,8 @@ public abstract class RuntimeExecutor {
     @Resource
     protected NodeInstanceLogDAO nodeInstanceLogDAO;
 
-    @Resource
-    private IdGenerateManager idGenerateManager;
-
     protected String genId() {
-        return idGenerateManager.getIdGenerator().getNextId();
+        return IdGenerateFactory.getIdGenerator().getNextId();
     }
 
     /**

@@ -12,7 +12,7 @@ import com.didiglobal.turbo.engine.exception.ReentrantException;
 import com.didiglobal.turbo.engine.exception.SuspendException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
-import com.didiglobal.turbo.engine.spi.calulator.ExpressionCalculatorManager;
+import com.didiglobal.turbo.engine.spi.calulator.ExpressionCalculatorFactory;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -27,9 +27,6 @@ import java.util.Map;
 public abstract class ElementExecutor extends RuntimeExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElementExecutor.class);
-
-    @Resource
-    protected ExpressionCalculatorManager expressionCalculatorManager;
 
     @Override
     public void execute(RuntimeContext runtimeContext) throws ProcessException {
@@ -320,6 +317,6 @@ public abstract class ElementExecutor extends RuntimeExecutor {
 
     protected boolean processCondition(String expression, Map<String, InstanceData> instanceDataMap) throws ProcessException {
         Map<String, Object> dataMap = InstanceDataUtil.parseInstanceDataMap(instanceDataMap);
-        return expressionCalculatorManager.getExpressionCalculator().calculate(expression, dataMap);
+        return ExpressionCalculatorFactory.getExpressionCalculator().calculate(expression, dataMap);
     }
 }

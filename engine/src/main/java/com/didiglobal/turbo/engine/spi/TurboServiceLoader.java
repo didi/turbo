@@ -11,8 +11,9 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * <p> turbo service loader </p>
+ * turbo service loader
  *
+ * @author lijinghao
  * @param <T> the type of service
  */
 public class TurboServiceLoader<T> {
