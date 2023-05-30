@@ -217,7 +217,7 @@ spring.datasource.dynamic.datasource.engine.url=jdbc:mysql://127.0.0.1:3306/db_e
 
 ```
 
-## 4. 根据demo开始你的Turbo之旅吧
+## 2. 根据demo开始你的Turbo之旅吧
 
 根据上文提到的turbo支持的特性，给出了两个例子，其中整体的流程如下图所示：
 
@@ -235,7 +235,7 @@ Demo2：<a href="#demo2">请假流程</a>
 
 注：例子使用两个service是为了封装sop，在实际开发中sop是有前端页面传递进入，并非是必须再次开发。
 
-## 5. Turbo与LogicFlow交互demo
+## 3. Turbo与LogicFlow交互demo
 
 LogicFlow 是一款流程图编辑框架，提供了一系列流程图交互、编辑所必需的功能和灵活的节点自定义、插件等拓展机制。使用LogicFlow与Turbo接口交互可实现流程图创建，编辑，保存，发布功能，发布完成流程图即可参考第四部分文档，执行流程。
 
@@ -249,6 +249,6 @@ LogicFlow 是一款流程图编辑框架，提供了一系列流程图交互、�
 
 代码提供基本用法示例，使用方可以根据自己的业务场景参考使用
 
-## 6. 联系我们
+## 4. 联系我们
 ### 加入微信群
 添加微信号：logic-flow 加入turbo用户群
