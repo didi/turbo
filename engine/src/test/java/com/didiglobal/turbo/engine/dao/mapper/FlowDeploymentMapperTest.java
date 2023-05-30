@@ -8,9 +8,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
+
 public class FlowDeploymentMapperTest extends BaseTest {
 
-    @Autowired
+    @Resource
     private FlowDeploymentMapper flowDeploymentMapper;
 
     @Test
@@ -18,7 +20,7 @@ public class FlowDeploymentMapperTest extends BaseTest {
         FlowDeploymentPO flowDeploymentPO = EntityBuilder.buildFlowDeploymentPO();
         flowDeploymentPO.setFlowDeployId("testFlowDeployId_" + System.currentTimeMillis());
         int result = flowDeploymentMapper.insert(flowDeploymentPO);
-        Assert.assertTrue(result == 1);
+        Assert.assertEquals(1, result);
     }
 
     @Test
@@ -29,7 +31,7 @@ public class FlowDeploymentMapperTest extends BaseTest {
         flowDeploymentMapper.insert(flowDeploymentPO);
         String flowDeployId = flowDeploymentPO.getFlowDeployId();
         flowDeploymentPO = flowDeploymentMapper.selectByDeployId(flowDeployId);
-        Assert.assertTrue(flowDeployId.equals(flowDeploymentPO.getFlowDeployId()));
+        Assert.assertEquals(flowDeployId, flowDeploymentPO.getFlowDeployId());
     }
 
     @Test
@@ -45,6 +47,6 @@ public class FlowDeploymentMapperTest extends BaseTest {
         flowDeploymentPO.setFlowDeployId("testFlowDeployId_" + System.currentTimeMillis());
         flowDeploymentMapper.insert(flowDeploymentPONew);
         FlowDeploymentPO flowDeploymentPORes = flowDeploymentMapper.selectByModuleId(flowModuleId1);
-        Assert.assertTrue(flowDeploymentPONew.getFlowDeployId().equals(flowDeploymentPORes.getFlowDeployId()));
+        Assert.assertEquals(flowDeploymentPONew.getFlowDeployId(), flowDeploymentPORes.getFlowDeployId());
     }
 }

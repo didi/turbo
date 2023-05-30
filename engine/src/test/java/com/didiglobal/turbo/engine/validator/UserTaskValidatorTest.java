@@ -1,5 +1,6 @@
 package com.didiglobal.turbo.engine.validator;
 
+import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.exception.DefinitionException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.runner.BaseTest;
@@ -17,8 +18,7 @@ public class UserTaskValidatorTest extends BaseTest {
     UserTaskValidator userTaskValidator;
 
     /**
-     * Check userTask's incoming, whlile normal.
-     *
+     * Check userTask's incoming, while normal.
      */
     @Test
     public void checkIncomingAccess() {
@@ -29,15 +29,14 @@ public class UserTaskValidatorTest extends BaseTest {
         try {
             userTaskValidator.checkIncoming(map, userTask);
             access = true;
-            Assert.assertTrue(access);
         } catch (DefinitionException e) {
             LOGGER.error("", e);
-            Assert.assertTrue(access);
         }
+        Assert.assertTrue(access);
     }
+
     /**
      * Check userTask's incoming, while incoming is lack.
-     *
      */
     @Test
     public void checkWithoutIncoming() {
@@ -49,17 +48,15 @@ public class UserTaskValidatorTest extends BaseTest {
         try {
             userTaskValidator.checkIncoming(map, userTask);
             access = true;
-            Assert.assertFalse(access);
         } catch (DefinitionException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
+            Assert.assertEquals(ErrorEnum.ELEMENT_LACK_INCOMING.getErrNo(), e.getErrNo());
         }
+        Assert.assertFalse(access);
     }
 
 
     /**
-     * Check userTask's outgoing, whlile normal.
-     *
+     * Check userTask's outgoing, while normal.
      */
     @Test
     public void checkOutgoingAccess() {
@@ -70,19 +67,17 @@ public class UserTaskValidatorTest extends BaseTest {
         try {
             userTaskValidator.checkOutgoing(map, userTask);
             access = true;
-            Assert.assertTrue(access);
         } catch (DefinitionException e) {
             LOGGER.error("", e);
-            Assert.assertTrue(access);
         }
+        Assert.assertTrue(access);
     }
 
     /**
      * Check userTask's outgoing, while outgoing is lack.
-     *
      */
     @Test
-    public void checkWithoutOutgoing() {
+    public void checkEmptyOutgoing() {
         FlowElement userTask = EntityBuilder.buildUserTask();
         userTask.setOutgoing(null);
         Map<String, FlowElement> map = new HashMap<>();
@@ -91,10 +86,9 @@ public class UserTaskValidatorTest extends BaseTest {
         try {
             userTaskValidator.checkOutgoing(map, userTask);
             access = true;
-            Assert.assertFalse(access);
         } catch (DefinitionException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
+            Assert.assertEquals(ErrorEnum.ELEMENT_LACK_OUTGOING.getErrNo(), e.getErrNo());
         }
+        Assert.assertFalse(access);
     }
 }

@@ -1,5 +1,6 @@
 package com.didiglobal.turbo.engine.validator;
 
+import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.exception.DefinitionException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.runner.BaseTest;
@@ -21,7 +22,6 @@ public class SequenceFlowValidatorTest extends BaseTest {
 
     /**
      * Test sequenceFlow's checkIncoming, while incoming is normal.
-     *
      */
     @Test
     public void checkIncomingAccess() {
@@ -32,17 +32,15 @@ public class SequenceFlowValidatorTest extends BaseTest {
         try {
             sequenceFlowValidator.checkIncoming(flowElementMap, sequenceFlow);
             access = true;
-            Assert.assertTrue(access);
         } catch (DefinitionException e) {
             LOGGER.error("", e);
-            Assert.assertTrue(access);
         }
+        Assert.assertTrue(access);
     }
 
 
     /**
      * Test sequenceFlow's checkIncoming, while incoming  is too much.
-     *
      */
     @Test
     public void checkTooMuchIncoming() {
@@ -57,16 +55,14 @@ public class SequenceFlowValidatorTest extends BaseTest {
         try {
             sequenceFlowValidator.checkIncoming(flowElementMap, sequenceFlow);
             access = true;
-            Assert.assertFalse(access);
         } catch (DefinitionException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
+            Assert.assertEquals(ErrorEnum.ELEMENT_TOO_MANY_INCOMING.getErrNo(), e.getErrNo());
         }
+        Assert.assertFalse(access);
     }
 
     /**
      * Test sequenceFlow's checkOutgoing, while outgoing is normal.
-     *
      */
     @Test
     public void checkOutgoingAccess() {
@@ -78,16 +74,14 @@ public class SequenceFlowValidatorTest extends BaseTest {
         try {
             sequenceFlowValidator.checkOutgoing(flowElementMap, sequenceFlow);
             access = true;
-            Assert.assertTrue(access);
         } catch (DefinitionException e) {
             LOGGER.error("", e);
-            Assert.assertTrue(access);
         }
+        Assert.assertTrue(access);
     }
 
     /**
      * Test sequenceFlow's outgoing, while outgoing is lack.
-     *
      */
     @Test
     public void checkWithoutOutgoing() {
@@ -100,10 +94,9 @@ public class SequenceFlowValidatorTest extends BaseTest {
         try {
             sequenceFlowValidator.checkOutgoing(flowElementMap, sequenceFlow);
             access = true;
-            Assert.assertFalse(access);
         } catch (DefinitionException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
+            Assert.assertEquals(ErrorEnum.ELEMENT_LACK_OUTGOING.getErrNo(), e.getErrNo());
         }
+        Assert.assertFalse(access);
     }
 }

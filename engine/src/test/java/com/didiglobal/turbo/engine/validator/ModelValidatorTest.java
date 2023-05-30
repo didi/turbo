@@ -1,5 +1,6 @@
 package com.didiglobal.turbo.engine.validator;
 
+import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.exception.DefinitionException;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.runner.BaseTest;
@@ -11,11 +12,11 @@ import javax.annotation.Resource;
 
 public class ModelValidatorTest extends BaseTest {
 
-    @Resource ModelValidator modelValidator;
+    @Resource
+    private ModelValidator modelValidator;
 
     /**
      * Test modelValidator, while model is normal.
-     *
      */
     @Test
     public void validateAccess() {
@@ -24,20 +25,14 @@ public class ModelValidatorTest extends BaseTest {
         try {
             modelValidator.validate(modelStr);
             access = true;
-            Assert.assertTrue(access);
-        } catch (DefinitionException e) {
+        } catch (DefinitionException | ProcessException e) {
             LOGGER.error("", e);
-            Assert.assertTrue(access);
-        } catch (ProcessException e) {
-            LOGGER.error("", e);
-            Assert.assertTrue(access);
         }
-
-
+        Assert.assertTrue(access);
     }
+
     /**
      * Test modelValidator, while model is empty.
-     *
      */
     @Test
     public void validateEmptyModel() {
@@ -46,14 +41,10 @@ public class ModelValidatorTest extends BaseTest {
         try {
             modelValidator.validate(modelStr);
             access = true;
-            Assert.assertFalse(access);
-        } catch (DefinitionException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
-        } catch (ProcessException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
+        } catch (DefinitionException | ProcessException e) {
+            Assert.assertEquals(ErrorEnum.MODEL_EMPTY.getErrNo(), e.getErrNo());
         }
+        Assert.assertFalse(access);
     }
 
 }

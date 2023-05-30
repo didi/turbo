@@ -20,7 +20,7 @@ public class NodeInstanceDAOTest extends BaseTest {
     public void insert(){
         NodeInstancePO nodeInstancePO = EntityBuilder.buildNodeInstancePO();
         int result = nodeInstanceDAO.insert(nodeInstancePO);
-        Assert.assertTrue(result == 1);
+        Assert.assertEquals(1, result);
     }
 
     @Test
@@ -43,6 +43,6 @@ public class NodeInstanceDAOTest extends BaseTest {
 
         nodeInstanceDAO.updateStatus(nodeInstancePO, NodeInstanceStatus.COMPLETED);
         NodeInstancePO result = nodeInstanceDAO.selectByNodeInstanceId(nodeInstancePO.getFlowInstanceId(), nodeInstancePO.getNodeInstanceId());
-        Assert.assertTrue(result.getStatus() == NodeInstanceStatus.COMPLETED);
+        Assert.assertEquals(NodeInstanceStatus.COMPLETED, (int) result.getStatus());
     }
 }
