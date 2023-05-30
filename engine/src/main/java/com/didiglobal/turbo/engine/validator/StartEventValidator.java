@@ -15,7 +15,7 @@ public class StartEventValidator extends ElementValidator {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(StartEventValidator.class);
     /**
-     * CheckIncoming: check userTask's incoming, warn while incoming is not empty.
+     * CheckIncoming: check startEvent's incoming, warn while incoming is not empty.
      *
      * @param flowElementMap, flowElement
      */
@@ -24,7 +24,7 @@ public class StartEventValidator extends ElementValidator {
         List<String> incoming = flowElement.getIncoming();
 
         if (CollectionUtils.isNotEmpty(incoming)) {
-            recordElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MUCH_INCOMING);
+            recordElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MANY_INCOMING);
         }
     }
 }

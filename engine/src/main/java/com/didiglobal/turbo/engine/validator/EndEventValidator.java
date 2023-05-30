@@ -25,7 +25,7 @@ public class EndEventValidator extends ElementValidator {
         List<String> outgoing = flowElement.getOutgoing();
 
         if (CollectionUtils.isNotEmpty(outgoing)) {
-            recordElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MUCH_OUTGOING);
+            recordElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MANY_OUTGOING);
         }
     }
 }
