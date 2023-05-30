@@ -68,6 +68,7 @@
         <groovy.version>2.3.7</groovy.version>
         <guava.version>31.0.1-jre</guava.version>
         <lombok.version>1.18.26</lombok.version>
+        <h2.version>1.4.200</h2.version>
     </properties>
 
     <dependencyManagement>
@@ -142,6 +143,12 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
