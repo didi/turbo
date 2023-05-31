@@ -607,7 +607,7 @@ public class EntityBuilder {
         return flowModel;
     }
 
-    // 构建包含 CallActivity 节点的流程模型
+    // build flowModel with CallActivity node
     public static String buildFlowModelStr2(String callActivityFlowModuleId) {
         List<FlowElement> flowElementList = Lists.newArrayList();
 
@@ -760,7 +760,7 @@ public class EntityBuilder {
         return JSON.toJSONString(flowModel);
     }
 
-    // 构建 CallActivity 节点的引用的子流程模型
+    // build little flowModel
     public static String buildFlowModelStr3() {
         List<FlowElement> flowElementList = Lists.newArrayList();
 

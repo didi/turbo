@@ -14,9 +14,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class BusinessConfig {
 
-    @Value("${isSaveInstanceData:true}")
-    public boolean isSaveInstanceData;
-
     @Value("${callActivity.nested.level:#{null}}")
     private String callActivityNestedLevel;
 

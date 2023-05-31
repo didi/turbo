@@ -77,7 +77,7 @@ public class CallActivityDemoRunner implements CommandLineRunner {
         createMainFlowParam = new CreateFlowParam(tenant, caller);
         createMainFlowParam.setFlowKey("mainFlowKey");
         createMainFlowParam.setFlowName("mainFlowName");
-        createMainFlowParam.setRemark("主流程");
+        createMainFlowParam.setRemark("mainFlow");
         createMainFlowParam.setOperator(operator);
         createMainFlowResult = processEngine.createFlow(createMainFlowParam);
         LOGGER.info("createMainFlow.||createMainFlowResult={}", createMainFlowResult);
@@ -85,7 +85,7 @@ public class CallActivityDemoRunner implements CommandLineRunner {
         createSubFlowParam = new CreateFlowParam(tenant, caller);
         createSubFlowParam.setFlowKey("subFlowKey");
         createSubFlowParam.setFlowName("subFlowName");
-        createSubFlowParam.setRemark("子流程");
+        createSubFlowParam.setRemark("subFlow");
         createSubFlowParam.setOperator(operator);
         createSubFlowResult = processEngine.createFlow(createSubFlowParam);
         LOGGER.info("createSubFlow.||createSubFlowResult={}", createSubFlowResult);
