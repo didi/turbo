@@ -13,10 +13,19 @@ import java.util.Map;
 
 /**
  * Implementation of calculator that uses script based on `Groovy`
+ * <p>
+ * Expressions can be wrapped with ${} or written without anything
+ * ep:
+ * ${key_test > 0}  or key_test > 0
  */
 public class GroovyExpressionCalculator implements ExpressionCalculator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroovyExpressionCalculator.class);
+
+    @Override
+    public String getType() {
+        return "groovy";
+    }
 
     @Override
     public Boolean calculate(String expression, Map<String, Object> dataMap) throws ProcessException {

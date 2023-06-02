@@ -53,6 +53,8 @@ public enum ErrorEnum {
     SAVE_FLOW_INSTANCE_FAILED(4016, "Save flowInstance failed"),
     SAVE_INSTANCE_DATA_FAILED(4017, "Save instanceData failed"),
     GROOVY_CALCULATE_FAILED(4018, "Groovy calculate failed"),
+    NOT_FOUND_EXPRESSION_CALCULATOR(4019, "Not found expression calculator"),
+
 
     //5000~5999 系统错误
     //保留错误码

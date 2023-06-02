@@ -12,6 +12,13 @@ import java.util.Map;
 public interface ExpressionCalculator {
 
     /**
+     * 获取表达式计算器类型
+     *
+     * @return
+     */
+    String getType();
+
+    /**
      * Execute the conditional expression and get the result of the evaluation
      *
      * @param expression conditional expression

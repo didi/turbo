@@ -12,6 +12,11 @@ import java.util.regex.Pattern;
 public class TestExpressionCalculator implements ExpressionCalculator {
 
     @Override
+    public String getType() {
+        return "test";
+    }
+
+    @Override
     public Boolean calculate(String expression, Map<String, Object> dataMap) throws ProcessException {
         // 扩展表达式计算方式
 

@@ -13,8 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * turbo service loader
  *
- * @author lijinghao
  * @param <T> the type of service
+ * @author lijinghao
  */
 public class TurboServiceLoader<T> {
 
@@ -25,7 +25,7 @@ public class TurboServiceLoader<T> {
     @Getter
     private final Collection<T> services;
 
-    private TurboServiceLoader(final Class<T> serviceInterface){
+    private TurboServiceLoader(final Class<T> serviceInterface) {
         this.serviceInterface = serviceInterface;
         validate();
         services = load();
@@ -41,24 +41,24 @@ public class TurboServiceLoader<T> {
 
     private void validate() {
         Preconditions.checkNotNull(serviceInterface, "SPI interface is null.");
-        Preconditions.checkArgument(serviceInterface.isInterface(), "SPI interface `%s` is not interface.", serviceInterface);
+        Preconditions.checkArgument(serviceInterface.isInterface(),
+            "SPI interface `%s` is not interface.", serviceInterface);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Collection<T> getServiceInterfaces(final Class<T> serviceInterface){
+    public static <T> Collection<T> getServiceInterfaces(final Class<T> serviceInterface) {
         TurboServiceLoader<?> result = LOADERS.get(serviceInterface);
-        return (Collection<T>) (result != null ? result.getServiceInterfaces(): LOADERS.computeIfAbsent(serviceInterface, TurboServiceLoader::new).getServiceInterfaces());
-
+        return (Collection<T>) (result != null ? result.getServiceInterfaces()
+            : LOADERS.computeIfAbsent(serviceInterface, TurboServiceLoader::new).getServiceInterfaces());
     }
 
     private Collection<T> getServiceInterfaces() {
-        return serviceInterface.getAnnotation(SingletonSPI.class) == null ? createNewServiceInstances() : getSingletonServiceInstances();
-
+        return serviceInterface.getAnnotation(SingletonSPI.class) == null ? createNewServiceInstances()
+            : getSingletonServiceInstances();
     }
 
     private Collection<T> getSingletonServiceInstances() {
         return services;
-
     }
 
     @SneakyThrows(ReflectiveOperationException.class)

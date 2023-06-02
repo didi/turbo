@@ -296,7 +296,8 @@ public abstract class ElementExecutor extends RuntimeExecutor {
 
             //case1 condition is true, hit the outgoing
             String condition = FlowModelUtil.getConditionFromSequenceFlow(outgoingSequenceFlow);
-            if (StringUtils.isNotBlank(condition) && processCondition(condition, instanceDataMap)) {
+            String type = FlowModelUtil.getCalculatorTypeFromSequenceFlow(outgoingSequenceFlow);
+            if (StringUtils.isNotBlank(condition) && processCondition(type, condition, instanceDataMap)) {
                 return outgoingSequenceFlow;
             }
 
@@ -314,8 +315,8 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         throw new ProcessException(ErrorEnum.GET_OUTGOING_FAILED);
     }
 
-    protected boolean processCondition(String expression, Map<String, InstanceData> instanceDataMap) throws ProcessException {
+    protected boolean processCondition(String type, String expression,  Map<String, InstanceData> instanceDataMap) throws ProcessException {
         Map<String, Object> dataMap = InstanceDataUtil.parseInstanceDataMap(instanceDataMap);
-        return ExpressionCalculatorFactory.getExpressionCalculator().calculate(expression, dataMap);
+        return ExpressionCalculatorFactory.getExpressionCalculator(type).calculate( expression, dataMap);
     }
 }
