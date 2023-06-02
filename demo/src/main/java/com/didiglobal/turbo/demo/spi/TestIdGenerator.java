@@ -7,7 +7,7 @@ public class TestIdGenerator implements IdGenerator {
 
     @Override
     public String getNextId() {
-        // 通过这种方式扩展自己的ID生成器
+        // Expand your ID generator in this way
         return RandomStringUtils.randomAlphabetic(20);
     }
 }

@@ -2,14 +2,17 @@ package com.didiglobal.turbo.demo.spi;
 
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.spi.calulator.ExpressionCalculator;
+import com.didiglobal.turbo.engine.spi.calulator.ExpressionCalculatorFactory;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TestExpressionCalculator implements ExpressionCalculator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestExpressionCalculator.class);
 
     @Override
     public String getType() {
@@ -18,14 +21,12 @@ public class TestExpressionCalculator implements ExpressionCalculator {
 
     @Override
     public Boolean calculate(String expression, Map<String, Object> dataMap) throws ProcessException {
-        // 扩展表达式计算方式
-
-        // 执行正则表达式或者其他语言脚本等,如 python
-        Pattern compile = Pattern.compile(expression);
-        Matcher data = compile.matcher((String) dataMap.get("data"));
-        return data.matches();
+        // You can customize the implementation,
+        // and the code here serves as an example of extending the calculation expression
+        // Because all calculations in the demo use groovy, the groovy method will also be used here
+        LOGGER.info("enter TestExpressionCalculator, but use groovy for test");
+        return ExpressionCalculatorFactory.getExpressionCalculator("groovy").calculate(expression, dataMap);
     }
-
 
     /**
      * test

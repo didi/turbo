@@ -1,6 +1,8 @@
 package com.didiglobal.turbo.engine.spi.calulator;
 
 import com.didiglobal.turbo.engine.exception.ProcessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -11,6 +13,8 @@ import java.util.regex.Pattern;
  */
 public class TestExpressionCalculator implements ExpressionCalculator {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TestExpressionCalculator.class);
+
     @Override
     public String getType() {
         return "test";
@@ -18,8 +22,7 @@ public class TestExpressionCalculator implements ExpressionCalculator {
 
     @Override
     public Boolean calculate(String expression, Map<String, Object> dataMap) throws ProcessException {
-        Pattern compile = Pattern.compile(expression);
-        Matcher data = compile.matcher((String) dataMap.get("data"));
-        return data.matches();
+       LOGGER.info("enter TestExpressionCalculator, but use groovy for test");
+       return ExpressionCalculatorFactory.getExpressionCalculator("groovy").calculate(expression, dataMap);
     }
 }
