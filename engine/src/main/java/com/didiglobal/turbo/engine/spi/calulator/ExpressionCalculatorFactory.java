@@ -36,10 +36,6 @@ public class ExpressionCalculatorFactory {
         }
     }
 
-    public static ExpressionCalculator getExpressionCalculator() {
-        return DEFAULT_EXPRESSION_CALCULATOR;
-    }
-
     public static ExpressionCalculator getExpressionCalculator(String type) {
         if(StringUtils.isBlank(type)){
             return DEFAULT_EXPRESSION_CALCULATOR;
@@ -49,5 +45,9 @@ public class ExpressionCalculatorFactory {
                 String.format("Not found expression calculator for %s", type));
         }
         return CALCULATORS.get(type);
+    }
+
+    public static boolean contains(String type){
+        return CALCULATORS.containsKey(type);
     }
 }
