@@ -19,15 +19,35 @@ public class ExpressionCalculatorFactoryTest {
     }
 
     @Test
-    public void assertExpressionCalculatorExistsWithNoType(){
+    public void assertExpressionCalculatorExistsWithNoType() {
         ExpressionCalculator defaultExpressionCalculator = ExpressionCalculatorFactory.getExpressionCalculator("");
         Assert.assertNotNull(defaultExpressionCalculator);
     }
 
     @Test
-    public void assertDefaultExpressionCalculatorNotGroovy(){
+    public void assertDefaultExpressionCalculatorNotGroovy() {
         ExpressionCalculator defaultExpressionCalculator = ExpressionCalculatorFactory.getExpressionCalculator("");
         Assert.assertFalse(defaultExpressionCalculator instanceof GroovyExpressionCalculator);
     }
 
+    @Test
+    public void assertDefaultExpressionCalculatorResetToGroovy() {
+        ExpressionCalculatorFactory.resetDefaultExpressionCalculator("groovy");
+        ExpressionCalculator defaultExpressionCalculator = ExpressionCalculatorFactory.getExpressionCalculator("");
+        Assert.assertTrue(defaultExpressionCalculator instanceof GroovyExpressionCalculator);
+    }
+
+    @Test
+    public void assertDefaultExpressionCalculatorResetFail() {
+        try {
+            ExpressionCalculatorFactory.resetDefaultExpressionCalculator("groovy");
+            // reset fail
+            ExpressionCalculatorFactory.resetDefaultExpressionCalculator("test");
+        } catch (Exception e) {
+            // noting
+        }
+        ExpressionCalculator defaultExpressionCalculator = ExpressionCalculatorFactory.getExpressionCalculator("");
+        Assert.assertTrue(defaultExpressionCalculator instanceof GroovyExpressionCalculator);
+
+    }
 }
