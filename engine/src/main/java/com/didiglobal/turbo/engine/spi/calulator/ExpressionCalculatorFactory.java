@@ -9,8 +9,6 @@ import java.util.*;
 
 /**
  * expression calculator factory
- *
- * @author lijinghao
  */
 public class ExpressionCalculatorFactory {
 
@@ -36,18 +34,26 @@ public class ExpressionCalculatorFactory {
         }
     }
 
+    /**
+     * Get the calculator by type
+     * <p>
+     * If no type is passed in, use the first calculator loaded by SPI
+     *
+     * @param type type of calculator
+     * @return ExpressionCalculator
+     */
     public static ExpressionCalculator getExpressionCalculator(String type) {
-        if(StringUtils.isBlank(type)){
+        if (StringUtils.isBlank(type)) {
             return DEFAULT_EXPRESSION_CALCULATOR;
         }
-        if(!CALCULATORS.containsKey(type)){
+        if (!CALCULATORS.containsKey(type)) {
             throw new TurboException(ErrorEnum.NOT_FOUND_EXPRESSION_CALCULATOR,
                 String.format("Not found expression calculator for %s", type));
         }
         return CALCULATORS.get(type);
     }
 
-    public static boolean contains(String type){
+    public static boolean contains(String type) {
         return CALCULATORS.containsKey(type);
     }
 }

@@ -2,16 +2,16 @@ package com.didiglobal.turbo.engine.common;
 
 public enum ErrorEnum {
 
-    //1000~1999 非阻断性错误码
+    // 1000~1999, non blocking error code
     SUCCESS(1000, "Success"),
     REENTRANT_WARNING(1001, "Reentrant warning"),
     COMMIT_SUSPEND(1002, "Commit task suspend"),
     ROLLBACK_SUSPEND(1003, "Rollback task suspend"),
 
-    //2000~2999 通用业务错误
+    // 2000~2999, general business error
     PARAM_INVALID(2001, "Invalid param"),
 
-    //3000~3999 流程定义错误
+    // 3000~3999, process definition error
     DEFINITION_INSERT_INVALID(3001, "Definition insert failed"),
     DEFINITION_UPDATE_INVALID(3002, "Definition update failed"),
 
@@ -34,11 +34,11 @@ public enum ErrorEnum {
     ELEMENT_LACK_INCOMING(3214, "Element lack incoming"),
     ELEMENT_LACK_OUTGOING(3215, "Element lack outgoing"),
 
-    //4000~4999 流程执行错误
+    // 4000~4999, process definition error
     COMMIT_FAILED(4001, "Commit task failed"),
     ROLLBACK_FAILED(4002, "Rollback task failed"),
-    COMMIT_REJECTRD(4003, "Commit rejected, flow is terminate"),
-    ROLLBACK_REJECTRD(4004, "Rollback rejected, non-running flowInstance to rollback"),
+    COMMIT_REJECTED(4003, "Commit rejected, flow is terminate"),
+    ROLLBACK_REJECTED(4004, "Rollback rejected, non-running flowInstance to rollback"),
     NO_NODE_TO_ROLLBACK(4005, "No node to rollback"),
     NO_USER_TASK_TO_ROLLBACK(4006, "No userTask to rollback"),
     GET_FLOW_DEPLOYMENT_FAILED(4007, "Get flowDeployment failed"),
@@ -56,8 +56,8 @@ public enum ErrorEnum {
     NOT_FOUND_EXPRESSION_CALCULATOR(4019, "Not found expression calculator"),
 
 
-    //5000~5999 系统错误
-    //保留错误码
+    // 5000~5999, system error
+    // reserved error code
     SYSTEM_ERROR(5000, "System error"),
     FAILED(5001, "Failed");
 

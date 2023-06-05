@@ -152,7 +152,7 @@ public class RuntimeProcessorTest extends BaseTest {
         commitTaskParam.setVariables(variables);
         CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
 
-        Assert.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.COMMIT_REJECTRD.getErrNo());
+        Assert.assertEquals(commitTaskResult.getErrCode(), ErrorEnum.COMMIT_REJECTED.getErrNo());
     }
 
     // UserTask <- ExclusiveGateway <- UserTask : Commit old UserTask
@@ -291,7 +291,7 @@ public class RuntimeProcessorTest extends BaseTest {
         RollbackTaskResult rollbackTaskResult = runtimeProcessor.rollback(rollbackTaskParam);
 
         LOGGER.info("testRollback.||rollbackTaskResult={}", rollbackTaskResult);
-        Assert.assertEquals(rollbackTaskResult.getErrCode(), ErrorEnum.ROLLBACK_REJECTRD.getErrNo());
+        Assert.assertEquals(rollbackTaskResult.getErrCode(), ErrorEnum.ROLLBACK_REJECTED.getErrNo());
     }
 
     @Test

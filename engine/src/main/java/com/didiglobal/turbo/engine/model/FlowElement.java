@@ -6,11 +6,30 @@ import java.util.List;
 import java.util.Map;
 
 public class FlowElement {
-    private String key; // 流程内元素唯一key resourceId
-    private int type; // stencil 类型
-    private List<String> outgoing;
-    private Map<String, Object> properties; // 配置属性
+    /**
+     * Unique key in flow element, resourceId
+     */
+    private String key;
+
+    /**
+     * The type of element
+     */
+    private int type;
+
+    /**
+     * List of elements before the current element
+     */
     private List<String> incoming;
+
+    /**
+     * List of elements following the current element
+     */
+    private List<String> outgoing;
+
+    /**
+     * Element configuration attributes, which can be used to extend
+     */
+    private Map<String, Object> properties;
 
     public String getKey() {
         return key;

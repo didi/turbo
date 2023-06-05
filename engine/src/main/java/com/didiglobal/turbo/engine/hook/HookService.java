@@ -4,13 +4,6 @@ import com.didiglobal.turbo.engine.model.InstanceData;
 
 import java.util.List;
 
-/**
- * HookService
- *
- * @author lijinghao
- * @version v1.0
- * @date 2023/2/16 6:59 PM
- */
 public interface HookService {
 
     /**
