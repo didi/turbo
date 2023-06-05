@@ -386,7 +386,7 @@ public class EntityBuilder {
 
     public static FlowInstancePO buildDynamicFlowInstancePO() {
         FlowInstancePO flowInstancePO = EntityBuilder.buildFlowInstancePO();
-        flowInstancePO.setFlowInstanceId("testFlowInstanceId_" + System.currentTimeMillis() + new Random().nextInt());
+        flowInstancePO.setFlowInstanceId("testFlowInstanceId_" + UUID.randomUUID());
         return flowInstancePO;
     }
 
@@ -409,8 +409,8 @@ public class EntityBuilder {
 
     public static NodeInstancePO buildDynamicNodeInstancePO() {
         NodeInstancePO nodeInstancePO = buildNodeInstancePO();
-        nodeInstancePO.setNodeInstanceId("testNodeInstanceId_" + UUID.randomUUID().toString());
-        nodeInstancePO.setSourceNodeInstanceId("testSourceNodeInstanceId_" + UUID.randomUUID().toString());
+        nodeInstancePO.setNodeInstanceId("testNodeInstanceId_" + UUID.randomUUID());
+        nodeInstancePO.setSourceNodeInstanceId("testSourceNodeInstanceId_" + UUID.randomUUID());
         return nodeInstancePO;
     }
 
@@ -461,7 +461,7 @@ public class EntityBuilder {
 
     public static InstanceDataPO buildDynamicInstanceDataPO() {
         InstanceDataPO instanceDataPO = buildInstanceDataPO();
-        instanceDataPO.setInstanceDataId("testInstanceDataId_" + System.currentTimeMillis() + new Random().nextInt());
+        instanceDataPO.setInstanceDataId("testInstanceDataId_" + UUID.randomUUID());
         return instanceDataPO;
     }
 
