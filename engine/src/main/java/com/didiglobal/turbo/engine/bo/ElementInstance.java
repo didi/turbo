@@ -20,6 +20,10 @@ public class ElementInstance {
         super();
     }
 
+    public ElementInstance(String modelKey, int status) {
+        this(modelKey, status, null, null);
+    }
+
     public ElementInstance(String modelKey, int status, String nodeInstanceId, String instanceDataId) {
         super();
         this.modelKey = modelKey;

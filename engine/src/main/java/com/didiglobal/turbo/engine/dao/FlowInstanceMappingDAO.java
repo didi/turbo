@@ -47,12 +47,12 @@ public class FlowInstanceMappingDAO extends BaseDAO<FlowInstanceMappingMapper, F
         return -1;
     }
 
-    public void updateStatus(String flowInstanceId, String nodeInstanceId, int status) {
+    public void updateType(String flowInstanceId, String nodeInstanceId, int type) {
         FlowInstanceMappingPO flowInstanceMappingPO = new FlowInstanceMappingPO();
         flowInstanceMappingPO.setFlowInstanceId(flowInstanceId);
         flowInstanceMappingPO.setNodeInstanceId(nodeInstanceId);
-        flowInstanceMappingPO.setType(status);
+        flowInstanceMappingPO.setType(type);
         flowInstanceMappingPO.setModifyTime(new Date());
-        baseMapper.updateStatus(flowInstanceMappingPO);
+        baseMapper.updateType(flowInstanceMappingPO);
     }
 }

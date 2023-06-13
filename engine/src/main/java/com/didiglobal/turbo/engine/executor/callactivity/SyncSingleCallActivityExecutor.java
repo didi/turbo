@@ -282,7 +282,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
         runtimeContext.setCurrentNodeInstance(newNodeInstanceBO);
 
         FlowInstanceMappingPO oldFlowInstanceMappingPO = flowInstanceMappingDAO.selectFlowInstanceMappingPO(runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId());
-        flowInstanceMappingDAO.updateStatus(oldFlowInstanceMappingPO.getFlowInstanceId(), oldFlowInstanceMappingPO.getNodeInstanceId(), FlowInstanceMappingType.TERMINATED);
+        flowInstanceMappingDAO.updateType(oldFlowInstanceMappingPO.getFlowInstanceId(), oldFlowInstanceMappingPO.getNodeInstanceId(), FlowInstanceMappingType.TERMINATED);
 
         FlowInstanceMappingPO newFlowInstanceMappingPO = new FlowInstanceMappingPO();
         BeanUtils.copyProperties(oldFlowInstanceMappingPO, newFlowInstanceMappingPO);
@@ -321,7 +321,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
         if (runtimeResult.getStatus() == FlowInstanceStatus.TERMINATED) {
             // The subFlow rollback from the StartNode to the MainFlow
             currentNodeInstance.setStatus(NodeInstanceStatus.DISABLED);
-            flowInstanceMappingDAO.updateStatus(runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId(), FlowInstanceMappingType.TERMINATED);
+            flowInstanceMappingDAO.updateType(runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId(), FlowInstanceMappingType.TERMINATED);
         } else if (runtimeResult.getStatus() == FlowInstanceStatus.END) {
             // The subFlow is completed from the EndNode to the MainFlow
             currentNodeInstance.setStatus(NodeInstanceStatus.COMPLETED);
