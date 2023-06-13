@@ -17,5 +17,5 @@ public interface FlowInstanceMappingMapper extends BaseMapper<FlowInstanceMappin
     FlowInstanceMappingPO selectFlowInstanceMappingPO(@Param("flowInstanceId") String flowInstanceId, @Param("nodeInstanceId") String nodeInstanceId);
 
     @Update("UPDATE ei_flow_instance_mapping SET type= #{type}, modify_time= #{modifyTime} WHERE flow_instance_id= #{flowInstanceId} and node_instance_id = #{nodeInstanceId}")
-    void updateStatus(FlowInstanceMappingPO entity);
+    void updateType(FlowInstanceMappingPO entity);
 }
