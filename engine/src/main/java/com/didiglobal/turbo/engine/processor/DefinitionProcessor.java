@@ -48,6 +48,7 @@ public class DefinitionProcessor {
 
     public CreateFlowResult create(CreateFlowParam createFlowParam) {
         CreateFlowResult createFlowResult = new CreateFlowResult();
+        List<FlowElement> flowElementList = Lists.newArrayList();
         try {
             ParamValidator.validate(createFlowParam);
 
@@ -55,6 +56,7 @@ public class DefinitionProcessor {
             BeanUtils.copyProperties(createFlowParam, flowDefinitionPO);
             String flowModuleId = idGenerator.getNextId();
             flowDefinitionPO.setFlowModuleId(flowModuleId);
+            flowDefinitionPO.setFlowModel(JSON.toJSONString(flowElementList));
             flowDefinitionPO.setStatus(FlowDefinitionStatus.INIT);
             Date date = new Date();
             flowDefinitionPO.setCreateTime(date);
