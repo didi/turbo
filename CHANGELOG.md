@@ -3,6 +3,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2023-06-26
+### Bugfix
+- Fix v1.1.0 release issues
+
+
 ## [1.1.0] - 2023-03-15
 
 Support CallActivity configuration and execution.
