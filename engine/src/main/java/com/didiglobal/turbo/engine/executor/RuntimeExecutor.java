@@ -2,11 +2,11 @@ package com.didiglobal.turbo.engine.executor;
 
 
 import com.didiglobal.turbo.engine.common.RuntimeContext;
-import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
-import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
-import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
+import com.didiglobal.turbo.engine.dao.*;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.spi.generator.IdGenerateFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 
@@ -14,6 +14,8 @@ import javax.annotation.Resource;
  * runtime executor
  */
 public abstract class RuntimeExecutor {
+
+    protected static final Logger LOGGER = LoggerFactory.getLogger(RuntimeExecutor.class);
 
     @Resource
     protected ExecutorFactory executorFactory;
@@ -25,14 +27,20 @@ public abstract class RuntimeExecutor {
     protected NodeInstanceDAO nodeInstanceDAO;
 
     @Resource
+    protected ProcessInstanceDAO processInstanceDAO;
+
+    @Resource
     protected NodeInstanceLogDAO nodeInstanceLogDAO;
+
+    @Resource
+    protected FlowInstanceMappingDAO flowInstanceMappingDAO;
 
     protected String genId() {
         return IdGenerateFactory.getIdGenerator().getNextId();
     }
 
     /**
-     * execute the process
+     * Execute the process
      *
      * @param runtimeContext runtime context information
      * @throws ProcessException the exception thrown during execution
@@ -40,7 +48,7 @@ public abstract class RuntimeExecutor {
     public abstract void execute(RuntimeContext runtimeContext) throws ProcessException;
 
     /**
-     * commit and continue the process
+     * Commit and continue the process
      *
      * @param runtimeContext runtime context information
      * @throws ProcessException the exception thrown during execution
@@ -48,7 +56,7 @@ public abstract class RuntimeExecutor {
     public abstract void commit(RuntimeContext runtimeContext) throws ProcessException;
 
     /**
-     * roll back to the previous user node
+     * Roll back to the previous user node
      *
      * @param runtimeContext runtime context information
      * @throws ProcessException the exception thrown during execution
@@ -56,7 +64,7 @@ public abstract class RuntimeExecutor {
     public abstract void rollback(RuntimeContext runtimeContext) throws ProcessException;
 
     /**
-     * determine whether the process has been completed
+     * Determine whether the process has been completed
      *
      * @param runtimeContext runtime context information
      * @return true or false
@@ -65,7 +73,18 @@ public abstract class RuntimeExecutor {
     protected abstract boolean isCompleted(RuntimeContext runtimeContext) throws ProcessException;
 
     /**
-     * get the current execute executor
+     * Determine whether the current process is a sub process
+     *
+     * @param runtimeContext runtime context information
+     * @return true or false
+     * @throws ProcessException the exception thrown during execution
+     */
+    protected boolean isSubFlowInstance(RuntimeContext runtimeContext) throws ProcessException {
+        return runtimeContext.getParentRuntimeContext() != null;
+    }
+
+    /**
+     * Get the current execute executor
      *
      * @param runtimeContext runtime context information
      * @return execute executor
@@ -74,7 +93,7 @@ public abstract class RuntimeExecutor {
     protected abstract RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws ProcessException;
 
     /**
-     * get the rollback executor
+     * Get the rollback executor
      *
      * @param runtimeContext runtime context information
      * @return rollback executor

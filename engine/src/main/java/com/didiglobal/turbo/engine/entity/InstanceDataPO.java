@@ -11,6 +11,7 @@ public class InstanceDataPO extends CommonPO {
     private String flowModuleId;
     private String nodeKey;
     private String instanceData;
+    private String instanceDataEncode;
     private Integer type;
 
     public String getFlowInstanceId() {
@@ -67,6 +68,14 @@ public class InstanceDataPO extends CommonPO {
 
     public void setInstanceData(String instanceData) {
         this.instanceData = instanceData;
+    }
+
+    public String getInstanceDataEncode() {
+        return instanceDataEncode;
+    }
+
+    public void setInstanceDataEncode(String instanceDataEncode) {
+        this.instanceDataEncode = instanceDataEncode;
     }
 
     public Integer getType() {

@@ -40,21 +40,26 @@ CREATE TABLE IF NOT EXISTS `em_flow_deployment` (
     KEY `idx_flow_module_id` (`flow_module_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='流程部署表';
 
-CREATE TABLE IF NOT EXISTS `ei_flow_instance` (
-    `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-    `flow_instance_id` varchar(128) NOT NULL DEFAULT '' COMMENT '流程执行实例id',
-    `flow_deploy_id` varchar(128) NOT NULL DEFAULT '' COMMENT '流程模型部署id',
-    `flow_module_id` varchar(128) NOT NULL DEFAULT '' COMMENT '流程模型id',
-    `tenant_id` varchar(16) NOT NULL DEFAULT '' COMMENT '业务方标识',
-    `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态(1.执行完成 2.执行中 3.执行终止(强制终止))',
-    `create_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程创建时间',
-    `modify_time` datetime NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程修改时间',
-    `archive` tinyint(4) NOT NULL DEFAULT '0' COMMENT '归档状态(0未删除，1删除)',
-    `tenant` varchar(100) NOT NULL DEFAULT '' COMMENT '租户',
-    `caller` varchar(100) NOT NULL DEFAULT '' COMMENT '调用方',
+DROP TABLE IF EXISTS `ei_flow_instance`;
+CREATE TABLE IF NOT EXISTS `ei_flow_instance`
+(
+    `id`                      bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+    `flow_instance_id`        varchar(128)        NOT NULL DEFAULT '' COMMENT '流程执行实例id',
+    `parent_flow_instance_id` varchar(128)        NOT NULL DEFAULT '' COMMENT '父流程执行实例id',
+    `flow_deploy_id`          varchar(128)        NOT NULL DEFAULT '' COMMENT '流程模型部署id',
+    `flow_module_id`          varchar(128)        NOT NULL DEFAULT '' COMMENT '流程模型id',
+    `tenant_id`               varchar(16)         NOT NULL DEFAULT '' COMMENT '业务方标识',
+    `status`                  tinyint(4)          NOT NULL DEFAULT '0' COMMENT '状态(1.执行完成 2.执行中 3.执行终止(强制终止))',
+    `create_time`             datetime            NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程创建时间',
+    `modify_time`             datetime            NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程修改时间',
+    `archive`                 tinyint(4)          NOT NULL DEFAULT '0' COMMENT '归档状态(0未删除，1删除)',
+    `tenant`                  varchar(100)        NOT NULL DEFAULT '' COMMENT '租户',
+    `caller`                  varchar(100)        NOT NULL DEFAULT '' COMMENT '调用方',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_flow_instance_id` (`flow_instance_id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='流程执行实例表';
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  ROW_FORMAT = COMPACT COMMENT ='流程执行实例表';
 
 CREATE TABLE IF NOT EXISTS `ei_node_instance` (
     `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
@@ -93,6 +98,8 @@ CREATE TABLE IF NOT EXISTS `ei_node_instance_log` (
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='节点执行记录表';
 
+
+-- 在ei_instance_data表中,如果需要存储表情符号, MySQL的建表语句需要切换utf8mb4
 CREATE TABLE IF NOT EXISTS `ei_instance_data` (
     `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
     `node_instance_id` varchar(128)  NOT NULL DEFAULT '' COMMENT '节点执行实例id',
@@ -113,4 +120,22 @@ CREATE TABLE IF NOT EXISTS `ei_instance_data` (
     KEY `idx_flow_instance_id` (`flow_instance_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT COMMENT='节点执行记录表';
 
--- 在ei_instance_data表中,如果需要存储表情符号, MySQL的建表语句需要切换utf8mb4
+DROP TABLE IF EXISTS `ei_flow_instance_mapping`;
+CREATE TABLE `ei_flow_instance_mapping`
+(
+    `id`                   bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+    `flow_instance_id`     varchar(128)        NOT NULL DEFAULT '' COMMENT '流程执行实例id',
+    `node_instance_id`     varchar(128)        NOT NULL DEFAULT '' COMMENT '节点执行实例id',
+    `node_key`             varchar(64)         NOT NULL DEFAULT '' COMMENT '节点唯一标识',
+    `sub_flow_instance_id` varchar(128)        NOT NULL DEFAULT '' COMMENT '子流程执行实例id',
+    `type`                 tinyint(4)          NOT NULL DEFAULT '0' COMMENT '状态(1.执行 2.回滚)',
+    `create_time`          datetime            NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程创建时间',
+    `modify_time`          datetime            NOT NULL DEFAULT '1970-01-01 00:00:00' COMMENT '流程修改时间',
+    `archive`              tinyint(4)          NOT NULL DEFAULT '0' COMMENT '归档状态(0未删除，1删除)',
+    `tenant`               varchar(100)        NOT NULL DEFAULT 'didi' COMMENT '租户',
+    `caller`               varchar(100)        NOT NULL DEFAULT 'optimus-prime' COMMENT '调用方',
+    PRIMARY KEY (`id`),
+    KEY `idx_fii` (`flow_instance_id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  ROW_FORMAT = COMPACT COMMENT ='父子流程实例映射表';

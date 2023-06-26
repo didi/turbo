@@ -7,6 +7,8 @@ import java.util.List;
 
 public class CommitTaskParam extends RuntimeTaskParam {
     private List<InstanceData> variables;
+    // Used to specify the FlowModuleId when commit CallActivity node
+    private String callActivityFlowModuleId;
 
     public List<InstanceData> getVariables() {
         return variables;
@@ -16,12 +18,21 @@ public class CommitTaskParam extends RuntimeTaskParam {
         this.variables = variables;
     }
 
+    public String getCallActivityFlowModuleId() {
+        return callActivityFlowModuleId;
+    }
+
+    public void setCallActivityFlowModuleId(String callActivityFlowModuleId) {
+        this.callActivityFlowModuleId = callActivityFlowModuleId;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("flowInstanceId", getFlowInstanceId())
-                .add("taskInstanceId", getTaskInstanceId())
-                .add("variables", variables)
-                .toString();
+            .add("flowInstanceId", getFlowInstanceId())
+            .add("taskInstanceId", getTaskInstanceId())
+            .add("variables", variables)
+            .add("callActivityFlowModuleId", callActivityFlowModuleId)
+            .toString();
     }
 }

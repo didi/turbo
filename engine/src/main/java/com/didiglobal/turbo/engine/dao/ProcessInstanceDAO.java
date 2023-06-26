@@ -30,7 +30,7 @@ public class ProcessInstanceDAO extends BaseDAO<ProcessInstanceMapper, FlowInsta
     }
 
     public void updateStatus(String flowInstanceId, int status) {
-        FlowInstancePO flowInstancePO = baseMapper.selectByFlowInstanceId(flowInstanceId);
+        FlowInstancePO flowInstancePO = selectByFlowInstanceId(flowInstanceId);
         updateStatus(flowInstancePO, status);
     }
 

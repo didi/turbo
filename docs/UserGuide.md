@@ -249,9 +249,77 @@ userTask.setOutgoing(utOutgoings);
 
 用户节点入口必须大于等于1个，出口必须大于等于1个。
 
-#### 2.1.3.2 *子流程（SubProcess）
+#### 2.1.3.2 内嵌子流程（SubProcess）
 
-子流程本期暂未实现。
+内嵌子流程本期暂未实现。
+
+#### 2.1.3.3 调用子流程（CallActivity）
+
+**行为特性**
+
+①调用子流程会产生一个新的流程实例，父流程实例存在映射关系
+
+②调用子流程拥有独立的数据存储，数据传递有两个方向，父传子和子传父
+
+③调用子流程从执行方式来看，分为同步和异步
+
+④调用子流程从创建实例数量来看，分为单实例和多实例
+
+**构造**
+
+```
+CallActivity callActivity = new CallActivity();
+// 设置唯一键
+callActivity.setKey("CallActivity_0ofi5hg");
+callActivity.setType(FlowElementType.CALL_ACTIVITY);
+// 设置入口
+List<String> caIncomings1 = new ArrayList<>();
+caIncomings1.add("SequenceFlow_1udf5vg");
+callActivity.setIncoming(caIncomings1);
+// 设置出口
+List<String> caOutgoings1 = new ArrayList<>();
+caOutgoings1.add("SequenceFlow_06uq82c");
+callActivity.setOutgoing(caOutgoings1);
+// 设置属性
+Map<String, Object> caProperties = new HashMap<>();
+caProperties.put("callActivityExecuteType", Constants.CALL_ACTIVITY_EXECUTE_TYPE.SYNC); // 同步
+caProperties.put("callActivityInstanceType", Constants.CALL_ACTIVITY_INSTANCE_TYPE.SINGLE); // 单实例
+caProperties.put("callActivityFlowModuleId", ""); // 填充引用的流程模型id
+caProperties.put("callActivityCustomId", ""); // 如果想要动态指定流程模型，则可以自定义属性，然后业务方计算出流程模型id向下提交
+caProperties.put("callActivityInParamType", Constants.CALL_ACTIVITY_PARAM_TYPE.FULL); // 父传子的数据传递规则，默认全传递
+caProperties.put("callActivityOutParamType", Constants.CALL_ACTIVITY_PARAM_TYPE.FULL); // 子传父的数据传递规则，默认全传递
+callActivity.setProperties(caProperties);
+```
+
+**属性**
+
+| 属性                | 可选值  | 默认值 | 描述         | 规则                                                                     |
+| --------------------- | ---------- | ------ | -------------- | -------------------------------------------------------------------------- |
+| name                  |            |        | 节点元素名称 |                                                                            |
+| callActivityExecuteType  | sync/async |   | 调用子流程执行方式 | 调用子流程节点可以同步执行或者异步执行 |
+| callActivityInstanceType | single/multiple |        | 调用子流程实例类型 | 调用子流程节点可以创建单个实例，也可以创建多个实例 |
+| callActivityFlowModuleId |            |        | 调用子流程引用的流程模型id | 默认引擎执行到调用子流程节点会先上挂起，既支持配置指定执行的子流程模型，也可以支持动态执行侧指定子流程模型 |
+| callActivityInParamType | none/part/full | full       | 父传子的数据传递类型 | 默认引擎会全部传递数据，既可以不传递，也可以部分传递，也可以全部传递 |
+| callActivityInParam |            |        | 父传子的数据传递参数 | 见下方数据传递规则介绍 |
+| callActivityOutParamType | none/part/full | full       | 子传父的数据传递类型 | 同父传子的数据传递类型 |
+| callActivityOutParam |            |        | 子传父的数据传递参数 | 见下方数据传递规则介绍 |
+
+**数据传递规则子属性**
+
+当父子流程实例交互时，需要指定数据传递规则。一般方向分为两种，一个是父传子，一个是子传父。传值规则既支持从来源的上下文中获取，也可以自定义固定值传递。
+
+举例：当父传子时，则父是来源 source，子是目标 target。
+
+| 属性                | 可选值  | 默认值 | 描述         | 规则                                                                     |
+| --------------------- | ---------- | ------ | -------------- | -------------------------------------------------------------------------- |
+| sourceType | context/fixed |        | 数据来源类型 | 支持数据上下文中获取，支持固定值传入 |
+| sourceKey  |  |   | 数据来源键 | 当数据来源类型是上下文中获取，本字段有意义 |
+| sourceValue  |  |   | 数据来源值 | 当数据来源类型是固定值，本字段有意义 |
+| targetKey |  |   | 数据目标键 | 将数据来源的内容赋值给新的数据key |
+
+**约束规则**
+
+调用子流程节点入口必须大于等于1个，出口只能等于1个。
 
 ### 2.2.顺序流（SequenceFlow）
 

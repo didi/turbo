@@ -10,6 +10,7 @@ import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -29,16 +30,25 @@ public class EndEventExecutor extends ElementExecutor {
 
     @Override
     protected void doRollback(RuntimeContext runtimeContext) throws ProcessException {
+        // when subFlowInstance, the EndEvent rollback is allowed
+        if (isSubFlowInstance(runtimeContext)) {
+            return;
+        }
         FlowElement flowElement = runtimeContext.getCurrentNodeModel();
         String nodeName = FlowModelUtil.getElementName(flowElement);
         LOGGER.warn("doRollback: unsupported element type as EndEvent.||flowInstanceId={}||nodeKey={}||nodeName={}||nodeType={}",
-                runtimeContext.getFlowInstanceId(), flowElement.getKey(), nodeName, flowElement.getType());
+            runtimeContext.getFlowInstanceId(), flowElement.getKey(), nodeName, flowElement.getType());
         throw new ProcessException(ErrorEnum.UNSUPPORTED_ELEMENT_TYPE,
-                MessageFormat.format(Constants.NODE_INFO_FORMAT, flowElement.getKey(), nodeName, flowElement.getType()));
+            MessageFormat.format(Constants.NODE_INFO_FORMAT, flowElement.getKey(), nodeName, flowElement.getType()));
     }
 
     @Override
     protected void postRollback(RuntimeContext runtimeContext) throws ProcessException {
+        // when subFlowInstance, the EndEvent rollback is allowed
+        if (isSubFlowInstance(runtimeContext)) {
+            super.postRollback(runtimeContext);
+            return;
+        }
         //do nothing
     }
 

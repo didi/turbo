@@ -153,7 +153,8 @@ Turbo的定位是兼容BPMN2.0的轻量级流程引擎（而非平台），支�
 * 任务 (Task)：需要处理的节点，例如：
   * 用户任务节点 (UserTask)：使用方执行任务的节点，比如需要用户提交信息；
   * 系统任务节点 (ServiceTask)：系统内部自行执行任务的节点；
-* 子流程 (SubProcess)；将流程作为另一个流程的节点来处理；
+* 内嵌子流程 (SubProcess)：将流程作为另一个流程的节点来处理；
+* 调用子流程 (CallActivity)：与内嵌子流程不同的是，调用子流程拥有独立的模型存储，会产生新的流程实例
 
 ##### 3.1.3 网关节点 (Gateway)
 
@@ -202,7 +203,7 @@ Turbo的定位是兼容BPMN2.0的轻量级流程引擎（而非平台），支�
 </dependency>
 ```
 
-## 1. 配置必要信息
+## 2. 配置必要信息
 
 执行[建表语句](engine/src/main/resources/turbo.db.create/turbo.mysql.sql)，在属性文件中配置属性信息
 
@@ -217,7 +218,7 @@ spring.datasource.dynamic.datasource.engine.url=jdbc:mysql://127.0.0.1:3306/db_e
 
 ```
 
-## 2. 根据demo开始你的Turbo之旅吧
+## 3. 根据demo开始你的Turbo之旅吧
 
 根据上文提到的turbo支持的特性，给出了两个例子，其中整体的流程如下图所示：
 
@@ -235,7 +236,7 @@ Demo2：<a href="#demo2">请假流程</a>
 
 注：例子使用两个service是为了封装sop，在实际开发中sop是有前端页面传递进入，并非是必须再次开发。
 
-## 3. Turbo与LogicFlow交互demo
+## 4. Turbo与LogicFlow交互demo
 
 LogicFlow 是一款流程图编辑框架，提供了一系列流程图交互、编辑所必需的功能和灵活的节点自定义、插件等拓展机制。使用LogicFlow与Turbo接口交互可实现流程图创建，编辑，保存，发布功能，发布完成流程图即可参考第四部分文档，执行流程。
 
@@ -249,6 +250,12 @@ LogicFlow 是一款流程图编辑框架，提供了一系列流程图交互、�
 
 代码提供基本用法示例，使用方可以根据自己的业务场景参考使用
 
-## 4. 联系我们
+## 5. 新的节点类型CallActivity上线啦
+
+千呼万唤的子流程它来了，着眼于内外部需求，我们新增了调用子流程节点，支持了同步单实例调用子流程
+
+使用文档：[CallActivityGuide](docs/CallActivityGuide.md)
+
+## 6. 联系我们
 ### 加入微信群
 添加微信号：logic-flow 加入turbo用户群

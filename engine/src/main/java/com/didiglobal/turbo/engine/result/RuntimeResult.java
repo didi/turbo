@@ -56,12 +56,12 @@ public class RuntimeResult extends CommonResult {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("errCode", getErrCode())
-                .add("errMsg", getErrMsg())
-                .add("flowInstanceId", flowInstanceId)
-                .add("status", status)
-                .add("activeTaskInstance", activeTaskInstance)
-                .add("variables", variables)
-                .toString();
+            .add("errCode", getErrCode())
+            .add("errMsg", getErrMsg())
+            .add("flowInstanceId", flowInstanceId)
+            .add("status", status)
+            .add("activeTaskInstance", activeTaskInstance)
+            .add("variables", variables)
+            .toString();
     }
 }
