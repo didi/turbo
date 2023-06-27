@@ -1,6 +1,7 @@
 package com.didiglobal.turbo.engine.spi.calculator;
 
 import com.didiglobal.turbo.engine.exception.ProcessException;
+import com.didiglobal.turbo.engine.spi.SPIOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import java.util.Map;
 /**
  * test calculator
  */
+@SPIOrder(0)
 public class TestExpressionCalculator implements ExpressionCalculator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TestExpressionCalculator.class);

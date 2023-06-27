@@ -15,45 +15,16 @@ public class ExpressionCalculatorFactory {
     /**
      * default expression calculator
      */
-    private static ExpressionCalculator DEFAULT_EXPRESSION_CALCULATOR;
+    private static final ExpressionCalculator DEFAULT_EXPRESSION_CALCULATOR = TurboServiceLoader.getDefaultService(ExpressionCalculator.class);
 
     /**
      * all calculators
      */
     private static final Map<String, ExpressionCalculator> CALCULATORS = new LinkedHashMap<>();
 
-    private static boolean reset = false;
-
     static {
         Collection<ExpressionCalculator> serviceInterfaces = TurboServiceLoader.getServiceInterfaces(ExpressionCalculator.class);
         serviceInterfaces.forEach(service -> CALCULATORS.put(service.getType(), service));
-        // In the order in which the services are loaded, take the first implementation as default
-        Optional<ExpressionCalculator> optional = serviceInterfaces.stream().findFirst();
-        if (optional.isPresent()) {
-            DEFAULT_EXPRESSION_CALCULATOR = optional.get();
-        } else {
-            throw new RuntimeException("spi load exception: not found Implementation class of interface ExpressionCalculator");
-        }
-    }
-
-    /**
-     * Reset default expression calculator, only supports once.
-     *
-     * @param type type of calculator
-     * @return ExpressionCalculator
-     */
-    public static void resetDefaultExpressionCalculator(String type) {
-        if (reset && !StringUtils.equals(type, DEFAULT_EXPRESSION_CALCULATOR.getType())) {
-            throw new TurboException(ErrorEnum.FAILED.getErrNo(), "the default expression calculator has already been reset");
-        }
-
-        if (StringUtils.isBlank(type) || !CALCULATORS.containsKey(type)) {
-            throw new TurboException(ErrorEnum.NOT_FOUND_EXPRESSION_CALCULATOR,
-                String.format("Not found expression calculator for %s", type));
-        }
-
-        DEFAULT_EXPRESSION_CALCULATOR = CALCULATORS.get(type);
-        reset = true;
     }
 
     /**

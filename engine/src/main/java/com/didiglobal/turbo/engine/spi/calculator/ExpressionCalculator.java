@@ -1,14 +1,12 @@
 package com.didiglobal.turbo.engine.spi.calculator;
 
 import com.didiglobal.turbo.engine.exception.ProcessException;
-import com.didiglobal.turbo.engine.spi.SingletonSPI;
 
 import java.util.Map;
 
 /**
  * turbo outgoing condition calculator
  */
-@SingletonSPI
 public interface ExpressionCalculator {
 
     /**

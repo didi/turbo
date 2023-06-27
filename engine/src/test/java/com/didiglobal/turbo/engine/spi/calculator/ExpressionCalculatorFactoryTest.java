@@ -31,23 +31,10 @@ public class ExpressionCalculatorFactoryTest {
     }
 
     @Test
-    public void assertDefaultExpressionCalculatorResetToGroovy() {
-        ExpressionCalculatorFactory.resetDefaultExpressionCalculator("groovy");
+    public void assertDefaultExpressionCalculatorIsTest() {
         ExpressionCalculator defaultExpressionCalculator = ExpressionCalculatorFactory.getExpressionCalculator("");
-        Assert.assertTrue(defaultExpressionCalculator instanceof GroovyExpressionCalculator);
+        Assert.assertTrue(defaultExpressionCalculator instanceof TestExpressionCalculator);
     }
 
-    @Test
-    public void assertDefaultExpressionCalculatorResetFail() {
-        try {
-            ExpressionCalculatorFactory.resetDefaultExpressionCalculator("groovy");
-            // reset fail
-            ExpressionCalculatorFactory.resetDefaultExpressionCalculator("test");
-        } catch (Exception e) {
-            // noting
-        }
-        ExpressionCalculator defaultExpressionCalculator = ExpressionCalculatorFactory.getExpressionCalculator("");
-        Assert.assertTrue(defaultExpressionCalculator instanceof GroovyExpressionCalculator);
 
-    }
 }

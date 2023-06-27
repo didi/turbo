@@ -2,12 +2,8 @@ package com.didiglobal.turbo.engine.spi;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.SneakyThrows;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -53,22 +49,22 @@ public class TurboServiceLoader<T> {
     }
 
     private Collection<T> getServiceInterfaces() {
-        return serviceInterface.getAnnotation(SingletonSPI.class) == null ? createNewServiceInstances()
-            : getSingletonServiceInstances();
-    }
-
-    private Collection<T> getSingletonServiceInstances() {
         return services;
     }
 
-    @SneakyThrows(ReflectiveOperationException.class)
-    @SuppressWarnings("unchecked")
-    private Collection<T> createNewServiceInstances() {
-        Collection<T> result = new LinkedList<>();
-        for (Object each : services) {
-            result.add((T) each.getClass().getDeclaredConstructor().newInstance());
+    public static <T> T getDefaultService(Class<T> tClass) {
+        Collection<T> serviceInterfaces = getServiceInterfaces(tClass);
+        if (serviceInterfaces.size() == 0) {
+            throw new RuntimeException("spi load exception: not found Implementation class of interface " + tClass.getName());
+        } else if (serviceInterfaces.size() == 1) {
+            return serviceInterfaces.stream().findFirst().get();
+        } else {
+            // Find the implementation to be used
+            Optional<T> optionalIdGenerator = serviceInterfaces.stream()
+                .filter(s -> null != s.getClass().getAnnotation(SPIOrder.class))
+                .min(Comparator.comparingInt(o -> o.getClass().getAnnotation(SPIOrder.class).value()));
+            return optionalIdGenerator.orElseGet(() -> serviceInterfaces.stream().findFirst().get());
         }
-        return result;
     }
 }
 
