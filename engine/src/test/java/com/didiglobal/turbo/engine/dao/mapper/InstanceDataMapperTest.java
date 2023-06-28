@@ -7,9 +7,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
+
 public class InstanceDataMapperTest extends BaseTest {
 
-    @Autowired
+    @Resource
     private InstanceDataMapper instanceDataMapper;
 
     @Test
@@ -17,7 +19,7 @@ public class InstanceDataMapperTest extends BaseTest {
         InstanceDataPO instanceDataPO = EntityBuilder.buildDynamicInstanceDataPO();
         int result = instanceDataMapper.insert(instanceDataPO);
         LOGGER.info("insert.result={}", result);
-        Assert.assertTrue(result == 1);
+        Assert.assertEquals(1, result);
     }
 
     @Test
@@ -25,7 +27,7 @@ public class InstanceDataMapperTest extends BaseTest {
         InstanceDataPO instanceDataPO = EntityBuilder.buildDynamicInstanceDataPO();
         instanceDataMapper.insert(instanceDataPO);
         InstanceDataPO result = instanceDataMapper.select(instanceDataPO.getFlowInstanceId(), instanceDataPO.getInstanceDataId());
-        Assert.assertTrue(result.getInstanceDataId().equals(instanceDataPO.getInstanceDataId()));
+        Assert.assertEquals(result.getInstanceDataId(), instanceDataPO.getInstanceDataId());
     }
 
     @Test
@@ -35,6 +37,6 @@ public class InstanceDataMapperTest extends BaseTest {
         InstanceDataPO newInstanceDataPO = EntityBuilder.buildDynamicInstanceDataPO();
         instanceDataMapper.insert(newInstanceDataPO);
         InstanceDataPO result = instanceDataMapper.selectRecentOne(oldInstanceDataPO.getFlowInstanceId());
-        Assert.assertTrue(result.getInstanceDataId().equals(newInstanceDataPO.getInstanceDataId()));
+        Assert.assertEquals(result.getInstanceDataId(), newInstanceDataPO.getInstanceDataId());
     }
 }

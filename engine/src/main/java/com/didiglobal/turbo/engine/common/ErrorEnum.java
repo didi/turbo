@@ -2,18 +2,18 @@ package com.didiglobal.turbo.engine.common;
 
 public enum ErrorEnum {
 
-    //1000~1999 非阻断性错误码
+    // 1000~1999, non blocking error code
     SUCCESS(1000, "Success"),
     REENTRANT_WARNING(1001, "Reentrant warning"),
     COMMIT_SUSPEND(1002, "Commit task suspend"),
     ROLLBACK_SUSPEND(1003, "Rollback task suspend"),
 
-    //2000~2999 通用业务错误
+    // 2000~2999, general business error
     PARAM_INVALID(2001, "Invalid param"),
     FLOW_NESTED_LEVEL_EXCEEDED(2002, "Flow nested level exceeded"),
     FLOW_NESTED_DEAD_LOOP(2003, "Flow nested dead loop"),
 
-    //3000~3999 流程定义错误
+    // 3000~3999, process definition error
     DEFINITION_INSERT_INVALID(3001, "Definition insert failed"),
     DEFINITION_UPDATE_INVALID(3002, "Definition update failed"),
 
@@ -31,18 +31,18 @@ public enum ErrorEnum {
     EMPTY_SEQUENCE_OUTGOING(3209, "Empty sequence outgoing"),
     TOO_MANY_DEFAULT_SEQUENCE(3210, "Too many default sequence"),
     MODEL_UNKNOWN_ELEMENT_KEY(3211, "Unknown element key"),
-    ELEMENT_TOO_MUCH_INCOMING(3212, "Too many incoming"),
-    ELEMENT_TOO_MUCH_OUTGOING(3213, "Too many outgoing"),
+    ELEMENT_TOO_MANY_INCOMING(3212, "Too many incoming"),
+    ELEMENT_TOO_MANY_OUTGOING(3213, "Too many outgoing"),
     ELEMENT_LACK_INCOMING(3214, "Element lack incoming"),
     ELEMENT_LACK_OUTGOING(3215, "Element lack outgoing"),
     REQUIRED_ELEMENT_ATTRIBUTES(3216, "required element attributes"),
     MODEL_UNKNOWN_ELEMENT_VALUE(3217, "Unknown element value"),
 
-    //4000~4999 流程执行错误
+    // 4000~4999, process definition error
     COMMIT_FAILED(4001, "Commit task failed"),
     ROLLBACK_FAILED(4002, "Rollback task failed"),
-    COMMIT_REJECTRD(4003, "Commit rejected, flow is terminate"),
-    ROLLBACK_REJECTRD(4004, "Rollback rejected, non-running flowInstance to rollback"),
+    COMMIT_REJECTED(4003, "Commit rejected, flow is terminate"),
+    ROLLBACK_REJECTED(4004, "Rollback rejected, non-running flowInstance to rollback"),
     NO_NODE_TO_ROLLBACK(4005, "No node to rollback"),
     NO_USER_TASK_TO_ROLLBACK(4006, "No userTask to rollback"),
     GET_FLOW_DEPLOYMENT_FAILED(4007, "Get flowDeployment failed"),
@@ -59,10 +59,11 @@ public enum ErrorEnum {
     GROOVY_CALCULATE_FAILED(4018, "Groovy calculate failed"),
     GET_CALL_ACTIVITY_MODEL_FAILED(4019, "Get CallActivity model failed"),
     NO_RECEIVE_SUB_FLOW_INSTANCE(4020, "Do not receive subFlowInstanceId"),
+    NOT_FOUND_EXPRESSION_CALCULATOR(4021, "Not found expression calculator"),
 
 
-    //5000~5999 系统错误
-    //保留错误码
+    // 5000~5999, system error
+    // reserved error code
     SYSTEM_ERROR(5000, "System error"),
     FAILED(5001, "Failed");
 

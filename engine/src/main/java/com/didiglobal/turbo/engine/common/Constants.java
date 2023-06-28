@@ -9,6 +9,7 @@ public class Constants {
     public static final class ELEMENT_PROPERTIES {
         public static final String NAME = "name";
         public static final String CONDITION = "conditionsequenceflow";
+        public static final String CONDITION_TYPE = "conditiontypesequenceflow";
         public static final String DEFAULT_CONDITION = "defaultConditions";
         public static final String HOOK_INFO_IDS = "hookInfoIds";
         public static final String CALL_ACTIVITY_EXECUTE_TYPE = "callActivityExecuteType";

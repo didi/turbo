@@ -17,7 +17,7 @@ public class SequenceFlowValidator extends ElementValidator {
 
         List<String> incomingList = flowElement.getIncoming();
         if (incomingList.size() >1) {
-            throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MUCH_INCOMING);
+            throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MANY_INCOMING);
         }
     }
 
@@ -27,7 +27,7 @@ public class SequenceFlowValidator extends ElementValidator {
 
         List<String> outgoingList = flowElement.getOutgoing();
         if (outgoingList.size() > 1) {
-            throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MUCH_OUTGOING);
+            throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MANY_OUTGOING);
         }
     }
 }

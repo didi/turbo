@@ -16,11 +16,8 @@ import javax.annotation.Resource;
 
 public class ProcessEngineTest extends BaseTest {
 
-    @Autowired
-    ProcessEngine processEngine;
-
     @Resource
-    ProcessEngineImpl processEngineImpl;
+    private ProcessEngineImpl processEngineImpl;
 
     @Test
     public void createFlowTest() {

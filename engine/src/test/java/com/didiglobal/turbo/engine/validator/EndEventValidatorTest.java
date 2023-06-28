@@ -1,5 +1,6 @@
 package com.didiglobal.turbo.engine.validator;
 
+import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.exception.DefinitionException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.runner.BaseTest;
@@ -8,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,14 +18,14 @@ import java.util.Map;
 
 public class EndEventValidatorTest extends BaseTest {
 
-    @Resource EndEventValidator endEventValidator;
+    @Resource
+    EndEventValidator endEventValidator;
 
     /**
      * Test endEvent's checkIncoming, while incoming is normal.
-     *
      */
     @Test
-    public void checkIncomingAcess() {
+    public void checkIncomingAccess() {
         FlowElement endEvent = EntityBuilder.buildEndEvent();
         Map<String, FlowElement> map = new HashMap<>();
         map.put(endEvent.getKey(), endEvent);
@@ -31,17 +33,16 @@ public class EndEventValidatorTest extends BaseTest {
         try {
             endEventValidator.checkIncoming(map, endEvent);
             access = true;
-            Assert.assertTrue(access);
         } catch (DefinitionException e) {
             LOGGER.error("", e);
-            Assert.assertTrue(access);
         }
+        Assert.assertTrue(access);
+
     }
 
 
     /**
      * Test endEvent's checkIncoming, while incoming is null.
-     *
      */
     @Test
     public void checkWithoutIncoming() {
@@ -53,16 +54,14 @@ public class EndEventValidatorTest extends BaseTest {
         try {
             endEventValidator.checkIncoming(map, endEventInvalid);
             access = true;
-            Assert.assertFalse(access);
         } catch (DefinitionException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
+            Assert.assertEquals(ErrorEnum.ELEMENT_LACK_INCOMING.getErrNo(), e.getErrNo());
         }
+        Assert.assertFalse(access);
     }
 
     /**
      * Test endEvent's checkOutgoing, while outgoing is normal.
-     *
      */
     @Test
     public void checkOutgoingAccess() {
@@ -74,7 +73,6 @@ public class EndEventValidatorTest extends BaseTest {
 
     /**
      * Test endEvent's checkOutgoing, while outgoing is not null.
-     *
      */
     @Test
     public void checkOutgoingIsNotNull() {

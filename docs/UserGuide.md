@@ -20,7 +20,7 @@ Turbo是Didi公司开发的轻量级的Java实现的流程引擎
 
 流程定义的内容，可以完整描述一个流程的定义，由FlowElement列表的json组成。下面是一个Demo的例子：
 
-```
+```json
 {
     "flowElementList": [
         {
@@ -101,7 +101,7 @@ Turbo是Didi公司开发的轻量级的Java实现的流程引擎
 
 **构造**
 
-```
+```java
 StartEvent startEvent = new StartEvent();
 // 设置唯一键
 startEvent.setKey("StartEvent_1r83q1z");
@@ -128,7 +128,7 @@ startEvent.setOutgoing(outgoings);
 
 **构造**
 
-```
+```java
 EndEvent endEvent = new EndEvent();
 // 设置唯一键
 endEvent.setKey("EndEvent_0z30kyv");
@@ -163,7 +163,7 @@ endEvent.setIncoming(incomings);
 
 **构造**
 
-```
+```java
 ExclusiveGateway exclusiveGateway = new ExclusiveGateway();
 // 设置唯一键
 exclusiveGateway.setKey("ExclusiveGateway_0yq2l0s");
@@ -224,7 +224,7 @@ exclusiveGateway.setProperties(properties);
 
 **构造**
 
-```
+```java
 UserTask userTask = new UserTask();
 // 设置唯一键
 userTask.setKey("UserTask_1eglyg7");
@@ -267,7 +267,7 @@ userTask.setOutgoing(utOutgoings);
 
 **构造**
 
-```
+```java
 CallActivity callActivity = new CallActivity();
 // 设置唯一键
 callActivity.setKey("CallActivity_0ofi5hg");
@@ -327,7 +327,7 @@ callActivity.setProperties(caProperties);
 
 **构造**
 
-```
+```java
 SequenceFlow sequenceFlow1 = new SequenceFlow();
 // 设置唯一键
 sequenceFlow1.setKey("SequenceFlow_1lc9xoo");
@@ -369,3 +369,107 @@ sequenceFlow1.setProperties(properties);
 **约束规则**
 
 顺序流只能有一个入口和一个出口。
+
+
+# 三、SPI扩展使用手册
+
+## 1. Turbo SPI 概述
+
+### 扩展性设计理念
+可扩展性是任何一个系统所追求的，对于 Turbo 来说同样使用。
+
+#### 什么是可扩展性
+可扩展性是一个重要的设计理念，旨在确保在现有的架构或设计基础之上，当未来因某些方面发生变化时，我们能够以更小的改动来实现系统的增强或变更，同时尽量避免对现有代码的修改。
+
+#### 可扩展性的优点
+可扩展性的优点主要表现在模块化设计以及模块之间的松耦合关系，它符合开闭原则，对扩展开放，对修改关闭。即可以在不修改现有代码的情况下，通过添加新的实现来扩展系统功能。
+
+#### 扩展实现方式
+一般来说，系统会采用 Factory、IoC、OSGI 等方式管理扩展(插件)生命周期。考虑到后期 Turbo 会剥离Spring，不想强依赖 Spring 等 IoC 容器。所以选择最简单的 Factory 方式管理扩展(插件)。在 Turbo 中，所有内部实现和第三方实现都是平等的。
+
+#### Turbo中的可扩展性
+- 平等对待第三方实现，在 Turbo 中，所有内部实现和第三方实现都是平等的，用户可以基于自身业务需求，替换 Turbo 中提供的原生实现。
+- 每个扩展点都只都相对独立，可最大化复用。用户如有扩展需求，只需要对关注的扩展点进行扩展就好，降低了扩展难度。
+
+### Turbo 扩展特性
+在 Turbo 中，我们使用的是JDK标准的SPI扩展点发现机制，降低用户扩展难度；目前我们提供了针对 ID生成器 和 表达式计算器 的扩展点，后续将增加更多的可扩展点，以满足广大用户需求。
+
+#### Turbo 扩展加载逻辑
+Turbo的加载逻辑相对比较简单，采用了懒加载的形式，在使用时会通过ServiceLoader加载并实例化对应实现，并进行缓存。加载过程可能会损耗一些性能，因此确认不使用的实现可以不进行配置。
+
+#### Turbo 中 SPI默认实现说明
+Turbo 支持多种实现并存，但在使用时可能只使用其中一个，因此使用哪一个需要确定。一般情况下，是根据SPI的配置加载顺序来决定的，但某些情况下可能存在顺序的不确定性。在 Turbo 中我们提供了 @SPIOrder 注解，使用其value最小的作为默认实现。只有当存在多个对应注解且value值相同时，会按照加载顺序，使用列表中的第一个。
+
+
+## 2. Turbo扩展使用说明
+
+### ID生成器扩展说明
+ID生成器基于 `IdGenerator` 接口实现，接口中仅存在一个方法，即 `genNextId()`；Turbo提供了默认实现`StrongUuidGenerator`，如果使用方想用其他形式ID生成方式，只需要在自己的项目目录下，实现 `IdGenerator` 接口，并按照SPI配置方式进行配置即可；另外，如果存在多个实现，仅会有一个实现是有效的(参考: Turbo 中 SPI默认实现说明)。
+
+代码示例：
+```java
+package com.didiglobal.turbo.demo.spi;
+
+import com.didiglobal.turbo.engine.spi.generator.IdGenerator;
+import org.apache.commons.lang3.RandomStringUtils;
+
+public class TestIdGenerator implements IdGenerator {
+    @Override
+    public String getNextId() {
+        // Expand your ID generator
+        return RandomStringUtils.randomAlphabetic(20);
+    }
+}
+```
+
+配置示例：
+```text
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── didiglobal
+│   │   │           └── turbo
+│   │   │               └── demo
+│   │   │                   ├── spi
+│   │   │                   │   └── TestIdGenerator.java
+│   │   └── resources
+│   │       ├── META-INF
+│   │       │   └── services
+│   │       │       └── com.didiglobal.turbo.engine.spi.generator.IdGenerator
+
+
+# 文件内容：
+com.didiglobal.turbo.demo.spi.TestIdGenerator
+```
+
+### 表达式计算器扩展说明
+在流程执行过程中，遇到存在多个出口时，会根据出口顺序流上的表达式来进行判断，最终走向哪一个分支。
+Turbo 中默认支持了 `Groovy` 语言的表达式计算器，同时支持用户自行扩展。进行扩展时， 只需要实现 `ExpressionCalculator` 接口，并根据上下文数据返回对应的结果。如果需要在流程图中支持多种表达式计算器，除了需要给出对应的实现外，仍需要在对应的顺序流的属性信息中添加 `conditiontypesequenceflow` 属性，来确定使用哪种类型的表达式计算器。如果不添加该属性，则使用默认的实现。
+
+model 示例:
+```json
+{
+  "flowElementList":[
+    ...
+    
+    {
+      "incoming":[
+        "UserTask_0cx5f72"
+      ],
+      "outgoing":[
+        "UserTask_15qhuilv"
+      ],
+      "type":1,
+      "properties":{
+        "conditionsequenceflow":"${type==1}",
+        "conditiontypesequenceflow":"groovy"
+      },
+      "key":"SequenceFlow_0ebra7c"
+    }
+    
+    ...
+  ]
+}
+```
+说明: 如果仅使用单一的表达式计算器(配置默认实现),则 `conditiontypesequenceflow` 可以省略。

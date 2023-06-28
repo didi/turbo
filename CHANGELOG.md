@@ -7,7 +7,6 @@ All notable changes to this project will be documented in this file.
 ### Bugfix
 - Fix v1.1.0 release issues
 
-
 ## [1.1.0] - 2023-03-15
 
 Support CallActivity configuration and execution.
@@ -22,15 +21,11 @@ Add CallActivity Node
 
 1. Optimize Maven dependency management
 
-    -Remove httpclient dependency
-    
-    -Remove individual jsr250 API dependencies
-
-    -Remove individual junit dependencies
-
-    -Commons collections 3.2.2-->commons collections 4
-    
-    -Commons lang3 3.4-->3.12.0
+   - Remove httpclient dependency
+   - Remove individual jsr250 API dependencies
+   - Remove individual junit dependencies
+   - Commons collections 3.2.2-->commons collections 4
+   - Commons lang3 3.4-->3.12.0
 
 2. Optimize hook function, change HTTP mode to internal call mode, reduce dependence on HTTP packages, and improve performance
 

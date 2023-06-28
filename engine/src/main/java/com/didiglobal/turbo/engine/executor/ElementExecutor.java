@@ -12,7 +12,7 @@ import com.didiglobal.turbo.engine.exception.ReentrantException;
 import com.didiglobal.turbo.engine.exception.SuspendException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
-import com.didiglobal.turbo.engine.util.ExpressionCalculator;
+import com.didiglobal.turbo.engine.spi.calculator.ExpressionCalculatorFactory;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -20,16 +20,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
 public abstract class ElementExecutor extends RuntimeExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElementExecutor.class);
-
-    @Resource
-    protected ExpressionCalculator expressionCalculator;
 
     @Override
     public void execute(RuntimeContext runtimeContext) throws ProcessException {
@@ -300,7 +296,8 @@ public abstract class ElementExecutor extends RuntimeExecutor {
 
             //case1 condition is true, hit the outgoing
             String condition = FlowModelUtil.getConditionFromSequenceFlow(outgoingSequenceFlow);
-            if (StringUtils.isNotBlank(condition) && processCondition(condition, instanceDataMap)) {
+            String type = FlowModelUtil.getCalculatorTypeFromSequenceFlow(outgoingSequenceFlow);
+            if (StringUtils.isNotBlank(condition) && processCondition(type, condition, instanceDataMap)) {
                 return outgoingSequenceFlow;
             }
 
@@ -318,8 +315,8 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         throw new ProcessException(ErrorEnum.GET_OUTGOING_FAILED);
     }
 
-    protected boolean processCondition(String expression, Map<String, InstanceData> instanceDataMap) throws ProcessException {
+    protected boolean processCondition(String type, String expression,  Map<String, InstanceData> instanceDataMap) throws ProcessException {
         Map<String, Object> dataMap = InstanceDataUtil.parseInstanceDataMap(instanceDataMap);
-        return expressionCalculator.calculate(expression, dataMap);
+        return ExpressionCalculatorFactory.getExpressionCalculator(type).calculate( expression, dataMap);
     }
 }

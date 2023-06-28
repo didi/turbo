@@ -107,6 +107,12 @@ public class FlowModelUtil {
         return (String) properties.get(Constants.ELEMENT_PROPERTIES.CONDITION);
     }
 
+    public static String getCalculatorTypeFromSequenceFlow(FlowElement flowElement) {
+        Map<String, Object> properties = flowElement.getProperties();
+        Object type = properties.get(Constants.ELEMENT_PROPERTIES.CONDITION_TYPE);
+        return type == null ? StringUtils.EMPTY : (String) type;
+    }
+
     public static boolean isDefaultCondition(FlowElement flowElement) {
         Map<String, Object> properties = flowElement.getProperties();
         String isDefaultStr = (String) properties.get(Constants.ELEMENT_PROPERTIES.DEFAULT_CONDITION);

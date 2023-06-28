@@ -2,6 +2,7 @@ package com.didiglobal.turbo.engine.util;
 
 import com.didiglobal.turbo.engine.runner.BaseTest;
 import com.google.common.collect.Maps;
+import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +28,12 @@ public class GroovyUtilTest {
     @Test
     public void fun1(){
         try {
-            String expression = "";
+            String expression = "str.length() > 2";
             Map<String, Object> dataMap = Maps.newHashMap();
+            dataMap.put("str","1234");
             Object result = GroovyUtil.execute(expression, dataMap);
+            Assert.assertNotNull(result);
+            Assert.assertTrue((Boolean) result);
             LOGGER.warn("result:{}:{}", result.getClass().getSimpleName(), result);
         } catch (Exception e) {
             LOGGER.warn("catch exception", e);

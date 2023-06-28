@@ -7,9 +7,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.annotation.Resource;
+
 public class FlowDefinitionDAOTest extends BaseTest {
 
-    @Autowired
+    @Resource
     private FlowDefinitionDAO flowDefinitionDAO;
 
     @Test
@@ -18,7 +20,7 @@ public class FlowDefinitionDAOTest extends BaseTest {
         flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
         int result = flowDefinitionDAO.insert(flowDefinitionPO);
         LOGGER.info("insertTest.result={}", result);
-        Assert.assertTrue(result == 1);
+        Assert.assertEquals(1, result);
     }
 
     @Test
@@ -26,10 +28,10 @@ public class FlowDefinitionDAOTest extends BaseTest {
         FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
         flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
         int insertResult = flowDefinitionDAO.insert(flowDefinitionPO);
-        Assert.assertTrue(insertResult == 1);
+        Assert.assertEquals(1, insertResult);
         int updateResult = flowDefinitionDAO.updateByModuleId(flowDefinitionPO);
         LOGGER.info("updateByModuleIdTest.||result={}", updateResult);
-        Assert.assertTrue(updateResult == 1);
+        Assert.assertEquals(1, updateResult);
     }
 
     @Test
@@ -37,10 +39,10 @@ public class FlowDefinitionDAOTest extends BaseTest {
         FlowDefinitionPO flowDefinitionPO = EntityBuilder.buildFlowDefinitionPO();
         flowDefinitionPO.setFlowModuleId("testFlowModuleId_" + System.currentTimeMillis());
         int result = flowDefinitionDAO.insert(flowDefinitionPO);
-        Assert.assertTrue(result == 1);
+        Assert.assertEquals(1, result);
         String flowModuleId = flowDefinitionPO.getFlowModuleId();
         FlowDefinitionPO queryFlowDefinitionPO = flowDefinitionDAO.selectByModuleId(flowDefinitionPO.getFlowModuleId());
         LOGGER.info("selectByModuleIdTest.||flowDefinitionPO={}", flowDefinitionPO);
-        Assert.assertTrue(flowModuleId.equals(queryFlowDefinitionPO.getFlowModuleId()));
+        Assert.assertEquals(flowModuleId, queryFlowDefinitionPO.getFlowModuleId());
     }
 }

@@ -18,14 +18,14 @@ public class NodeInstanceDAOTest extends BaseTest {
 
     @Test
     public void insert(){
-        NodeInstancePO nodeInstancePO = EntityBuilder.buildNodeInstancePO();
+        NodeInstancePO nodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
         int result = nodeInstanceDAO.insert(nodeInstancePO);
-        Assert.assertTrue(result == 1);
+        Assert.assertEquals(1, result);
     }
 
     @Test
     public void insertOrUpdateList(){
-        NodeInstancePO nodeInstancePO = EntityBuilder.buildNodeInstancePO();
+        NodeInstancePO nodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
         nodeInstanceDAO.insert(nodeInstancePO);
         nodeInstancePO = nodeInstanceDAO.selectByNodeInstanceId(nodeInstancePO.getFlowInstanceId(), nodeInstancePO.getNodeInstanceId());
         List<NodeInstancePO> nodeInstancePOList = new ArrayList<>();
@@ -38,11 +38,11 @@ public class NodeInstanceDAOTest extends BaseTest {
 
     @Test
     public void updateStatus() {
-        NodeInstancePO nodeInstancePO = EntityBuilder.buildNodeInstancePO();
+        NodeInstancePO nodeInstancePO = EntityBuilder.buildDynamicNodeInstancePO();
         nodeInstanceDAO.insert(nodeInstancePO);
 
         nodeInstanceDAO.updateStatus(nodeInstancePO, NodeInstanceStatus.COMPLETED);
         NodeInstancePO result = nodeInstanceDAO.selectByNodeInstanceId(nodeInstancePO.getFlowInstanceId(), nodeInstancePO.getNodeInstanceId());
-        Assert.assertTrue(result.getStatus() == NodeInstanceStatus.COMPLETED);
+        Assert.assertEquals(NodeInstanceStatus.COMPLETED, (int) result.getStatus());
     }
 }

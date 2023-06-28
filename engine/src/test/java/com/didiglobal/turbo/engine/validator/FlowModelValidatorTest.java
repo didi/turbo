@@ -1,5 +1,6 @@
 package com.didiglobal.turbo.engine.validator;
 
+import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.common.FlowElementType;
 import com.didiglobal.turbo.engine.exception.DefinitionException;
 import com.didiglobal.turbo.engine.exception.ProcessException;
@@ -13,17 +14,17 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.annotation.Resource;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class FlowModelValidatorTest extends BaseTest {
 
     @Resource
-    FlowModelValidator flowModelValidator;
+    private FlowModelValidator flowModelValidator;
 
     /**
      * Test flowModel's validate, while normal.
-     *
      */
     @Test
     public void validateAccess() {
@@ -34,22 +35,15 @@ public class FlowModelValidatorTest extends BaseTest {
         try {
             flowModelValidator.validate(flowModel);
             access = true;
-            Assert.assertTrue(access);
-        } catch (ProcessException e) {
+        } catch (ProcessException | DefinitionException e) {
             LOGGER.error("", e);
-            access = true;
-            Assert.assertTrue(access);
-        } catch (DefinitionException e) {
-            LOGGER.error("", e);
-            access = true;
-            Assert.assertTrue(access);
         }
+        Assert.assertTrue(access);
 
     }
 
     /**
      * Test flowModel's validate, while element's key is not unique.
-     *
      */
     @Test
     public void validateElementKeyNotUnique() {
@@ -70,19 +64,14 @@ public class FlowModelValidatorTest extends BaseTest {
         try {
             flowModelValidator.validate(flowModel);
             access = true;
-            Assert.assertFalse(access);
-        } catch (ProcessException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
-        } catch (DefinitionException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
+        } catch (ProcessException | DefinitionException e) {
+            Assert.assertEquals(ErrorEnum.ELEMENT_KEY_NOT_UNIQUE.getErrNo(), e.getErrNo());
         }
+        Assert.assertFalse(access);
     }
 
     /**
      * Test flowModel's validate, while startEvent's num is not equal 1.
-     *
      */
     @Test
     public void validateStartEventNotOne() {
@@ -101,39 +90,30 @@ public class FlowModelValidatorTest extends BaseTest {
         try {
             flowModelValidator.validate(flowModel);
             access = true;
-            Assert.assertFalse(access);
-        } catch (ProcessException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
-        } catch (DefinitionException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
+        } catch (ProcessException | DefinitionException e) {
+            Assert.assertEquals(ErrorEnum.START_NODE_INVALID.getErrNo(), e.getErrNo());
         }
+        Assert.assertFalse(access);
     }
 
     /**
      * Test flowModel's validate, while endEvent is null.
-     *
      */
     @Test
     public void validateWithoutEndEvent() {
         List<FlowElement> flowElementsList = EntityBuilder.buildFlowElementList();
         int flowElementsListSize = flowElementsList.size();
-        flowElementsList.remove(flowElementsListSize-1);
-        flowElementsList.remove(flowElementsListSize-2);
+        flowElementsList.remove(flowElementsListSize - 1);
+        flowElementsList.remove(flowElementsListSize - 2);
         FlowModel flowModel = new FlowModel();
         flowModel.setFlowElementList(flowElementsList);
         boolean access = false;
         try {
             flowModelValidator.validate(flowModel);
             access = true;
-            Assert.assertFalse(access);
-        } catch (ProcessException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
-        } catch (DefinitionException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
+        } catch (ProcessException | DefinitionException e) {
+            Assert.assertEquals(ErrorEnum.END_NODE_INVALID.getErrNo(), e.getErrNo());
         }
+        Assert.assertFalse(access);
     }
 }

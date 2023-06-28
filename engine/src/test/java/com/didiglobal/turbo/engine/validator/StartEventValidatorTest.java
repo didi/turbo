@@ -1,5 +1,6 @@
 package com.didiglobal.turbo.engine.validator;
 
+import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.exception.DefinitionException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.runner.BaseTest;
@@ -16,11 +17,11 @@ import java.util.Map;
 
 public class StartEventValidatorTest extends BaseTest {
 
-    @Resource StartEventValidator startEventValidator;
+    @Resource
+    StartEventValidator startEventValidator;
 
     /**
-     * Test startEvent's incoming, whlile normal.
-     *
+     * Test startEvent's incoming, while normal.
      */
     @Test
     public void checkIncomingAccess() {
@@ -29,24 +30,24 @@ public class StartEventValidatorTest extends BaseTest {
         map.put(startEvent.getKey(), startEvent);
         startEventValidator.checkIncoming(map, startEvent);
     }
+
     /**
-     * Test startEvent's incoming, whlile incoming is too much.
-     *
+     * Test startEvent's incoming, when there are too many incomings.
      */
     @Test
     public void checkTooManyIncoming() {
-        FlowElement startEventVaild = EntityBuilder.buildStartEvent();
+        FlowElement startEvent = EntityBuilder.buildStartEvent();
         List<String> incomings = new ArrayList<>();
         incomings.add("sequence");
-        startEventVaild.setIncoming(incomings);
+        startEvent.setIncoming(incomings);
         Map<String, FlowElement> map = new HashMap<>();
-        map.put("startEvent", startEventVaild);
-        startEventValidator.checkIncoming(map, startEventVaild);
+        map.put("startEvent", startEvent);
+        // A warning log will be printed when the startEvent's incoming exists.
+        startEventValidator.checkIncoming(map, startEvent);
     }
 
     /**
-     * Test startEvent's incoming, whlile normal.
-     *
+     * Test startEvent's incoming, while normal.
      */
     @Test
     public void checkOutgoingAccess() {
@@ -57,32 +58,29 @@ public class StartEventValidatorTest extends BaseTest {
         try {
             startEventValidator.checkOutgoing(map, startEvent);
             access = true;
-            Assert.assertTrue(access);
         } catch (DefinitionException e) {
             LOGGER.error("", e);
-            Assert.assertTrue(access);
         }
+        Assert.assertTrue(access);
     }
+
     /**
-     * Test startEvent's incoming, whlile incoming is too much.
-     *
+     * Test startEvent's outgoing, when the outgoing don't exist.
      */
     @Test
-    public void checkTooMuchOutgoing() {
-        FlowElement startEventVaild = EntityBuilder.buildStartEvent();
+    public void checkEmptyOutgoing() {
+        FlowElement startEvent = EntityBuilder.buildStartEvent();
         List<String> outgoings = new ArrayList<>();
-        startEventVaild.setOutgoing(outgoings);
+        startEvent.setOutgoing(outgoings);
         Map<String, FlowElement> map = new HashMap<>();
-        map.put("startEvent", startEventVaild);
+        map.put("startEvent", startEvent);
         boolean access = false;
         try {
-            startEventValidator.checkOutgoing(map, startEventVaild);
+            startEventValidator.checkOutgoing(map, startEvent);
             access = true;
-            Assert.assertFalse(access);
         } catch (DefinitionException e) {
-            LOGGER.error("", e);
-            Assert.assertFalse(access);
+            Assert.assertEquals(ErrorEnum.ELEMENT_LACK_OUTGOING.getErrNo(), e.getErrNo());
         }
-
+        Assert.assertFalse(access);
     }
 }

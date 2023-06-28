@@ -1,16 +1,9 @@
-package com.didiglobal.turbo.engine.spi;
+package com.didiglobal.turbo.engine.hook;
 
 import com.didiglobal.turbo.engine.model.InstanceData;
 
 import java.util.List;
 
-/**
- * <p> HookService </p>
- *
- * @author lijinghao
- * @version v1.0
- * @date 2023/2/16 6:59 PM
- */
 public interface HookService {
 
     /**

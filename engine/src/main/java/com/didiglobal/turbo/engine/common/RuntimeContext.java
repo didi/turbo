@@ -26,9 +26,12 @@ public class RuntimeContext {
     //2.1 flowInstance info
     private String flowInstanceId;
     private int flowInstanceStatus;
-    private NodeInstanceBO suspendNodeInstance; //point to the userTaskInstance to commit/rollback
-    private List<NodeInstanceBO> nodeInstanceList;  //processed nodeInstance list
-    private Stack<String> suspendNodeInstanceStack; // suspendNodeInstance Stack: commitNode > ... > currentNode
+    //point to the userTaskInstance to commit/rollback
+    private NodeInstanceBO suspendNodeInstance;
+    //processed nodeInstance list
+    private List<NodeInstanceBO> nodeInstanceList;
+    // suspendNodeInstance Stack: commitNode > ... > currentNode
+    private Stack<String> suspendNodeInstanceStack;
 
     //2.2 current info
     private FlowElement currentNodeModel;
