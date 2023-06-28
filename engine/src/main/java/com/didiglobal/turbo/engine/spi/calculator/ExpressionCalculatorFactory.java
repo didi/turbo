@@ -5,7 +5,9 @@ import com.didiglobal.turbo.engine.exception.TurboException;
 import com.didiglobal.turbo.engine.spi.TurboServiceLoader;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * expression calculator factory
@@ -15,16 +17,30 @@ public class ExpressionCalculatorFactory {
     /**
      * default expression calculator
      */
-    private static final ExpressionCalculator DEFAULT_EXPRESSION_CALCULATOR = TurboServiceLoader.getDefaultService(ExpressionCalculator.class);
+    private volatile static ExpressionCalculator DEFAULT_EXPRESSION_CALCULATOR;
 
     /**
      * all calculators
      */
     private static final Map<String, ExpressionCalculator> CALCULATORS = new LinkedHashMap<>();
 
-    static {
+    public static void load() {
         Collection<ExpressionCalculator> serviceInterfaces = TurboServiceLoader.getServiceInterfaces(ExpressionCalculator.class);
         serviceInterfaces.forEach(service -> CALCULATORS.put(service.getType(), service));
+    }
+
+    public static void loadDefault() {
+        if (DEFAULT_EXPRESSION_CALCULATOR == null) {
+            synchronized (ExpressionCalculatorFactory.class) {
+                if (DEFAULT_EXPRESSION_CALCULATOR == null) {
+                    DEFAULT_EXPRESSION_CALCULATOR = TurboServiceLoader.getDefaultService(ExpressionCalculator.class);
+                }
+            }
+        }
+    }
+
+    public static boolean contains(String type) {
+        return CALCULATORS.containsKey(type);
     }
 
     /**
@@ -37,16 +53,19 @@ public class ExpressionCalculatorFactory {
      */
     public static ExpressionCalculator getExpressionCalculator(String type) {
         if (StringUtils.isBlank(type)) {
+            loadDefault();
             return DEFAULT_EXPRESSION_CALCULATOR;
         }
-        if (!CALCULATORS.containsKey(type)) {
+
+        if (CALCULATORS.isEmpty()) {
+            load();
+        }
+
+        if (!contains(type)) {
             throw new TurboException(ErrorEnum.NOT_FOUND_EXPRESSION_CALCULATOR,
                 String.format("Not found expression calculator for %s", type));
         }
         return CALCULATORS.get(type);
     }
 
-    public static boolean contains(String type) {
-        return CALCULATORS.containsKey(type);
-    }
 }

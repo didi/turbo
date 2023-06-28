@@ -10,9 +10,9 @@ import java.util.Map;
 public interface ExpressionCalculator {
 
     /**
-     * 获取表达式计算器类型
+     * Get expression calculator Type
      *
-     * @return
+     * @return expression calculator Type
      */
     String getType();
 

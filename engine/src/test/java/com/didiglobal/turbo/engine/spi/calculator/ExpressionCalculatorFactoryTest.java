@@ -12,7 +12,6 @@ public class ExpressionCalculatorFactoryTest {
         Assert.assertTrue(ExpressionCalculatorFactory.contains("test"));
     }
 
-
     @Test
     public void assertNotExists() {
         Assert.assertFalse(ExpressionCalculatorFactory.contains("Tn3UI7"));
@@ -35,6 +34,4 @@ public class ExpressionCalculatorFactoryTest {
         ExpressionCalculator defaultExpressionCalculator = ExpressionCalculatorFactory.getExpressionCalculator("");
         Assert.assertTrue(defaultExpressionCalculator instanceof TestExpressionCalculator);
     }
-
-
 }
