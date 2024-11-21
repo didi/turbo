@@ -6,11 +6,14 @@ import com.didiglobal.turbo.engine.model.InstanceData;
 import com.didiglobal.turbo.engine.result.RuntimeResult;
 import com.google.common.base.MoreObjects;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-public class RuntimeContext {
+public class RuntimeContext implements Serializable {
 
     //0.parent info
     private RuntimeContext parentRuntimeContext;
@@ -27,7 +30,7 @@ public class RuntimeContext {
     private String flowInstanceId;
     private int flowInstanceStatus;
     private NodeInstanceBO suspendNodeInstance; //point to the userTaskInstance to commit/rollback
-    private List<NodeInstanceBO> nodeInstanceList;  //processed nodeInstance list
+    private List<NodeInstanceBO> nodeInstanceList = new ArrayList<>();  //processed nodeInstance list
     private Stack<String> suspendNodeInstanceStack; // suspendNodeInstance Stack: commitNode > ... > currentNode
 
     //2.2 current info
@@ -44,6 +47,10 @@ public class RuntimeContext {
     //2.5 transparent transmission field
     private String callActivityFlowModuleId; // from top to bottom transmit callActivityFlowModuleId
     private List<RuntimeResult> callActivityRuntimeResultList; // from bottom to top transmit callActivityRuntimeResultList
+
+    // 3.other
+    private Map<String, Object> extendProperties = new HashMap<>(16);
+    private List<ExtendRuntimeContext> extendRuntimeContextList = new ArrayList<>();
 
     public RuntimeContext getParentRuntimeContext() {
         return parentRuntimeContext;
@@ -187,6 +194,22 @@ public class RuntimeContext {
 
     public void setCallActivityRuntimeResultList(List<RuntimeResult> callActivityRuntimeResultList) {
         this.callActivityRuntimeResultList = callActivityRuntimeResultList;
+    }
+
+    public Map<String, Object> getExtendProperties() {
+        return extendProperties;
+    }
+
+    public void setExtendProperties(Map<String, Object> extendProperties) {
+        this.extendProperties = extendProperties;
+    }
+
+    public List<ExtendRuntimeContext> getExtendRuntimeContextList() {
+        return extendRuntimeContextList;
+    }
+
+    public void setExtendRuntimeContextList(List<ExtendRuntimeContext> extendRuntimeContextList) {
+        this.extendRuntimeContextList = extendRuntimeContextList;
     }
 
     @Override

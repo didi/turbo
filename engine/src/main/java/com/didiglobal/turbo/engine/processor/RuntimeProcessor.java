@@ -8,6 +8,7 @@ import com.didiglobal.turbo.engine.bo.FlowInstanceBO;
 import com.didiglobal.turbo.engine.bo.NodeInstance;
 import com.didiglobal.turbo.engine.bo.NodeInstanceBO;
 import com.didiglobal.turbo.engine.common.ErrorEnum;
+import com.didiglobal.turbo.engine.common.ExtendRuntimeContext;
 import com.didiglobal.turbo.engine.common.FlowElementType;
 import com.didiglobal.turbo.engine.common.FlowInstanceMappingType;
 import com.didiglobal.turbo.engine.common.FlowInstanceStatus;
@@ -221,16 +222,25 @@ public class RuntimeProcessor {
         //5. set callActivity msg
         runtimeContext.setCallActivityFlowModuleId(commitTaskParam.getCallActivityFlowModuleId());
 
+        //6. set extendProperties
+        runtimeContext.setExtendProperties(commitTaskParam.getExtendProperties());
+
         return runtimeContext;
     }
 
     private CommitTaskResult buildCommitTaskResult(RuntimeContext runtimeContext) {
         CommitTaskResult commitTaskResult = new CommitTaskResult();
+        if (null != runtimeContext) {
+            BeanUtils.copyProperties(runtimeContext, commitTaskResult);
+        }
         return (CommitTaskResult) fillRuntimeResult(commitTaskResult, runtimeContext);
     }
 
     private CommitTaskResult buildCommitTaskResult(RuntimeContext runtimeContext, TurboException e) {
         CommitTaskResult commitTaskResult = new CommitTaskResult();
+        if (null != runtimeContext) {
+            BeanUtils.copyProperties(runtimeContext, commitTaskResult);
+        }
         return (CommitTaskResult) fillRuntimeResult(commitTaskResult, runtimeContext, e);
     }
 
@@ -305,16 +315,24 @@ public class RuntimeProcessor {
         suspendNodeInstance.setNodeInstanceId(realNodeInstanceId);
         runtimeContext.setSuspendNodeInstance(suspendNodeInstance);
 
+        //4. set extendProperties
+        runtimeContext.setExtendProperties(rollbackTaskParam.getExtendProperties());
         return runtimeContext;
     }
 
     private RollbackTaskResult buildRollbackTaskResult(RuntimeContext runtimeContext) {
         RollbackTaskResult rollbackTaskResult = new RollbackTaskResult();
+        if (null != runtimeContext) {
+            BeanUtils.copyProperties(runtimeContext, rollbackTaskResult);
+        }
         return (RollbackTaskResult) fillRuntimeResult(rollbackTaskResult, runtimeContext);
     }
 
     private RollbackTaskResult buildRollbackTaskResult(RuntimeContext runtimeContext, TurboException e) {
         RollbackTaskResult rollbackTaskResult = new RollbackTaskResult();
+        if (null != runtimeContext) {
+            BeanUtils.copyProperties(runtimeContext, rollbackTaskResult);
+        }
         return (RollbackTaskResult) fillRuntimeResult(rollbackTaskResult, runtimeContext, e);
     }
 
@@ -704,8 +722,25 @@ public class RuntimeProcessor {
         if (runtimeContext != null) {
             runtimeResult.setFlowInstanceId(runtimeContext.getFlowInstanceId());
             runtimeResult.setStatus(runtimeContext.getFlowInstanceStatus());
-            runtimeResult.setActiveTaskInstance(buildActiveTaskInstance(runtimeContext.getSuspendNodeInstance(), runtimeContext));
-            runtimeResult.setVariables(InstanceDataUtil.getInstanceDataList(runtimeContext.getInstanceDataMap()));
+            List<RuntimeResult.NodeExecuteResult> nodeExecuteResults = Lists.newArrayList();
+
+            if (null != runtimeContext.getExtendRuntimeContextList() && !runtimeContext.getExtendRuntimeContextList().isEmpty()) {
+                for (ExtendRuntimeContext extendRuntimeContext : runtimeContext.getExtendRuntimeContextList()) {
+                    RuntimeResult.NodeExecuteResult result = new RuntimeResult.NodeExecuteResult();
+                    result.setActiveTaskInstance(buildActiveTaskInstance(extendRuntimeContext.getBranchSuspendNodeInstance(), runtimeContext));
+                    result.setVariables(InstanceDataUtil.getInstanceDataList(extendRuntimeContext.getBranchExecuteDataMap()));
+                    result.setErrCode(extendRuntimeContext.getException().getErrNo());
+                    result.setErrMsg(extendRuntimeContext.getException().getErrMsg());
+                    nodeExecuteResults.add(result);
+                }
+            } else {
+                RuntimeResult.NodeExecuteResult result = new RuntimeResult.NodeExecuteResult();
+                result.setActiveTaskInstance(buildActiveTaskInstance(runtimeContext.getSuspendNodeInstance(), runtimeContext));
+                result.setVariables(InstanceDataUtil.getInstanceDataList(runtimeContext.getInstanceDataMap()));
+                nodeExecuteResults.add(result);
+            }
+
+            runtimeResult.setNodeExecuteResults(nodeExecuteResults);
         }
         return runtimeResult;
     }
@@ -719,7 +754,6 @@ public class RuntimeProcessor {
         activeNodeInstance.setProperties(flowElement.getProperties());
         activeNodeInstance.setFlowElementType(flowElement.getType());
         activeNodeInstance.setSubNodeResultList(runtimeContext.getCallActivityRuntimeResultList());
-
 
         return activeNodeInstance;
     }

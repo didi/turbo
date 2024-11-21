@@ -1,7 +1,9 @@
 package com.didiglobal.turbo.engine.dao;
 
+import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.dao.mapper.InstanceDataMapper;
 import com.didiglobal.turbo.engine.entity.InstanceDataPO;
+import com.didiglobal.turbo.engine.exception.TurboException;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -35,5 +37,31 @@ public class InstanceDataDAO extends BaseDAO<InstanceDataMapper, InstanceDataPO>
             LOGGER.error("insert exception.||instanceDataPO={}", instanceDataPO, e);
         }
         return -1;
+    }
+
+    /**
+     * update instanceData
+     * @param instanceDataPO
+     * @return
+     */
+    public int updateData(InstanceDataPO instanceDataPO) {
+        try {
+            return baseMapper.updateData(instanceDataPO);
+        } catch (Exception e) {
+            LOGGER.error("update instance data exception.||instanceDataPO={}", instanceDataPO, e);
+            throw new TurboException(ErrorEnum.UPDATE_INSTANCE_DATA_FAILED);
+        }
+    }
+
+    /**
+     * insert or update instanceData
+     * @param mergePo
+     * @return
+     */
+    public int insertOrUpdate(InstanceDataPO mergePo) {
+        if (mergePo.getId() != null) {
+            return updateData(mergePo);
+        }
+        return insert(mergePo);
     }
 }

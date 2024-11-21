@@ -4,7 +4,7 @@ import com.didiglobal.turbo.engine.common.ErrorEnum;
 
 import java.text.MessageFormat;
 
-public class TurboException extends Exception {
+public class TurboException extends RuntimeException {
 
     private static final String ERROR_MSG_FORMAT = "{0}({1})";
 

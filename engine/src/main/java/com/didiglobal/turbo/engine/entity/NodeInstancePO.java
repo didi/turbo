@@ -15,6 +15,7 @@ public class NodeInstancePO extends CommonPO {
     private String sourceNodeKey;
     private Integer status;
     private Date modifyTime;
+    private int nodeType;
 
     public String getFlowInstanceId() {
         return flowInstanceId;
@@ -86,5 +87,13 @@ public class NodeInstancePO extends CommonPO {
 
     public void setModifyTime(Date modifyTime) {
         this.modifyTime = modifyTime;
+    }
+
+    public int getNodeType() {
+        return nodeType;
+    }
+
+    public void setNodeType(int nodeType) {
+        this.nodeType = nodeType;
     }
 }

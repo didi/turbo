@@ -8,12 +8,16 @@ import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
 import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
 import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
 import com.didiglobal.turbo.engine.exception.ProcessException;
+import com.didiglobal.turbo.engine.plugin.IdGeneratorPlugin;
+import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
 import com.didiglobal.turbo.engine.util.IdGenerator;
 import com.didiglobal.turbo.engine.util.StrongUuidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
+
+import java.util.List;
 
 public abstract class RuntimeExecutor {
 
@@ -34,14 +38,22 @@ public abstract class RuntimeExecutor {
     @Resource
     protected NodeInstanceLogDAO nodeInstanceLogDAO;
 
-    private static final IdGenerator ID_GENERATOR = new StrongUuidGenerator();
+    private IdGenerator ID_GENERATOR;
     @Resource
     protected FlowInstanceMappingDAO flowInstanceMappingDAO;
 
-    private static final IdGenerator idGenerator = new StrongUuidGenerator();
-
+    @Resource
+    protected PluginManager pluginManager;
 
     protected String genId() {
+        if (null == ID_GENERATOR) {
+            List<IdGeneratorPlugin> idGeneratorPlugins = pluginManager.getPluginsFor(IdGeneratorPlugin.class);
+            if (!idGeneratorPlugins.isEmpty()) {
+                ID_GENERATOR = idGeneratorPlugins.get(0).getIdGenerator();
+            } else {
+                ID_GENERATOR = new StrongUuidGenerator();
+            }
+        }
         return ID_GENERATOR.getNextId();
     }
 

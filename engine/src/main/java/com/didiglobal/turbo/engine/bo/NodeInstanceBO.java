@@ -2,7 +2,11 @@ package com.didiglobal.turbo.engine.bo;
 
 import com.google.common.base.MoreObjects;
 
-public class NodeInstanceBO {
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+public class NodeInstanceBO implements Serializable {
     //used while updateById
     private Long id;
     private String nodeInstanceId;
@@ -11,6 +15,8 @@ public class NodeInstanceBO {
     private String sourceNodeKey;
     private String instanceDataId;
     private int status;
+    private int nodeType;
+    private Map<String, Object> properties = new HashMap<>();
 
     public Long getId() {
         return id;
@@ -68,6 +74,30 @@ public class NodeInstanceBO {
         this.status = status;
     }
 
+    public int getNodeType() {
+        return nodeType;
+    }
+
+    public void setNodeType(int nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+
+    public Object get(String key) {
+        return properties.get(key);
+    }
+
+    public void put(String key, Object value) {
+        properties.put(key, value);
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
@@ -78,6 +108,7 @@ public class NodeInstanceBO {
                 .add("sourceNodeKey", sourceNodeKey)
                 .add("instanceDataId", instanceDataId)
                 .add("status", status)
+                .add("nodeType", nodeType)
                 .toString();
     }
 }

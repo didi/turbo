@@ -3,6 +3,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2024-11-21
+
+Support plugin extension function
+
+Support parallel gateway and inclusive gateway through plugins
+
+### Bugfix
+- Fix v1.1.1 release issues
+
 ## [1.1.1] - 2023-06-26
 ### Bugfix
 - Fix v1.1.0 release issues

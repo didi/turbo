@@ -5,13 +5,19 @@ import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.common.FlowElementType;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.model.FlowElement;
+import com.didiglobal.turbo.engine.plugin.ElementPlugin;
+import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class ElementValidatorFactory {
@@ -36,6 +42,26 @@ public class ElementValidatorFactory {
     @Resource
     private CallActivityValidator callActivityValidator;
 
+    @Resource
+    private PluginManager pluginManager;
+
+    private final Map<Integer, ElementValidator> validatorMap = new HashMap<>(16);
+
+    /**
+     * 将原生校验器与插件扩展校验器汇总
+     * 插件扩展校验器可以通过设置与原生校验器相同的elementType值进行覆盖
+     */
+    @PostConstruct
+    public void init() {
+        validatorMap.put(FlowElementType.SEQUENCE_FLOW, sequenceFlowValidator);
+        validatorMap.put(FlowElementType.START_EVENT, startEventValidator);
+        validatorMap.put(FlowElementType.END_EVENT, endEventValidator);
+        validatorMap.put(FlowElementType.USER_TASK, userTaskValidator);
+        validatorMap.put(FlowElementType.EXCLUSIVE_GATEWAY, exclusiveGatewayValidator);
+        List<ElementPlugin> elementPlugins = pluginManager.getPluginsFor(ElementPlugin.class);
+        elementPlugins.forEach(elementPlugin -> validatorMap.put(elementPlugin.getFlowElementType(), elementPlugin.getElementValidator()));
+    }
+
     public ElementValidator getElementValidator(FlowElement flowElement) throws ProcessException {
         int elementType = flowElement.getType();
         ElementValidator elementValidator = getElementValidator(elementType);
@@ -50,21 +76,6 @@ public class ElementValidatorFactory {
     }
 
     private ElementValidator getElementValidator(int elementType) {
-        switch (elementType) {
-            case FlowElementType.START_EVENT:
-                return startEventValidator;
-            case FlowElementType.END_EVENT:
-                return endEventValidator;
-            case FlowElementType.SEQUENCE_FLOW:
-                return sequenceFlowValidator;
-            case FlowElementType.USER_TASK:
-                return userTaskValidator;
-            case FlowElementType.EXCLUSIVE_GATEWAY:
-                return exclusiveGatewayValidator;
-            case FlowElementType.CALL_ACTIVITY:
-                return callActivityValidator;
-            default:
-                return null;
-        }
+        return validatorMap.get(elementType);
     }
 }

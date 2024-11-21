@@ -1,9 +1,12 @@
 package com.didiglobal.turbo.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CommonPO {
     @TableId(type = IdType.AUTO)
@@ -12,6 +15,8 @@ public class CommonPO {
     private String caller;
     private Date createTime;
     private Integer archive = 0;
+    @TableField(exist = false)
+    private Map<String, Object> properties = new HashMap<>();
 
     public Long getId() {
         return id;
@@ -51,5 +56,21 @@ public class CommonPO {
 
     public void setArchive(Integer archive) {
         this.archive = archive;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+
+    public Object get(String key) {
+        return properties.get(key);
+    }
+
+    public void put(String key, Object value) {
+        properties.put(key, value);
     }
 }

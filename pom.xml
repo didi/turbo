@@ -6,7 +6,7 @@
     <groupId>com.didiglobal.turbo</groupId>
     <artifactId>turbo</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
     <name>turbo</name>
     <description>Turbo is a light-weight flow engine framework, support BPMN2.0</description>
     <url>https://www.github.com/didi/turbo</url>
@@ -50,11 +50,17 @@
             <organization>Didi</organization>
             <organizationUrl>http://www.didiglobal.com</organizationUrl>
         </developer>
+        <developer>
+            <name>lanzhengjian</name>
+            <organization>Didi</organization>
+            <organizationUrl>http://www.didiglobal.com</organizationUrl>
+        </developer>
     </developers>
 
     <modules>
         <module>engine</module>
         <module>demo</module>
+        <module>parallel-plugin</module>
     </modules>
 
     <properties>

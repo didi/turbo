@@ -2,10 +2,11 @@ package com.didiglobal.turbo.engine.model;
 
 import com.google.common.base.MoreObjects;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class FlowElement {
+public class FlowElement implements Serializable {
     private String key; // 流程内元素唯一key resourceId
     private int type; // stencil 类型
     private List<String> outgoing;
