@@ -58,6 +58,7 @@ public class ElementValidatorFactory {
         validatorMap.put(FlowElementType.END_EVENT, endEventValidator);
         validatorMap.put(FlowElementType.USER_TASK, userTaskValidator);
         validatorMap.put(FlowElementType.EXCLUSIVE_GATEWAY, exclusiveGatewayValidator);
+        validatorMap.put(FlowElementType.CALL_ACTIVITY, callActivityValidator);
         List<ElementPlugin> elementPlugins = pluginManager.getPluginsFor(ElementPlugin.class);
         elementPlugins.forEach(elementPlugin -> validatorMap.put(elementPlugin.getFlowElementType(), elementPlugin.getElementValidator()));
     }

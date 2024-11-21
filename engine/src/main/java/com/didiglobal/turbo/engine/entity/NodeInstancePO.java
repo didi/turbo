@@ -1,5 +1,6 @@
 package com.didiglobal.turbo.engine.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.util.Date;
@@ -15,6 +16,7 @@ public class NodeInstancePO extends CommonPO {
     private String sourceNodeKey;
     private Integer status;
     private Date modifyTime;
+    @TableField(exist = false)
     private int nodeType;
 
     public String getFlowInstanceId() {
