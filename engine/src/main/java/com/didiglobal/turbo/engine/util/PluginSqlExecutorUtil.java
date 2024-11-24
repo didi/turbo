@@ -1,7 +1,6 @@
 package com.didiglobal.turbo.engine.util;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
+import com.alibaba.druid.pool.DruidDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -18,7 +17,7 @@ public class PluginSqlExecutorUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PluginSqlExecutorUtil.class);
 
-    private static HikariDataSource dataSource;
+    private static DruidDataSource dataSource;
     private static final String JDBC_URL = "turbo.plugin.jdbc.url";
     private static final String USERNAME = "turbo.plugin.jdbc.username";
     private static final String PASSWORD = "turbo.plugin.jdbc.password";
@@ -36,14 +35,19 @@ public class PluginSqlExecutorUtil {
                 dataSource = null;
             } else {
                 properties.load(PluginSqlExecutorUtil.class.getClassLoader().getResourceAsStream("plugin.properties"));
-                HikariConfig config = new HikariConfig();
-                config.setJdbcUrl(properties.getProperty(JDBC_URL));
-                config.setUsername(properties.getProperty(USERNAME));
-                config.setPassword(properties.getProperty(PASSWORD));
-                config.setDriverClassName(properties.getProperty(DRIVER_CLASS_NAME));
-                config.setMaximumPoolSize(Integer.parseInt(properties.getProperty(MAX_POOL_SIZE, "10")));
-                if (validateConfig(config)) {
-                    dataSource = new HikariDataSource(config);
+                dataSource = new DruidDataSource();
+                dataSource.setUrl(properties.getProperty(JDBC_URL));
+                dataSource.setUsername(properties.getProperty(USERNAME));
+                dataSource.setPassword(properties.getProperty(PASSWORD));
+                dataSource.setDriverClassName(properties.getProperty(DRIVER_CLASS_NAME));
+                // 配置 Druid 数据源的特性
+                dataSource.setInitialSize(1);
+                dataSource.setMinIdle(1);
+                dataSource.setMaxActive(Integer.parseInt(properties.getProperty(MAX_POOL_SIZE, "10")));
+                dataSource.setMaxWait(60000);
+                // 验证配置
+                if (!validateConfig(dataSource)) {
+                    dataSource = null;
                 }
             }
         } catch (IOException e) {
@@ -51,22 +55,22 @@ public class PluginSqlExecutorUtil {
         }
     }
 
-    private static boolean validateConfig(HikariConfig config) {
-        if (config == null) {
+    private static boolean validateConfig(DruidDataSource dataSource) {
+        if (dataSource == null) {
             return false;
         }
-        if (StringUtils.isEmpty(config.getJdbcUrl())) {
+        if (StringUtils.isEmpty(dataSource.getUrl())) {
             LOGGER.error("Plugin JDBC URL is empty");
             return false;
         }
-        if (StringUtils.isEmpty(config.getUsername())) {
+        if (StringUtils.isEmpty(dataSource.getUsername())) {
             LOGGER.error("Plugin JDBC username is empty");
             return false;
         }
-        if (StringUtils.isEmpty(config.getPassword())) {
+        if (StringUtils.isEmpty(dataSource.getPassword())) {
             LOGGER.warn("Plugin JDBC password is empty");
         }
-        if (StringUtils.isEmpty(config.getDriverClassName())) {
+        if (StringUtils.isEmpty(dataSource.getDriverClassName())) {
             LOGGER.error("Plugin JDBC driver class name is empty");
             return false;
         }

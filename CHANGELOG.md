@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 ## [1.2.0] - 2024-11-21
 
 Support plugin extension function
+   - Add `node_type` field to the `ei_node_instance` table in the database to save the node type.
+   - Add `NodeExecuteResult` inner class to the `RuntimeResult` class, and move the `activeTaskInstance` and `variables` fields to the inner class.
+   - Add `properties` variable to the `CommonPO` entity class to store extended data.
+   - Add `ExtendRuntimeContext` class to store extended branch context information.
 
 Support parallel gateway and inclusive gateway through plugins
 
