@@ -3,7 +3,9 @@ package com.didiglobal.turbo.engine.result;
 import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.google.common.base.MoreObjects;
 
-public class CommonResult {
+import java.io.Serializable;
+
+public class CommonResult implements Serializable {
 
     private int errCode;
     private String errMsg;

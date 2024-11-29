@@ -83,6 +83,8 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         currentNodeInstance.setSourceNodeInstanceId(sourceNodeInstanceId);
         currentNodeInstance.setSourceNodeKey(sourceNodeKey);
         currentNodeInstance.setStatus(NodeInstanceStatus.ACTIVE);
+        currentNodeInstance.getProperties().putAll(runtimeContext.getExtendProperties());
+        currentNodeInstance.setNodeType(runtimeContext.getCurrentNodeModel().getType());
         currentNodeInstance.setInstanceDataId(StringUtils.defaultString(runtimeContext.getInstanceDataId(), StringUtils.EMPTY));
 
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);

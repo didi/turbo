@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.didiglobal.turbo.engine.dao.provider.NodeInstanceProvider;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import org.apache.ibatis.annotations.InsertProvider;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -41,7 +42,10 @@ public interface NodeInstanceMapper extends BaseMapper<NodeInstancePO> {
 
 
     @InsertProvider(type = NodeInstanceProvider.class, method = "batchInsert")
+    @Options(useGeneratedKeys = true, keyProperty = "list.id")
     boolean batchInsert(@Param("flowInstanceId") String flowInstanceId,
-                        @Param("nodeInstanceList") List<NodeInstancePO> nodeInstanceList);
+                        @Param("list") List<NodeInstancePO> nodeInstanceList);
 
+    @Select("SELECT * FROM ei_node_instance WHERE flow_instance_id=#{flowInstanceId} AND node_key=#{nodeKey}")
+    List<NodeInstancePO> selectByFlowInstanceIdAndNodeKey(@Param("flowInstanceId") String flowInstanceId,  @Param("nodeKey") String nodeKey);
 }

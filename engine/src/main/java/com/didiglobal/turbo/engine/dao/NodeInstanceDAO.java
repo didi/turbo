@@ -133,4 +133,14 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
         nodeInstancePO.setModifyTime(new Date());
         baseMapper.updateStatus(nodeInstancePO);
     }
+
+    /**
+     * select nodeInstancePOList by flowInstanceId and nodeKey
+     * @param flowInstanceId
+     * @param nodeKey
+     * @return
+     */
+    public List<NodeInstancePO> selectByFlowInstanceIdAndNodeKey(String flowInstanceId, String nodeKey) {
+        return baseMapper.selectByFlowInstanceIdAndNodeKey(flowInstanceId, nodeKey);
+    }
 }

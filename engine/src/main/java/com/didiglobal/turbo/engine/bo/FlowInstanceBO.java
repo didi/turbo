@@ -2,12 +2,16 @@ package com.didiglobal.turbo.engine.bo;
 
 import com.google.common.base.MoreObjects;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class FlowInstanceBO {
     private String flowInstanceId;
     private String flowDeployId;
     private String flowModuleId;
     private Integer status;
     private String parentFlowInstanceId;
+    private Map<String, Object> properties = new HashMap<>();
 
     public String getFlowInstanceId() {
         return flowInstanceId;
@@ -47,6 +51,22 @@ public class FlowInstanceBO {
 
     public void setParentFlowInstanceId(String parentFlowInstanceId) {
         this.parentFlowInstanceId = parentFlowInstanceId;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
+    }
+
+    public Object get(String key) {
+        return properties.get(key);
+    }
+
+    public void put(String key, Object value) {
+        properties.put(key, value);
     }
 
     @Override

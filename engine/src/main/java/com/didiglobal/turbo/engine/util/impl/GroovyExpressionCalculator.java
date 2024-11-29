@@ -8,12 +8,10 @@ import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.GroovyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.Map;
 
-@Service
 public class GroovyExpressionCalculator implements ExpressionCalculator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GroovyExpressionCalculator.class);

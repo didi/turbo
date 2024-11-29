@@ -108,16 +108,16 @@ public class CallActivityDemoRunner implements CommandLineRunner {
     }
 
     public void deployFlow() {
-        // Deploy main flow
-        DeployFlowParam deployMainFlowParam = new DeployFlowParam(tenant, caller);
-        deployMainFlowParam.setFlowModuleId(createMainFlowResult.getFlowModuleId());
-        deployMainFlowResult = processEngine.deployFlow(deployMainFlowParam);
-        LOGGER.info("deployMainFlow.||deployMainFlowResult={}", deployMainFlowResult);
         // Deploy sub flow
         DeployFlowParam deploySubFlowParam = new DeployFlowParam(tenant, caller);
         deploySubFlowParam.setFlowModuleId(createSubFlowResult.getFlowModuleId());
         deploySubFlowResult = processEngine.deployFlow(deploySubFlowParam);
         LOGGER.info("deploySubFlow.||deploySubFlowResult={}", deploySubFlowResult);
+        // Deploy main flow
+        DeployFlowParam deployMainFlowParam = new DeployFlowParam(tenant, caller);
+        deployMainFlowParam.setFlowModuleId(createMainFlowResult.getFlowModuleId());
+        deployMainFlowResult = processEngine.deployFlow(deployMainFlowParam);
+        LOGGER.info("deployMainFlow.||deployMainFlowResult={}", deployMainFlowResult);
     }
 
     public void startProcessToEnd(boolean auth) {
@@ -134,7 +134,7 @@ public class CallActivityDemoRunner implements CommandLineRunner {
         // Now it is stuck in the second user node of the parent process, 'Generate Work Order', driving the completion of the parent process
         commitTaskResult = commitMainFlowUserTask2(commitTaskResult);
 
-        assert commitTaskResult.getStatus() == ErrorEnum.SUCCESS.getErrNo();
+        assert commitTaskResult.getErrCode() == ErrorEnum.SUCCESS.getErrNo();
     }
 
     private StartProcessResult startProcessToCallActivity() {

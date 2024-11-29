@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS `ei_node_instance`
     `instance_data_id`        varchar(128)        NOT NULL DEFAULT '' COMMENT '实例数据id',
     `flow_deploy_id`          varchar(128)        NOT NULL DEFAULT '' COMMENT '流程模型部署id',
     `node_key`                varchar(64)         NOT NULL DEFAULT '' COMMENT '节点唯一标识',
+    `node_type` int NOT NULL DEFAULT 0 COMMENT '流程类型',
   `source_node_key` varchar(64) NOT NULL DEFAULT '' COMMENT '上一个流程节点唯一标识',
   `tenant_id` varchar(16) NOT NULL DEFAULT '' COMMENT '业务方标识',
   `status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '状态(1.处理成功 2.处理中 3.处理失败 4.处理已撤销)',
