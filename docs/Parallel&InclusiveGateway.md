@@ -32,6 +32,8 @@ turbo.plugin.element_type.InclusiveGatewayElementPlugin=10
 # 并行网关与包容网关的开关配置。默认为true开启
 turbo.plugin.support.ParallelGatewayElementPlugin=true
 turbo.plugin.support.InclusiveGatewayElementPlugin=true
+# 并行分支执行超时时间，单位：毫秒
+turbo.plugin.parallelGateway.threadPool.timeout=3000
 ```
 ### 5. 插件使用
 #### 5.1 分支汇聚策略
