@@ -1,0 +1,7 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    com.didiglobal.turbo.spring.configuration.TurboBusinessAutoConfiguration,\
+    com.didiglobal.turbo.spring.configuration.TurboDaoAutoConfiguration,\
+    com.didiglobal.turbo.spring.configuration.TurboValidatorAutoConfig,\
+    com.didiglobal.turbo.spring.configuration.TurboFlowAutoConfiguration,\
+    com.didiglobal.turbo.spring.config.PluginConfig,\
+    com.didiglobal.turbo.spring.config.TurboMybatisConfig

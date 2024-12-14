@@ -1,7 +1,6 @@
 package com.didiglobal.turbo.plugin.dao;
 
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
-import com.didiglobal.turbo.engine.plugin.CustomOperationHandler;
 import com.didiglobal.turbo.engine.util.MapToObjectConverter;
 import com.didiglobal.turbo.plugin.dao.mapper.ParallelNodeInstanceMapper;
 import com.didiglobal.turbo.plugin.entity.ParallelNodeInstancePO;
@@ -17,7 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
-public class ParallelNodeInstanceHandler implements CustomOperationHandler {
+public class ParallelNodeInstanceHandler implements com.didiglobal.turbo.mybatis.CustomOperationHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ParallelNodeInstanceHandler.class);
 
     @Override
@@ -44,7 +43,7 @@ public class ParallelNodeInstanceHandler implements CustomOperationHandler {
             }
         } catch (Exception e) {
             LOGGER.error("Exception occurred during handling. CommandType={} | ParameterObject={} | OriginalResult={}",
-                commandType, parameterObject, originalResult, e);
+                    commandType, parameterObject, originalResult, e);
         } finally {
             sqlSession.close();
         }
@@ -55,11 +54,11 @@ public class ParallelNodeInstanceHandler implements CustomOperationHandler {
             ParallelNodeInstancePO parallelNodeInstancePO = convertToParallelLog((NodeInstancePO) parameterObject);
             mapper.insert(parallelNodeInstancePO);
         } else if (parameterObject instanceof Map) {
-            List<Object> list = (List<Object>) ((Map<?,?>) parameterObject).get("list");
+            List<Object> list = (List<Object>) ((Map<?, ?>) parameterObject).get("list");
             if (list != null) {
                 List<ParallelNodeInstancePO> parallelLogList = list.stream()
-                    .map(this::convertToParallelLogSafe)
-                    .collect(Collectors.toList());
+                        .map(this::convertToParallelLogSafe)
+                        .collect(Collectors.toList());
                 mapper.insertList(parallelLogList);
             }
         }

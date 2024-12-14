@@ -1,7 +1,18 @@
 package com.didiglobal.turbo.engine.executor;
 
 import com.didiglobal.turbo.engine.bo.NodeInstanceBO;
-import com.didiglobal.turbo.engine.common.*;
+import com.didiglobal.turbo.engine.common.ErrorEnum;
+import com.didiglobal.turbo.engine.common.FlowElementType;
+import com.didiglobal.turbo.engine.common.FlowInstanceStatus;
+import com.didiglobal.turbo.engine.common.InstanceDataType;
+import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
+import com.didiglobal.turbo.engine.common.NodeInstanceType;
+import com.didiglobal.turbo.engine.common.ProcessStatus;
+import com.didiglobal.turbo.engine.common.RuntimeContext;
+import com.didiglobal.turbo.engine.dao.FlowInstanceMappingDAO;
+import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
 import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
 import com.didiglobal.turbo.engine.entity.FlowInstancePO;
 import com.didiglobal.turbo.engine.entity.InstanceDataPO;
@@ -11,9 +22,10 @@ import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.exception.ReentrantException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
-import com.didiglobal.turbo.engine.service.FlowInstanceService;
+import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
+import com.didiglobal.turbo.engine.util.TurboBeanUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
@@ -21,23 +33,24 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Service
+
 public class FlowExecutor extends RuntimeExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowExecutor.class);
 
-    @Resource
-    private ProcessInstanceDAO processInstanceDAO;
+    private final ProcessInstanceDAO processInstanceDAO;
 
-    ////////////////////////////////////////execute////////////////////////////////////////
+    public FlowExecutor(ExecutorFactory executorFactory, InstanceDataDAO instanceDataDAO, NodeInstanceDAO nodeInstanceDAO, ProcessInstanceDAO processInstanceDAO, NodeInstanceLogDAO nodeInstanceLogDAO, FlowInstanceMappingDAO flowInstanceMappingDAO, PluginManager pluginManager) {
+        super(executorFactory, instanceDataDAO, nodeInstanceDAO, processInstanceDAO, nodeInstanceLogDAO, flowInstanceMappingDAO, pluginManager);
+        this.processInstanceDAO = processInstanceDAO;
+    }
+
+    /// /////////////////////////////////////execute////////////////////////////////////////
 
     @Override
     public void execute(RuntimeContext runtimeContext) throws ProcessException {
@@ -88,7 +101,7 @@ public class FlowExecutor extends RuntimeExecutor {
     private FlowInstancePO buildFlowInstancePO(RuntimeContext runtimeContext) {
         FlowInstancePO flowInstancePO = new FlowInstancePO();
         // copy flow info
-        BeanUtils.copyProperties(runtimeContext, flowInstancePO);
+        TurboBeanUtils.copyProperties(runtimeContext, flowInstancePO);
         // generate flowInstanceId
         flowInstancePO.setFlowInstanceId(genId());
         RuntimeContext parentRuntimeContext = runtimeContext.getParentRuntimeContext();
@@ -120,7 +133,7 @@ public class FlowExecutor extends RuntimeExecutor {
     private InstanceDataPO buildInstanceDataPO(FlowInstancePO flowInstancePO, Map<String, InstanceData> instanceDataMap) {
         InstanceDataPO instanceDataPO = new InstanceDataPO();
         // copy flow info & flowInstanceId
-        BeanUtils.copyProperties(flowInstancePO, instanceDataPO);
+        TurboBeanUtils.copyProperties(flowInstancePO, instanceDataPO);
         // fix primary key duplicated
         instanceDataPO.setId(null);
 
@@ -197,7 +210,7 @@ public class FlowExecutor extends RuntimeExecutor {
     }
 
 
-    ////////////////////////////////////////commit////////////////////////////////////////
+    /// /////////////////////////////////////commit////////////////////////////////////////
 
     @Override
     public void commit(RuntimeContext runtimeContext) throws ProcessException {
@@ -260,7 +273,7 @@ public class FlowExecutor extends RuntimeExecutor {
             InstanceDataPO instanceDataPO = instanceDataDAO.select(flowInstanceId, instanceDataId);
             if (instanceDataPO == null) {
                 LOGGER.warn("preCommit failed: cannot find instanceDataPO from db." +
-                    "||flowInstanceId={}||instanceDataId={}", flowInstanceId, instanceDataId);
+                        "||flowInstanceId={}||instanceDataId={}", flowInstanceId, instanceDataId);
                 throw new ProcessException(ErrorEnum.GET_INSTANCE_DATA_FAILED);
             }
             instanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
@@ -277,7 +290,7 @@ public class FlowExecutor extends RuntimeExecutor {
             instanceDataMap.putAll(commitDataMap);
 
             InstanceDataPO commitInstanceDataPO = buildCommitInstanceData(runtimeContext, nodeInstanceId,
-                nodeInstancePO.getNodeKey(), instanceDataId, instanceDataMap);
+                    nodeInstancePO.getNodeKey(), instanceDataId, instanceDataMap);
             instanceDataDAO.insert(commitInstanceDataPO);
         }
 
@@ -288,7 +301,7 @@ public class FlowExecutor extends RuntimeExecutor {
     private InstanceDataPO buildCommitInstanceData(RuntimeContext runtimeContext, String nodeInstanceId, String nodeKey,
                                                    String newInstanceDataId, Map<String, InstanceData> instanceDataMap) {
         InstanceDataPO instanceDataPO = new InstanceDataPO();
-        BeanUtils.copyProperties(runtimeContext, instanceDataPO);
+        TurboBeanUtils.copyProperties(runtimeContext, instanceDataPO);
 
         instanceDataPO.setNodeInstanceId(nodeInstanceId);
         instanceDataPO.setNodeKey(nodeKey);
@@ -345,7 +358,7 @@ public class FlowExecutor extends RuntimeExecutor {
         }
     }
 
-    ////////////////////////////////////////rollback////////////////////////////////////////
+    /// /////////////////////////////////////rollback////////////////////////////////////////
 
     @Override
     public void rollback(RuntimeContext runtimeContext) throws ProcessException {
@@ -372,7 +385,7 @@ public class FlowExecutor extends RuntimeExecutor {
         //1.check node: only the latest enabled(ACTIVE or COMPLETED) nodeInstance can be rollbacked.
         String suspendNodeInstanceId = runtimeContext.getSuspendNodeInstance().getNodeInstanceId();
         NodeInstancePO rollbackNodeInstancePO = getActiveNodeForRollback(flowInstanceId, suspendNodeInstanceId,
-            runtimeContext.getFlowElementMap());
+                runtimeContext.getFlowElementMap());
         if (rollbackNodeInstancePO == null) {
             LOGGER.warn("preRollback failed: cannot rollback.||runtimeContext={}", runtimeContext);
             throw new ProcessException(ErrorEnum.ROLLBACK_FAILED);
@@ -381,9 +394,9 @@ public class FlowExecutor extends RuntimeExecutor {
         //2.check status: flowInstance is completed
         if (isCompleted(runtimeContext)) {
             LOGGER.warn("invalid preRollback: FlowInstance has been processed completely."
-                + "||flowInstanceId={}||flowDeployId={}", flowInstanceId, runtimeContext.getFlowDeployId());
+                    + "||flowInstanceId={}||flowDeployId={}", flowInstanceId, runtimeContext.getFlowDeployId());
             NodeInstanceBO suspendNodeInstance = new NodeInstanceBO();
-            BeanUtils.copyProperties(rollbackNodeInstancePO, suspendNodeInstance);
+            TurboBeanUtils.copyProperties(rollbackNodeInstancePO, suspendNodeInstance);
             runtimeContext.setSuspendNodeInstance(suspendNodeInstance);
             runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.COMPLETED);
             throw new ProcessException(ErrorEnum.ROLLBACK_FAILED);
@@ -398,7 +411,7 @@ public class FlowExecutor extends RuntimeExecutor {
             InstanceDataPO instanceDataPO = instanceDataDAO.select(flowInstanceId, instanceDataId);
             if (instanceDataPO == null) {
                 LOGGER.warn("preRollback failed: cannot find instanceDataPO from db."
-                    + "||flowInstanceId={}||instanceDataId={}", flowInstanceId, instanceDataId);
+                        + "||flowInstanceId={}||instanceDataId={}", flowInstanceId, instanceDataId);
                 throw new ProcessException(ErrorEnum.GET_INSTANCE_DATA_FAILED);
             }
             instanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
@@ -414,44 +427,44 @@ public class FlowExecutor extends RuntimeExecutor {
         List<NodeInstancePO> nodeInstancePOList = nodeInstanceDAO.selectDescByFlowInstanceId(flowInstanceId);
         if (CollectionUtils.isEmpty(nodeInstancePOList)) {
             LOGGER.warn("getActiveNodeForRollback: nodeInstancePOList is empty."
-                + "||flowInstanceId={}||suspendNodeInstanceId={}", flowInstanceId, suspendNodeInstanceId);
+                    + "||flowInstanceId={}||suspendNodeInstanceId={}", flowInstanceId, suspendNodeInstanceId);
             return null;
         }
 
         for (NodeInstancePO nodeInstancePO : nodeInstancePOList) {
             int elementType = FlowModelUtil.getElementType(nodeInstancePO.getNodeKey(), flowElementMap);
             if (elementType != FlowElementType.USER_TASK
-                && elementType != FlowElementType.END_EVENT
-                && elementType != FlowElementType.CALL_ACTIVITY) {
+                    && elementType != FlowElementType.END_EVENT
+                    && elementType != FlowElementType.CALL_ACTIVITY) {
                 LOGGER.info("getActiveNodeForRollback: ignore un-userTask or un-endEvent or un-callActivity nodeInstance.||flowInstanceId={}"
-                    + "||suspendNodeInstanceId={}||nodeKey={}", flowInstanceId, suspendNodeInstanceId, nodeInstancePO.getNodeKey());
+                        + "||suspendNodeInstanceId={}||nodeKey={}", flowInstanceId, suspendNodeInstanceId, nodeInstancePO.getNodeKey());
                 continue;
             }
 
             if (nodeInstancePO.getStatus() == NodeInstanceStatus.ACTIVE) {
                 if (nodeInstancePO.getNodeInstanceId().equals(suspendNodeInstanceId)) {
                     LOGGER.info("getActiveNodeForRollback: roll back the active Node."
-                        + "||flowInstanceId={}||suspendNodeInstanceId={}", flowInstanceId, suspendNodeInstanceId);
+                            + "||flowInstanceId={}||suspendNodeInstanceId={}", flowInstanceId, suspendNodeInstanceId);
                     return nodeInstancePO;
                 }
             } else if (nodeInstancePO.getStatus() == NodeInstanceStatus.COMPLETED) {
                 if (nodeInstancePO.getNodeInstanceId().equals(suspendNodeInstanceId)) {
                     LOGGER.info("getActiveNodeForRollback: roll back the lasted completed Node."
-                            + "||flowInstanceId={}||suspendNodeInstanceId={}||activeNodeInstanceId={}",
-                        flowInstanceId, suspendNodeInstanceId, nodeInstancePO);
+                                    + "||flowInstanceId={}||suspendNodeInstanceId={}||activeNodeInstanceId={}",
+                            flowInstanceId, suspendNodeInstanceId, nodeInstancePO);
                     return nodeInstancePO;
                 }
 
                 LOGGER.warn("getActiveNodeForRollback: cannot rollback the Node."
-                    + "||flowInstanceId={}||suspendNodeInstanceId={}", flowInstanceId, suspendNodeInstanceId);
+                        + "||flowInstanceId={}||suspendNodeInstanceId={}", flowInstanceId, suspendNodeInstanceId);
                 return null;
             }
             LOGGER.info("getActiveNodeForRollback: ignore disabled Node instance.||flowInstanceId={}"
-                + "||suspendNodeInstanceId={}||status={}", flowInstanceId, suspendNodeInstanceId, nodeInstancePO.getStatus());
+                    + "||suspendNodeInstanceId={}||status={}", flowInstanceId, suspendNodeInstanceId, nodeInstancePO.getStatus());
 
         }
         LOGGER.warn("getActiveNodeForRollback: cannot rollback the suspendNodeInstance."
-            + "||flowInstanceId={}||suspendNodeInstanceId={}", flowInstanceId, suspendNodeInstanceId);
+                + "||flowInstanceId={}||suspendNodeInstanceId={}", flowInstanceId, suspendNodeInstanceId);
         return null;
     }
 
@@ -497,7 +510,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
     private NodeInstanceBO buildSuspendNodeInstanceBO(NodeInstancePO nodeInstancePO) {
         NodeInstanceBO suspendNodeInstanceBO = new NodeInstanceBO();
-        BeanUtils.copyProperties(nodeInstancePO, suspendNodeInstanceBO);
+        TurboBeanUtils.copyProperties(nodeInstancePO, suspendNodeInstanceBO);
         return suspendNodeInstanceBO;
     }
 
@@ -567,7 +580,7 @@ public class FlowExecutor extends RuntimeExecutor {
         return executorFactory.getElementExecutor(runtimeContext.getCurrentNodeModel());
     }
 
-    ////////////////////////////////////////common////////////////////////////////////////
+    /// /////////////////////////////////////common////////////////////////////////////////
 
     private void saveNodeInstanceList(RuntimeContext runtimeContext, int nodeInstanceType) {
 
@@ -607,7 +620,7 @@ public class FlowExecutor extends RuntimeExecutor {
         }
 
         NodeInstancePO nodeInstancePO = new NodeInstancePO();
-        BeanUtils.copyProperties(nodeInstanceBO, nodeInstancePO);
+        TurboBeanUtils.copyProperties(nodeInstanceBO, nodeInstancePO);
         nodeInstancePO.setFlowInstanceId(runtimeContext.getFlowInstanceId());
         nodeInstancePO.setFlowDeployId(runtimeContext.getFlowDeployId());
         nodeInstancePO.setTenant(runtimeContext.getTenant());
@@ -621,7 +634,7 @@ public class FlowExecutor extends RuntimeExecutor {
     private NodeInstanceLogPO buildNodeInstanceLogPO(NodeInstancePO nodeInstancePO, int nodeInstanceType) {
         NodeInstanceLogPO nodeInstanceLogPO = new NodeInstanceLogPO();
         // fix primary key duplicated
-        BeanUtils.copyProperties(nodeInstancePO, nodeInstanceLogPO);
+        TurboBeanUtils.copyProperties(nodeInstancePO, nodeInstanceLogPO);
         nodeInstanceLogPO.setId(null);
         nodeInstanceLogPO.setType(nodeInstanceType);
         return nodeInstanceLogPO;

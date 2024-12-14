@@ -9,27 +9,26 @@ import com.didiglobal.turbo.engine.entity.FlowInstancePO;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 
 import java.util.List;
 import java.util.Map;
 
-@Service
 public class NodeInstanceService {
 
-    @Resource
-    private NodeInstanceDAO nodeInstanceDAO;
+    private final NodeInstanceDAO nodeInstanceDAO;
 
-    @Resource
-    private ProcessInstanceDAO processInstanceDAO;
+    private final ProcessInstanceDAO processInstanceDAO;
 
-    @Resource
-    private FlowDeploymentDAO flowDeploymentDAO;
+    private final FlowDeploymentDAO flowDeploymentDAO;
 
-    @Resource
-    private FlowInstanceService flowInstanceService;
+    private final FlowInstanceService flowInstanceService;
+
+    public NodeInstanceService(NodeInstanceDAO nodeInstanceDAO, ProcessInstanceDAO processInstanceDAO, FlowDeploymentDAO flowDeploymentDAO, FlowInstanceService flowInstanceService) {
+        this.nodeInstanceDAO = nodeInstanceDAO;
+        this.processInstanceDAO = processInstanceDAO;
+        this.flowDeploymentDAO = flowDeploymentDAO;
+        this.flowInstanceService = flowInstanceService;
+    }
 
     public NodeInstancePO selectByNodeInstanceId(String flowInstanceId, String nodeInstanceId, boolean effectiveForSubFlowInstance) {
         NodeInstancePO nodeInstancePO = nodeInstanceDAO.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);

@@ -6,13 +6,13 @@
     <parent>
         <groupId>com.didiglobal.turbo</groupId>
         <artifactId>turbo</artifactId>
-        <version>1.2.0</version>
+        <version>${revision}</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>demo</artifactId>
-    <version>1.2.0</version>
+    <version>${revision}</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -20,33 +20,37 @@
         <java.version>1.8</java.version>
 
         <spring-boot.version>1.5.10.RELEASE</spring-boot.version>
-        <turbo.engine.version>1.2.0</turbo.engine.version>
         <h2.version>1.4.200</h2.version>
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring-boot.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <version>${spring-boot.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.didiglobal.turbo</groupId>
-            <artifactId>engine</artifactId>
-            <version>${turbo.engine.version}</version>
+            <artifactId>turbo-spring-boot-starter</artifactId>
+            <version>${revision}</version>
         </dependency>
+
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.200</version>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>

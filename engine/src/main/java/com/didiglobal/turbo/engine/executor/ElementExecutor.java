@@ -5,6 +5,11 @@ import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.common.FlowElementType;
 import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
 import com.didiglobal.turbo.engine.common.RuntimeContext;
+import com.didiglobal.turbo.engine.dao.FlowInstanceMappingDAO;
+import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
+import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
 import com.didiglobal.turbo.engine.entity.InstanceDataPO;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import com.didiglobal.turbo.engine.exception.ProcessException;
@@ -12,15 +17,15 @@ import com.didiglobal.turbo.engine.exception.ReentrantException;
 import com.didiglobal.turbo.engine.exception.SuspendException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
+import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
 import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
+import com.didiglobal.turbo.engine.util.TurboBeanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
@@ -28,8 +33,12 @@ public abstract class ElementExecutor extends RuntimeExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElementExecutor.class);
 
-    @Resource
-    protected ExpressionCalculator expressionCalculator;
+    protected final ExpressionCalculator expressionCalculator;
+
+    public ElementExecutor(ExecutorFactory executorFactory, InstanceDataDAO instanceDataDAO, NodeInstanceDAO nodeInstanceDAO, ProcessInstanceDAO processInstanceDAO, NodeInstanceLogDAO nodeInstanceLogDAO, FlowInstanceMappingDAO flowInstanceMappingDAO, PluginManager pluginManager, ExpressionCalculator expressionCalculator) {
+        super(executorFactory, instanceDataDAO, nodeInstanceDAO, processInstanceDAO, nodeInstanceLogDAO, flowInstanceMappingDAO, pluginManager);
+        this.expressionCalculator = expressionCalculator;
+    }
 
     @Override
     public void execute(RuntimeContext runtimeContext) throws ProcessException {
@@ -68,7 +77,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
                     sourceNodeInstance.getNodeInstanceId(), nodeKey);
             //reentrant check
             if (nodeInstancePO != null) {
-                BeanUtils.copyProperties(nodeInstancePO, currentNodeInstance);
+                TurboBeanUtils.copyProperties(nodeInstancePO, currentNodeInstance);
                 runtimeContext.setCurrentNodeInstance(currentNodeInstance);
                 LOGGER.warn("preExecute reentrant.||nodeInstancePO={}", nodeInstancePO);
                 return;
@@ -176,7 +185,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
                 throw new ProcessException(ErrorEnum.GET_NODE_INSTANCE_FAILED);
             }
             currentNodeInstance = new NodeInstanceBO();
-            BeanUtils.copyProperties(currentNodeInstancePO, currentNodeInstance);
+            TurboBeanUtils.copyProperties(currentNodeInstancePO, currentNodeInstance);
 
             String currentInstanceDataId = currentNodeInstance.getInstanceDataId();
             runtimeContext.setInstanceDataId(currentInstanceDataId);

@@ -1,7 +1,6 @@
 package com.didiglobal.turbo.plugin.processor;
 
 import com.didiglobal.turbo.engine.common.ErrorEnum;
-import com.didiglobal.turbo.engine.dao.mapper.FlowDeploymentMapper;
 import com.didiglobal.turbo.engine.entity.FlowDeploymentPO;
 import com.didiglobal.turbo.engine.model.InstanceData;
 import com.didiglobal.turbo.engine.param.CommitTaskParam;
@@ -12,6 +11,8 @@ import com.didiglobal.turbo.engine.result.CommitTaskResult;
 import com.didiglobal.turbo.engine.result.RollbackTaskResult;
 import com.didiglobal.turbo.engine.result.StartProcessResult;
 import com.didiglobal.turbo.engine.result.TerminateResult;
+import com.didiglobal.turbo.mybatis.dao.mapper.FlowDeploymentMapper;
+import com.didiglobal.turbo.mybatis.entity.FlowDeploymentEntity;
 import com.didiglobal.turbo.plugin.common.ParallelErrorEnum;
 import com.didiglobal.turbo.plugin.common.ParallelRuntimeContext;
 import com.didiglobal.turbo.plugin.runner.BaseTest;
@@ -21,7 +22,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,10 +44,10 @@ public class RuntimeProcessorTest extends BaseTest {
         if (_flowDeploymentPO != null) {
             if (!StringUtils.equals(_flowDeploymentPO.getFlowModel(), flowDeploymentPO.getFlowModel())) {
                 flowDeploymentMapper.deleteById(_flowDeploymentPO.getId());
-                flowDeploymentMapper.insert(flowDeploymentPO);
+                flowDeploymentMapper.insert(FlowDeploymentEntity.of(flowDeploymentPO));
             }
         } else {
-            flowDeploymentMapper.insert(flowDeploymentPO);
+            flowDeploymentMapper.insert(FlowDeploymentEntity.of(flowDeploymentPO));
         }
 
         // start process
@@ -71,10 +71,10 @@ public class RuntimeProcessorTest extends BaseTest {
         if (_flowDeploymentPO != null) {
             if (!StringUtils.equals(_flowDeploymentPO.getFlowModel(), flowDeploymentPO.getFlowModel())) {
                 flowDeploymentMapper.deleteById(_flowDeploymentPO.getId());
-                flowDeploymentMapper.insert(flowDeploymentPO);
+                flowDeploymentMapper.insert(FlowDeploymentEntity.of(flowDeploymentPO));
             }
         } else {
-            flowDeploymentMapper.insert(flowDeploymentPO);
+            flowDeploymentMapper.insert(FlowDeploymentEntity.of(flowDeploymentPO));
         }
 
         // start process
@@ -98,10 +98,10 @@ public class RuntimeProcessorTest extends BaseTest {
         if (_flowDeploymentPO != null) {
             if (!StringUtils.equals(_flowDeploymentPO.getFlowModel(), flowDeploymentPO.getFlowModel())) {
                 flowDeploymentMapper.deleteById(_flowDeploymentPO.getId());
-                flowDeploymentMapper.insert(flowDeploymentPO);
+                flowDeploymentMapper.insert(FlowDeploymentEntity.of(flowDeploymentPO));
             }
         } else {
-            flowDeploymentMapper.insert(flowDeploymentPO);
+            flowDeploymentMapper.insert(FlowDeploymentEntity.of(flowDeploymentPO));
         }
 
         // start process

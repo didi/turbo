@@ -16,10 +16,12 @@ public class NodeInstance extends ElementInstance {
     private Date modifyTime;
     private Map<String, Object> properties = new HashMap<>();
 
+    @Override
     public String getNodeInstanceId() {
         return nodeInstanceId;
     }
 
+    @Override
     public void setNodeInstanceId(String nodeInstanceId) {
         this.nodeInstanceId = nodeInstanceId;
     }

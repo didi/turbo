@@ -5,22 +5,31 @@ import com.didiglobal.turbo.engine.common.Constants;
 import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
 import com.didiglobal.turbo.engine.common.RuntimeContext;
+import com.didiglobal.turbo.engine.dao.FlowInstanceMappingDAO;
+import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
+import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.exception.SuspendException;
 import com.didiglobal.turbo.engine.model.FlowElement;
+import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
+import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
+import com.didiglobal.turbo.engine.util.TurboBeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.Map;
 
-@Service
 public class UserTaskExecutor extends ElementExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserTaskExecutor.class);
+
+    public UserTaskExecutor(ExecutorFactory executorFactory, InstanceDataDAO instanceDataDAO, NodeInstanceDAO nodeInstanceDAO, ProcessInstanceDAO processInstanceDAO, NodeInstanceLogDAO nodeInstanceLogDAO, FlowInstanceMappingDAO flowInstanceMappingDAO, PluginManager pluginManager, ExpressionCalculator expressionCalculator) {
+        super(executorFactory, instanceDataDAO, nodeInstanceDAO, processInstanceDAO, nodeInstanceLogDAO, flowInstanceMappingDAO, pluginManager, expressionCalculator);
+    }
 
     @Override
     protected void doExecute(RuntimeContext runtimeContext) throws ProcessException {
@@ -54,7 +63,7 @@ public class UserTaskExecutor extends ElementExecutor {
         String nodeKey = flowElement.getKey();
 
         NodeInstanceBO currentNodeInstance = new NodeInstanceBO();
-        BeanUtils.copyProperties(suspendNodeInstance, currentNodeInstance);
+        TurboBeanUtils.copyProperties(suspendNodeInstance, currentNodeInstance);
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
 
         //invalid commit node
@@ -105,7 +114,7 @@ public class UserTaskExecutor extends ElementExecutor {
         runtimeContext.getNodeInstanceList().add(currentNodeInstance);
         if (currentStatus == NodeInstanceStatus.COMPLETED) {
             NodeInstanceBO newNodeInstanceBO = new NodeInstanceBO();
-            BeanUtils.copyProperties(currentNodeInstance, newNodeInstanceBO);
+            TurboBeanUtils.copyProperties(currentNodeInstance, newNodeInstanceBO);
             // TODO: 2019/12/31 to insert new record
             newNodeInstanceBO.setId(null);
             String newNodeInstanceId = genId();

@@ -3,12 +3,10 @@ package com.didiglobal.turbo.engine.validator;
 import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.exception.DefinitionException;
 import com.didiglobal.turbo.engine.model.FlowElement;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
-@Component
 public class SequenceFlowValidator extends ElementValidator {
 
     @Override
@@ -16,7 +14,7 @@ public class SequenceFlowValidator extends ElementValidator {
         super.checkIncoming(flowElementMap, flowElement);
 
         List<String> incomingList = flowElement.getIncoming();
-        if (incomingList.size() >1) {
+        if (incomingList.size() > 1) {
             throwElementValidatorException(flowElement, ErrorEnum.ELEMENT_TOO_MUCH_INCOMING);
         }
     }
