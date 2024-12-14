@@ -13,32 +13,31 @@ import com.didiglobal.turbo.engine.entity.InstanceDataPO;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 
 import java.util.Map;
 
-@Service
 public class InstanceDataService {
 
-    @Resource
-    private InstanceDataDAO instanceDataDAO;
+    private final InstanceDataDAO instanceDataDAO;
 
-    @Resource
-    private ProcessInstanceDAO processInstanceDAO;
+    private final ProcessInstanceDAO processInstanceDAO;
 
-    @Resource
-    private FlowDeploymentDAO flowDeploymentDAO;
+    private final FlowDeploymentDAO flowDeploymentDAO;
 
-    @Resource
-    private NodeInstanceDAO nodeInstanceDAO;
+    private final NodeInstanceDAO nodeInstanceDAO;
 
-    @Resource
-    private FlowInstanceMappingDAO flowInstanceMappingDAO;
+    private final FlowInstanceMappingDAO flowInstanceMappingDAO;
 
-    @Resource
-    private FlowInstanceService flowInstanceService;
+    private final FlowInstanceService flowInstanceService;
+
+    public InstanceDataService(InstanceDataDAO instanceDataDAO, ProcessInstanceDAO processInstanceDAO, FlowDeploymentDAO flowDeploymentDAO, NodeInstanceDAO nodeInstanceDAO, FlowInstanceMappingDAO flowInstanceMappingDAO, FlowInstanceService flowInstanceService) {
+        this.instanceDataDAO = instanceDataDAO;
+        this.processInstanceDAO = processInstanceDAO;
+        this.flowDeploymentDAO = flowDeploymentDAO;
+        this.nodeInstanceDAO = nodeInstanceDAO;
+        this.flowInstanceMappingDAO = flowInstanceMappingDAO;
+        this.flowInstanceService = flowInstanceService;
+    }
 
     public InstanceDataPO select(String flowInstanceId, String instanceDataId, boolean effectiveForSubFlowInstance) {
         InstanceDataPO instanceDataPO = instanceDataDAO.select(flowInstanceId, instanceDataId);

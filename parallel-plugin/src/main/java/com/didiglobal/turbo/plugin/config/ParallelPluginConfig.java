@@ -2,7 +2,6 @@ package com.didiglobal.turbo.plugin.config;
 
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 import com.didiglobal.turbo.engine.common.EntityPOEnum;
-import com.didiglobal.turbo.engine.plugin.CustomOperationHandlerRegistry;
 import com.didiglobal.turbo.plugin.dao.ParallelNodeInstanceHandler;
 import com.didiglobal.turbo.plugin.dao.ParallelNodeInstanceLogHandler;
 import org.mybatis.spring.annotation.MapperScan;
@@ -20,7 +19,7 @@ public class ParallelPluginConfig {
 
     @PostConstruct
     public void init() {
-        CustomOperationHandlerRegistry.registerHandler(EntityPOEnum.NODE_INSTANCE, new ParallelNodeInstanceHandler());
-        CustomOperationHandlerRegistry.registerHandler(EntityPOEnum.NODE_INSTANCE_LOG, new ParallelNodeInstanceLogHandler());
+        com.didiglobal.turbo.mybatis.CustomOperationHandlerRegistry.registerHandler(EntityPOEnum.NODE_INSTANCE, new ParallelNodeInstanceHandler());
+        com.didiglobal.turbo.mybatis.CustomOperationHandlerRegistry.registerHandler(EntityPOEnum.NODE_INSTANCE_LOG, new ParallelNodeInstanceLogHandler());
     }
 }

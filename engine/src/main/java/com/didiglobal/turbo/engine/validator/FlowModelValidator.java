@@ -13,20 +13,20 @@ import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
-@Component
 public class FlowModelValidator {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(FlowModelValidator.class);
 
-    @Resource
-    private ElementValidatorFactory elementValidatorFactory;
+    private final ElementValidatorFactory elementValidatorFactory;
+
+    public FlowModelValidator(ElementValidatorFactory elementValidatorFactory) {
+        this.elementValidatorFactory = elementValidatorFactory;
+    }
 
     public void validate(FlowModel flowModel) throws ProcessException, DefinitionException {
         this.validate(flowModel, null);
@@ -46,7 +46,7 @@ public class FlowModelValidator {
                 String elementName = FlowModelUtil.getElementName(flowElement);
                 String elementKey = flowElement.getKey();
                 String exceptionMsg = MessageFormat.format(Constants.MODEL_DEFINITION_ERROR_MSG_FORMAT,
-                    ErrorEnum.ELEMENT_KEY_NOT_UNIQUE, elementName, elementKey);
+                        ErrorEnum.ELEMENT_KEY_NOT_UNIQUE, elementName, elementKey);
                 LOGGER.warn(exceptionMsg);
                 throw new DefinitionException(ErrorEnum.ELEMENT_KEY_NOT_UNIQUE.getErrNo(), exceptionMsg);
             }

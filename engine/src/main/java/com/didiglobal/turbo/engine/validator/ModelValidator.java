@@ -10,17 +10,16 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
-
-@Component
 public class ModelValidator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelValidator.class);
 
-    @Resource
-    private FlowModelValidator flowModelValidator;
+    private final FlowModelValidator flowModelValidator;
+
+    public ModelValidator(FlowModelValidator flowModelValidator) {
+        this.flowModelValidator = flowModelValidator;
+    }
 
     public void validate(String flowModelStr) throws DefinitionException, ProcessException {
         this.validate(flowModelStr, null);

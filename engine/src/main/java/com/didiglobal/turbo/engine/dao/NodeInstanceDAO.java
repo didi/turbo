@@ -1,17 +1,10 @@
 package com.didiglobal.turbo.engine.dao;
 
-import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
-import com.didiglobal.turbo.engine.dao.mapper.NodeInstanceMapper;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
-import com.google.common.collect.Lists;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 
-@Repository
-public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO> {
+public interface NodeInstanceDAO extends BaseDAO{
 
     /**
      * insert nodeInstancePO
@@ -19,14 +12,7 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
      * @param nodeInstancePO
      * @return -1 while insert failed
      */
-    public int insert(NodeInstancePO nodeInstancePO) {
-        try {
-            return baseMapper.insert(nodeInstancePO);
-        } catch (Exception e) {
-            LOGGER.error("insert exception.||nodeInstancePO={}", nodeInstancePO, e);
-        }
-        return -1;
-    }
+    int insert(NodeInstancePO nodeInstancePO);
 
     /**
      * when nodeInstancePO's id is null, batch insert.
@@ -36,62 +22,35 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
      * @return
      */
     // TODO: 2020/1/14 post handle while failed: retry 5 times
-    public boolean insertOrUpdateList(List<NodeInstancePO> nodeInstanceList) {
-        if (CollectionUtils.isEmpty(nodeInstanceList)) {
-            LOGGER.warn("insertOrUpdateList: nodeInstanceList is empty.");
-            return true;
-        }
+    boolean insertOrUpdateList(List<NodeInstancePO> nodeInstanceList);
 
-        List<NodeInstancePO> insertNodeInstanceList = Lists.newArrayList();
-        nodeInstanceList.forEach(nodeInstancePO -> {
-            if (nodeInstancePO.getId() == null) {
-                insertNodeInstanceList.add(nodeInstancePO);
-            } else {
-                baseMapper.updateStatus(nodeInstancePO);
-            }
-        });
+    NodeInstancePO selectByNodeInstanceId(String flowInstanceId, String nodeInstanceId);
 
-        if (CollectionUtils.isEmpty(insertNodeInstanceList)) {
-            return true;
-        }
-
-        return baseMapper.batchInsert(insertNodeInstanceList.get(0).getFlowInstanceId(), insertNodeInstanceList);
-    }
-
-    public NodeInstancePO selectByNodeInstanceId(String flowInstanceId, String nodeInstanceId) {
-        return baseMapper.selectByNodeInstanceId(flowInstanceId, nodeInstanceId);
-    }
-
-    public NodeInstancePO selectBySourceInstanceId(String flowInstanceId, String sourceNodeInstanceId, String nodeKey) {
-        return baseMapper.selectBySourceInstanceId(flowInstanceId, sourceNodeInstanceId, nodeKey);
-    }
+    NodeInstancePO selectBySourceInstanceId(String flowInstanceId, String sourceNodeInstanceId, String nodeKey);
 
     /**
      * select recent nodeInstancePO order by id desc
+     *
      * @param flowInstanceId
      * @return
      */
-    public NodeInstancePO selectRecentOne(String flowInstanceId) {
-        return baseMapper.selectRecentOne(flowInstanceId);
-    }
+    NodeInstancePO selectRecentOne(String flowInstanceId);
 
     /**
      * select recent active nodeInstancePO order by id desc
+     *
      * @param flowInstanceId
      * @return
      */
-    public NodeInstancePO selectRecentActiveOne(String flowInstanceId) {
-        return baseMapper.selectRecentOneByStatus(flowInstanceId, NodeInstanceStatus.ACTIVE);
-    }
+    NodeInstancePO selectRecentActiveOne(String flowInstanceId);
 
     /**
      * select recent completed nodeInstancePO order by id desc
+     *
      * @param flowInstanceId
      * @return
      */
-    public NodeInstancePO selectRecentCompletedOne(String flowInstanceId) {
-        return baseMapper.selectRecentOneByStatus(flowInstanceId, NodeInstanceStatus.COMPLETED);
-    }
+    NodeInstancePO selectRecentCompletedOne(String flowInstanceId);
 
     /**
      * select recent active nodeInstancePO order by id desc
@@ -100,18 +59,9 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
      * @param flowInstanceId
      * @return
      */
-    public NodeInstancePO selectEnabledOne(String flowInstanceId) {
-        NodeInstancePO nodeInstancePO = baseMapper.selectRecentOneByStatus(flowInstanceId, NodeInstanceStatus.ACTIVE);
-        if (nodeInstancePO == null) {
-            LOGGER.info("selectEnabledOne: there's no active node of the flowInstance.||flowInstanceId={}", flowInstanceId);
-            nodeInstancePO = baseMapper.selectRecentOneByStatus(flowInstanceId, NodeInstanceStatus.COMPLETED);
-        }
-        return nodeInstancePO;
-    }
+    NodeInstancePO selectEnabledOne(String flowInstanceId);
 
-    public List<NodeInstancePO> selectByFlowInstanceId(String flowInstanceId) {
-        return baseMapper.selectByFlowInstanceId(flowInstanceId);
-    }
+    List<NodeInstancePO> selectByFlowInstanceId(String flowInstanceId);
 
     /**
      * select nodeInstancePOList order by id desc
@@ -119,28 +69,24 @@ public class NodeInstanceDAO extends BaseDAO<NodeInstanceMapper, NodeInstancePO>
      * @param flowInstanceId
      * @return
      */
-    public List<NodeInstancePO> selectDescByFlowInstanceId(String flowInstanceId) {
-        return baseMapper.selectDescByFlowInstanceId(flowInstanceId);
-    }
+    List<NodeInstancePO> selectDescByFlowInstanceId(String flowInstanceId);
 
     /**
      * update nodeInstancePO status by nodeInstanceId
+     *
      * @param nodeInstancePO
      * @param status
      */
-    public void updateStatus(NodeInstancePO nodeInstancePO, int status) {
-        nodeInstancePO.setStatus(status);
-        nodeInstancePO.setModifyTime(new Date());
-        baseMapper.updateStatus(nodeInstancePO);
-    }
+    void updateStatus(NodeInstancePO nodeInstancePO, int status);
 
     /**
      * select nodeInstancePOList by flowInstanceId and nodeKey
+     *
      * @param flowInstanceId
      * @param nodeKey
      * @return
      */
-    public List<NodeInstancePO> selectByFlowInstanceIdAndNodeKey(String flowInstanceId, String nodeKey) {
-        return baseMapper.selectByFlowInstanceIdAndNodeKey(flowInstanceId, nodeKey);
-    }
+    List<NodeInstancePO> selectByFlowInstanceIdAndNodeKey(String flowInstanceId, String nodeKey);
+
+    void updateById(NodeInstancePO joinNodeInstancePo);
 }

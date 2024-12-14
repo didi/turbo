@@ -23,7 +23,7 @@ public class ParallelNodeInstanceHandlerTest extends BaseTest {
     public void insert(){
         NodeInstancePO nodeInstancePO = EntityBuilder.buildDynamicParallelNodeInstancePO();
         int result = nodeInstanceDAO.insert(nodeInstancePO);
-        Assert.assertTrue(result == 1);
+        Assert.assertEquals(1, result);
     }
 
     @Test

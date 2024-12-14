@@ -1,7 +1,6 @@
 package com.didiglobal.turbo.plugin.dao;
 
 import com.didiglobal.turbo.engine.entity.NodeInstanceLogPO;
-import com.didiglobal.turbo.engine.plugin.CustomOperationHandler;
 import com.didiglobal.turbo.engine.util.MapToObjectConverter;
 import com.didiglobal.turbo.plugin.dao.mapper.ParallelNodeInstanceLogMapper;
 import com.didiglobal.turbo.plugin.entity.ParallelNodeInstanceLogPO;
@@ -17,7 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
-public class ParallelNodeInstanceLogHandler implements CustomOperationHandler {
+public class ParallelNodeInstanceLogHandler implements com.didiglobal.turbo.mybatis.CustomOperationHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ParallelNodeInstanceLogHandler.class);
 
     @Override
@@ -57,8 +56,8 @@ public class ParallelNodeInstanceLogHandler implements CustomOperationHandler {
             List<Object> list = (List<Object>) ((Map<?, ?>) parameterObject).get("list");
             if (list != null) {
                 List<ParallelNodeInstanceLogPO> parallelLogList = list.stream()
-                    .map(this::convertToParallelLogSafe)
-                    .collect(Collectors.toList());
+                        .map(this::convertToParallelLogSafe)
+                        .collect(Collectors.toList());
                 mapper.insertList(parallelLogList);
             }
         }

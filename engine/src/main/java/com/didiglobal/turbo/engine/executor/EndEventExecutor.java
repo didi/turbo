@@ -5,20 +5,28 @@ import com.didiglobal.turbo.engine.common.Constants;
 import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
 import com.didiglobal.turbo.engine.common.RuntimeContext;
+import com.didiglobal.turbo.engine.dao.FlowInstanceMappingDAO;
+import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
+import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.model.FlowElement;
+import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
+import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 
-@Service
 public class EndEventExecutor extends ElementExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EndEventExecutor.class);
+
+    public EndEventExecutor(ExecutorFactory executorFactory, InstanceDataDAO instanceDataDAO, NodeInstanceDAO nodeInstanceDAO, ProcessInstanceDAO processInstanceDAO, NodeInstanceLogDAO nodeInstanceLogDAO, FlowInstanceMappingDAO flowInstanceMappingDAO, PluginManager pluginManager, ExpressionCalculator expressionCalculator) {
+        super(executorFactory, instanceDataDAO, nodeInstanceDAO, processInstanceDAO, nodeInstanceLogDAO, flowInstanceMappingDAO, pluginManager, expressionCalculator);
+    }
 
     @Override
     protected void postExecute(RuntimeContext runtimeContext) throws ProcessException {
@@ -37,9 +45,9 @@ public class EndEventExecutor extends ElementExecutor {
         FlowElement flowElement = runtimeContext.getCurrentNodeModel();
         String nodeName = FlowModelUtil.getElementName(flowElement);
         LOGGER.warn("doRollback: unsupported element type as EndEvent.||flowInstanceId={}||nodeKey={}||nodeName={}||nodeType={}",
-            runtimeContext.getFlowInstanceId(), flowElement.getKey(), nodeName, flowElement.getType());
+                runtimeContext.getFlowInstanceId(), flowElement.getKey(), nodeName, flowElement.getType());
         throw new ProcessException(ErrorEnum.UNSUPPORTED_ELEMENT_TYPE,
-            MessageFormat.format(Constants.NODE_INFO_FORMAT, flowElement.getKey(), nodeName, flowElement.getType()));
+                MessageFormat.format(Constants.NODE_INFO_FORMAT, flowElement.getKey(), nodeName, flowElement.getType()));
     }
 
     @Override

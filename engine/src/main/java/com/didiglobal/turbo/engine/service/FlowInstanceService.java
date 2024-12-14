@@ -15,9 +15,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,22 +23,24 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
-@Service
 public class FlowInstanceService {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(FlowInstanceService.class);
 
-    @Resource
-    private NodeInstanceDAO nodeInstanceDAO;
+    private final NodeInstanceDAO nodeInstanceDAO;
 
-    @Resource
-    private FlowInstanceMappingDAO flowInstanceMappingDAO;
+    private final FlowInstanceMappingDAO flowInstanceMappingDAO;
 
-    @Resource
-    private ProcessInstanceDAO processInstanceDAO;
+    private final ProcessInstanceDAO processInstanceDAO;
 
-    @Resource
-    private FlowDeploymentDAO flowDeploymentDAO;
+    private final FlowDeploymentDAO flowDeploymentDAO;
+
+    public FlowInstanceService(NodeInstanceDAO nodeInstanceDAO, FlowInstanceMappingDAO flowInstanceMappingDAO, ProcessInstanceDAO processInstanceDAO, FlowDeploymentDAO flowDeploymentDAO) {
+        this.nodeInstanceDAO = nodeInstanceDAO;
+        this.flowInstanceMappingDAO = flowInstanceMappingDAO;
+        this.processInstanceDAO = processInstanceDAO;
+        this.flowDeploymentDAO = flowDeploymentDAO;
+    }
 
     /**
      * According to rootFlowInstanceId and commitNodeInstanceId, build and return NodeInstance stack.
@@ -65,7 +64,7 @@ public class FlowInstanceService {
             return new Stack<>();
         }
         FlowInstanceTreeResult flowInstanceTreeResult = buildFlowInstanceTree(rootFlowInstanceId,
-            nodeInstancePO -> nodeInstancePO.getNodeInstanceId().equals(commitNodeInstanceId));
+                nodeInstancePO -> nodeInstancePO.getNodeInstanceId().equals(commitNodeInstanceId));
         NodeInstancePOJO rightNodeInstance = flowInstanceTreeResult.getInterruptNodeInstancePOJO();
         Stack<String> stack = new Stack<>();
         while (rightNodeInstance != null) {
@@ -123,7 +122,7 @@ public class FlowInstanceService {
             return StringUtils.EMPTY;
         }
         FlowInstanceTreeResult flowInstanceTreeResult = buildFlowInstanceTree(rootFlowInstanceId,
-            nodeInstancePO -> nodeInstancePO.getNodeInstanceId().equals(nodeInstanceId));
+                nodeInstancePO -> nodeInstancePO.getNodeInstanceId().equals(nodeInstanceId));
         NodeInstancePOJO rightNodeInstance = flowInstanceTreeResult.getInterruptNodeInstancePOJO();
         if (rightNodeInstance == null) {
             return StringUtils.EMPTY;
@@ -144,7 +143,7 @@ public class FlowInstanceService {
             return StringUtils.EMPTY;
         }
         FlowInstanceTreeResult flowInstanceTreeResult = buildFlowInstanceTree(rootFlowInstanceId,
-            nodeInstancePO -> nodeInstancePO.getInstanceDataId().equals(instanceDataId));
+                nodeInstancePO -> nodeInstancePO.getInstanceDataId().equals(instanceDataId));
         NodeInstancePOJO rightNodeInstance = flowInstanceTreeResult.getInterruptNodeInstancePOJO();
         if (rightNodeInstance == null) {
             return StringUtils.EMPTY;

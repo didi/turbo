@@ -7,7 +7,6 @@ import com.didiglobal.turbo.engine.plugin.IdGeneratorPlugin;
 import com.didiglobal.turbo.engine.plugin.ListenerPlugin;
 import com.didiglobal.turbo.engine.plugin.Plugin;
 import com.didiglobal.turbo.engine.util.SPIUtil;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +15,6 @@ import java.util.Map;
 
 public abstract class AbstractPluginManager implements PluginManager {
     protected Map<String, List<? extends Plugin>> pluginMap = new HashMap<>();
-    protected DefaultListableBeanFactory beanFactory;
 
     public AbstractPluginManager() {
     }

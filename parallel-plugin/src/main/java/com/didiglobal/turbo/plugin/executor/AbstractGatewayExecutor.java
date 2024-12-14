@@ -4,8 +4,16 @@ import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.common.ExtendRuntimeContext;
 import com.didiglobal.turbo.engine.common.FlowInstanceStatus;
 import com.didiglobal.turbo.engine.common.ProcessStatus;
+import com.didiglobal.turbo.engine.dao.FlowInstanceMappingDAO;
+import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
+import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
 import com.didiglobal.turbo.engine.entity.NodeInstanceLogPO;
 import com.didiglobal.turbo.engine.exception.SuspendException;
+import com.didiglobal.turbo.engine.executor.ExecutorFactory;
+import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
+import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.plugin.InclusiveGatewayElementPlugin;
 import com.didiglobal.turbo.plugin.ParallelGatewayElementPlugin;
 import com.didiglobal.turbo.plugin.common.Constants;
@@ -69,6 +77,10 @@ public abstract class AbstractGatewayExecutor extends ElementExecutor {
 
     @Resource
     protected ParallelNodeInstanceService parallelNodeInstanceService;
+
+    public AbstractGatewayExecutor(ExecutorFactory executorFactory, InstanceDataDAO instanceDataDAO, NodeInstanceDAO nodeInstanceDAO, ProcessInstanceDAO processInstanceDAO, NodeInstanceLogDAO nodeInstanceLogDAO, FlowInstanceMappingDAO flowInstanceMappingDAO, PluginManager pluginManager, ExpressionCalculator expressionCalculator) {
+        super(executorFactory, instanceDataDAO, nodeInstanceDAO, processInstanceDAO, nodeInstanceLogDAO, flowInstanceMappingDAO, pluginManager, expressionCalculator);
+    }
 
     /**
      * When parallel gateways and inclusive gateways are used as branch nodes,

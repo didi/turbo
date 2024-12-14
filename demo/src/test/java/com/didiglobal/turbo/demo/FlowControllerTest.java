@@ -63,6 +63,7 @@ public class FlowControllerTest {
      */
     @Test
     public void saveFlowModel() {
+        createFlow();
         String flowModel = "{\"flowElementList\":[{\"incoming\":[],\"outgoing\":[\"Flow_3599vu7\"],\"dockers\":[],\"type\":2,\"properties\":{\"name\":\"开始\",\"x\":310,\"y\":200,\"text\":{\"x\":310,\"y\":240,\"value\":\"开始\"}},\"key\":\"Event_0vbtunu\"},{\"incoming\":[\"Flow_3599vu7\"],\"outgoing\":[\"Flow_1f2ei89\"],\"dockers\":[],\"type\":4,\"properties\":{\"name\":\"\",\"x\":520,\"y\":200,\"text\":\"\"},\"key\":\"Activity_0ivtksn\"},{\"incoming\":[\"Flow_1f2ei89\"],\"outgoing\":[\"Flow_1rkk099\"],\"dockers\":[],\"type\":6,\"properties\":{\"name\":\"\",\"x\":730,\"y\":200,\"text\":\"\"},\"key\":\"Gateway_2qj55i1\"},{\"incoming\":[\"Flow_1rkk099\"],\"outgoing\":[],\"dockers\":[],\"type\":3,\"properties\":{\"name\":\"结束\",\"x\":950,\"y\":200,\"text\":{\"x\":950,\"y\":240,\"value\":\"结束\"}},\"key\":\"Event_03pjf39\"},{\"incoming\":[\"Event_0vbtunu\"],\"outgoing\":[\"Activity_0ivtksn\"],\"type\":1,\"dockers\":[],\"properties\":{\"name\":\"\",\"text\":\"\",\"startPoint\":\"{\\\"x\\\":328,\\\"y\\\":200}\",\"endPoint\":\"{\\\"x\\\":470,\\\"y\\\":200}\",\"pointsList\":\"\\\"\\\"\"},\"key\":\"Flow_3599vu7\"},{\"incoming\":[\"Activity_0ivtksn\"],\"outgoing\":[\"Gateway_2qj55i1\"],\"type\":1,\"dockers\":[],\"properties\":{\"name\":\"\",\"text\":\"\",\"startPoint\":\"{\\\"x\\\":570,\\\"y\\\":200}\",\"endPoint\":\"{\\\"x\\\":705,\\\"y\\\":200}\",\"pointsList\":\"\\\"\\\"\"},\"key\":\"Flow_1f2ei89\"},{\"incoming\":[\"Gateway_2qj55i1\"],\"outgoing\":[\"Event_03pjf39\"],\"type\":1,\"dockers\":[],\"properties\":{\"conditionsequenceflow\":\"a==1\",\"name\":\"\",\"text\":\"\",\"startPoint\":\"{\\\"x\\\":755,\\\"y\\\":200}\",\"endPoint\":\"{\\\"x\\\":932,\\\"y\\\":200}\",\"pointsList\":\"\\\"\\\"\"},\"key\":\"Flow_1rkk099\"}]}";
         System.out.println(flowModel);
         UpdateFlowRequest updateFlowRequest = new UpdateFlowRequest();
@@ -83,6 +84,7 @@ public class FlowControllerTest {
      */
     @Test
     public void deployFlow() {
+        saveFlowModel();
         DeployFlowRequest deployFlowRequest = new DeployFlowRequest();
         deployFlowRequest.setFlowModuleId(flowModuleId);//模型唯一标识 必需
         deployFlowRequest.setTenant("testTenant"); //租户标识   必需
@@ -103,6 +105,7 @@ public class FlowControllerTest {
      */
     @Test
     public void queryFlow() {
+        deployFlow();
         GetFlowModuleRequest getFlowModuleRequest = new GetFlowModuleRequest();
         getFlowModuleRequest.setFlowModuleId(flowModuleId);//模型唯一标识 两个参数必须传入一个
         getFlowModuleRequest.setFlowDeployId(flowDeployId);//模型一次部署唯一标识 两个参数必须传入一个
@@ -129,6 +132,7 @@ public class FlowControllerTest {
      */
     @Test
     public void queryFlowList() {
+        deployFlow();
         GetFlowModuleListRequest getFlowModuleListRequest = new GetFlowModuleListRequest();
         getFlowModuleListRequest.setFlowName("测试流程");  // 模型名称  非必需
         getFlowModuleListRequest.setFlowModuleId(null);//模型唯一标识 非必需

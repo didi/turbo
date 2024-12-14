@@ -1,22 +1,42 @@
 package com.didiglobal.turbo.engine.engine.impl;
 
+import com.didiglobal.turbo.engine.core.TurboContext;
 import com.didiglobal.turbo.engine.engine.ProcessEngine;
-import com.didiglobal.turbo.engine.param.*;
+import com.didiglobal.turbo.engine.param.CommitTaskParam;
+import com.didiglobal.turbo.engine.param.CreateFlowParam;
+import com.didiglobal.turbo.engine.param.DeployFlowParam;
+import com.didiglobal.turbo.engine.param.GetFlowModuleParam;
+import com.didiglobal.turbo.engine.param.RollbackTaskParam;
+import com.didiglobal.turbo.engine.param.StartProcessParam;
+import com.didiglobal.turbo.engine.param.UpdateFlowParam;
 import com.didiglobal.turbo.engine.processor.DefinitionProcessor;
 import com.didiglobal.turbo.engine.processor.RuntimeProcessor;
-import com.didiglobal.turbo.engine.result.*;
-import org.springframework.stereotype.Service;
+import com.didiglobal.turbo.engine.result.CommitTaskResult;
+import com.didiglobal.turbo.engine.result.CreateFlowResult;
+import com.didiglobal.turbo.engine.result.DeployFlowResult;
+import com.didiglobal.turbo.engine.result.ElementInstanceListResult;
+import com.didiglobal.turbo.engine.result.FlowInstanceResult;
+import com.didiglobal.turbo.engine.result.FlowModuleResult;
+import com.didiglobal.turbo.engine.result.InstanceDataListResult;
+import com.didiglobal.turbo.engine.result.NodeInstanceListResult;
+import com.didiglobal.turbo.engine.result.NodeInstanceResult;
+import com.didiglobal.turbo.engine.result.RollbackTaskResult;
+import com.didiglobal.turbo.engine.result.StartProcessResult;
+import com.didiglobal.turbo.engine.result.TerminateResult;
+import com.didiglobal.turbo.engine.result.UpdateFlowResult;
 
-import javax.annotation.Resource;
-
-@Service
 public class ProcessEngineImpl implements ProcessEngine {
 
-    @Resource
     private DefinitionProcessor definitionProcessor;
 
-    @Resource
     private RuntimeProcessor runtimeProcessor;
+
+    @Override
+    public ProcessEngine configure(TurboContext turboContext) {
+        this.definitionProcessor = turboContext.getDefinitionProcessor();
+        this.runtimeProcessor = turboContext.getRuntimeProcessor();
+        return this;
+    }
 
     @Override
     public CreateFlowResult createFlow(CreateFlowParam createFlowParam) {

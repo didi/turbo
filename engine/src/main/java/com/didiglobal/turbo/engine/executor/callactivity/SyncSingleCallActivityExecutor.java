@@ -9,6 +9,13 @@ import com.didiglobal.turbo.engine.common.FlowInstanceMappingType;
 import com.didiglobal.turbo.engine.common.FlowInstanceStatus;
 import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
 import com.didiglobal.turbo.engine.common.RuntimeContext;
+import com.didiglobal.turbo.engine.config.BusinessConfig;
+import com.didiglobal.turbo.engine.dao.FlowDeploymentDAO;
+import com.didiglobal.turbo.engine.dao.FlowInstanceMappingDAO;
+import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
+import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
 import com.didiglobal.turbo.engine.entity.FlowDeploymentPO;
 import com.didiglobal.turbo.engine.entity.FlowInstanceMappingPO;
 import com.didiglobal.turbo.engine.entity.FlowInstancePO;
@@ -16,24 +23,26 @@ import com.didiglobal.turbo.engine.entity.InstanceDataPO;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.exception.SuspendException;
-import com.didiglobal.turbo.engine.exception.TurboException;
-import com.didiglobal.turbo.engine.executor.ElementExecutor;
+import com.didiglobal.turbo.engine.executor.ExecutorFactory;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
 import com.didiglobal.turbo.engine.param.CommitTaskParam;
 import com.didiglobal.turbo.engine.param.RollbackTaskParam;
 import com.didiglobal.turbo.engine.param.StartProcessParam;
+import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
+import com.didiglobal.turbo.engine.processor.RuntimeProcessor;
 import com.didiglobal.turbo.engine.result.CommitTaskResult;
 import com.didiglobal.turbo.engine.result.RollbackTaskResult;
 import com.didiglobal.turbo.engine.result.RuntimeResult;
 import com.didiglobal.turbo.engine.result.StartProcessResult;
+import com.didiglobal.turbo.engine.service.NodeInstanceService;
+import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
+import com.didiglobal.turbo.engine.util.TurboBeanUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -51,10 +60,13 @@ import java.util.Map;
  * 3.When External systems compute subFlowModuleId success, need continue to submit downward
  * 4.CallActivity node support repeated submission
  */
-@Service
 public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SyncSingleCallActivityExecutor.class);
+
+    public SyncSingleCallActivityExecutor(ExecutorFactory executorFactory, InstanceDataDAO instanceDataDAO, NodeInstanceDAO nodeInstanceDAO, ProcessInstanceDAO processInstanceDAO, NodeInstanceLogDAO nodeInstanceLogDAO, FlowInstanceMappingDAO flowInstanceMappingDAO, PluginManager pluginManager, RuntimeProcessor runtimeProcessor, FlowDeploymentDAO flowDeploymentDAO, NodeInstanceService nodeInstanceService, BusinessConfig businessConfig, ExpressionCalculator expressionCalculator) {
+        super(executorFactory, instanceDataDAO, nodeInstanceDAO, processInstanceDAO, nodeInstanceLogDAO, flowInstanceMappingDAO, pluginManager, runtimeProcessor, flowDeploymentDAO, nodeInstanceService, businessConfig, expressionCalculator);
+    }
 
     @Override
     protected void doExecute(RuntimeContext runtimeContext) throws ProcessException {
@@ -72,16 +84,16 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
         FlowElement flowElement = runtimeContext.getCurrentNodeModel();
         String nodeName = FlowModelUtil.getElementName(flowElement);
         LOGGER.info("doExecute: syncSingleCallActivity to commit.||flowInstanceId={}||nodeInstanceId={}||nodeKey={}||nodeName={}",
-            runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId(), flowElement.getKey(), nodeName);
+                runtimeContext.getFlowInstanceId(), currentNodeInstance.getNodeInstanceId(), flowElement.getKey(), nodeName);
         throw new SuspendException(ErrorEnum.COMMIT_SUSPEND, MessageFormat.format(Constants.NODE_INSTANCE_FORMAT,
-            flowElement.getKey(), nodeName, currentNodeInstance.getNodeInstanceId()));
+                flowElement.getKey(), nodeName, currentNodeInstance.getNodeInstanceId()));
     }
 
     @Override
     protected void preCommit(RuntimeContext runtimeContext) throws ProcessException {
         NodeInstanceBO suspendNodeInstance = runtimeContext.getSuspendNodeInstance();
         NodeInstanceBO currentNodeInstance = new NodeInstanceBO();
-        BeanUtils.copyProperties(suspendNodeInstance, currentNodeInstance);
+        TurboBeanUtils.copyProperties(suspendNodeInstance, currentNodeInstance);
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
     }
 
@@ -185,7 +197,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
         flowInstanceMappingPO.setCaller(runtimeContext.getCaller());
         flowInstanceMappingPO.setCreateTime(new Date());
         flowInstanceMappingPO.setModifyTime(new Date());
-        flowInstanceMappingDAO.save(flowInstanceMappingPO);
+        flowInstanceMappingDAO.insert(flowInstanceMappingPO);
     }
 
     private void handleReentrantSubFlowInstance(RuntimeContext runtimeContext, FlowInstanceMappingPO flowInstanceMappingPO) throws ProcessException {
@@ -231,7 +243,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
         runtimeResult.setStatus(subFlowInstancePO.getStatus());
 
         NodeInstance nodeInstance = new NodeInstance();
-        BeanUtils.copyProperties(nodeInstancePO, nodeInstance);
+        TurboBeanUtils.copyProperties(nodeInstancePO, nodeInstance);
         nodeInstance.setCreateTime(null);
         nodeInstance.setModifyTime(null);
         nodeInstance.setModelKey(nodeInstancePO.getNodeKey());
@@ -274,7 +286,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
         runtimeContext.getNodeInstanceList().add(currentNodeInstance);
 
         NodeInstanceBO newNodeInstanceBO = new NodeInstanceBO();
-        BeanUtils.copyProperties(currentNodeInstance, newNodeInstanceBO);
+        TurboBeanUtils.copyProperties(currentNodeInstance, newNodeInstanceBO);
         newNodeInstanceBO.setId(null);
         String newNodeInstanceId = genId();
         newNodeInstanceBO.setNodeInstanceId(newNodeInstanceId);
@@ -285,7 +297,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
         flowInstanceMappingDAO.updateType(oldFlowInstanceMappingPO.getFlowInstanceId(), oldFlowInstanceMappingPO.getNodeInstanceId(), FlowInstanceMappingType.TERMINATED);
 
         FlowInstanceMappingPO newFlowInstanceMappingPO = new FlowInstanceMappingPO();
-        BeanUtils.copyProperties(oldFlowInstanceMappingPO, newFlowInstanceMappingPO);
+        TurboBeanUtils.copyProperties(oldFlowInstanceMappingPO, newFlowInstanceMappingPO);
         newFlowInstanceMappingPO.setId(null);
         newFlowInstanceMappingPO.setNodeInstanceId(newNodeInstanceId);
         newFlowInstanceMappingPO.setCreateTime(new Date());

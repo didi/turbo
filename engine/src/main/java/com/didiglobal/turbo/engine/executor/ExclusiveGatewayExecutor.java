@@ -4,40 +4,42 @@ import com.didiglobal.turbo.engine.bo.NodeInstanceBO;
 import com.didiglobal.turbo.engine.common.InstanceDataType;
 import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
 import com.didiglobal.turbo.engine.common.RuntimeContext;
+import com.didiglobal.turbo.engine.dao.FlowInstanceMappingDAO;
+import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
+import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
 import com.didiglobal.turbo.engine.entity.InstanceDataPO;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
+import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
 import com.didiglobal.turbo.engine.spi.HookService;
+import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
+import com.didiglobal.turbo.engine.util.TurboBeanUtils;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Service
-public class ExclusiveGatewayExecutor extends ElementExecutor implements InitializingBean {
+public class ExclusiveGatewayExecutor extends ElementExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExclusiveGatewayExecutor.class);
 
-    @Resource
-    private ApplicationContext applicationContext;
+    private final List<HookService> hookServices;
 
-    private List<HookService> hookServices;
+    public ExclusiveGatewayExecutor(ExecutorFactory executorFactory, InstanceDataDAO instanceDataDAO, NodeInstanceDAO nodeInstanceDAO, ProcessInstanceDAO processInstanceDAO, NodeInstanceLogDAO nodeInstanceLogDAO, FlowInstanceMappingDAO flowInstanceMappingDAO, PluginManager pluginManager, List<HookService> hookServices, ExpressionCalculator expressionCalculator) {
+        super(executorFactory, instanceDataDAO, nodeInstanceDAO, processInstanceDAO, nodeInstanceLogDAO, flowInstanceMappingDAO, pluginManager, expressionCalculator);
+        this.hookServices = hookServices;
+    }
 
     /**
      * Update data map: invoke hook service to update data map
@@ -60,7 +62,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor implements Initial
         LOGGER.info("doExecute getHookInfoValueMap.||hookInfoValueMap={}", hookInfoValueMap);
         if (MapUtils.isEmpty(hookInfoValueMap)) {
             LOGGER.warn("doExecute: hookInfoValueMap is empty.||flowInstanceId={}||hookInfoParam={}||nodeKey={}",
-                runtimeContext.getFlowInstanceId(), hookInfoParam, flowElement.getKey());
+                    runtimeContext.getFlowInstanceId(), hookInfoParam, flowElement.getKey());
             return;
         }
 
@@ -82,12 +84,12 @@ public class ExclusiveGatewayExecutor extends ElementExecutor implements Initial
                 List<InstanceData> list = service.invoke(flowInstanceId, hookInfoParam, nodeKey, nodeInstanceId);
                 if (CollectionUtils.isEmpty(list)) {
                     LOGGER.warn("hook service invoke result is empty, serviceName={}, flowInstanceId={}, hookInfoParam={}",
-                        service.getClass().getName(), flowInstanceId, hookInfoParam);
+                            service.getClass().getName(), flowInstanceId, hookInfoParam);
                 }
                 dataList.addAll(list);
             } catch (Exception e) {
                 LOGGER.warn("hook service invoke fail, serviceName={}, flowInstanceId={}, hookInfoParam={}",
-                    service.getClass().getName(), flowInstanceId, hookInfoParam);
+                        service.getClass().getName(), flowInstanceId, hookInfoParam);
             }
         }
         return InstanceDataUtil.getInstanceDataMap(dataList);
@@ -102,7 +104,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor implements Initial
 
     private InstanceDataPO buildHookInstanceData(String instanceDataId, RuntimeContext runtimeContext) {
         InstanceDataPO instanceDataPO = new InstanceDataPO();
-        BeanUtils.copyProperties(runtimeContext, instanceDataPO);
+        TurboBeanUtils.copyProperties(runtimeContext, instanceDataPO);
         instanceDataPO.setInstanceDataId(instanceDataId);
         instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataListStr(runtimeContext.getInstanceDataMap()));
         instanceDataPO.setNodeInstanceId(runtimeContext.getCurrentNodeInstance().getNodeInstanceId());
@@ -131,35 +133,10 @@ public class ExclusiveGatewayExecutor extends ElementExecutor implements Initial
     @Override
     protected RuntimeExecutor getExecuteExecutor(RuntimeContext runtimeContext) throws ProcessException {
         FlowElement nextNode = calculateNextNode(runtimeContext.getCurrentNodeModel(),
-            runtimeContext.getFlowElementMap(), runtimeContext.getInstanceDataMap());
+                runtimeContext.getFlowElementMap(), runtimeContext.getInstanceDataMap());
 
         runtimeContext.setCurrentNodeModel(nextNode);
         return executorFactory.getElementExecutor(nextNode);
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        ensureHookService();
-    }
-
-    private void ensureHookService() {
-        if (hookServices != null) {
-            return;
-        }
-
-        // init hook services by Spring application context
-        synchronized (ExclusiveGatewayExecutor.class) {
-            if (hookServices != null) {
-                return;
-            }
-            hookServices = new ArrayList<>();
-            String[] names = applicationContext.getBeanNamesForType(HookService.class);
-            for (String name : names) {
-                Object bean = applicationContext.getBean(name);
-                if (bean != null) {
-                    hookServices.add((HookService) bean);
-                }
-            }
-        }
-    }
 }

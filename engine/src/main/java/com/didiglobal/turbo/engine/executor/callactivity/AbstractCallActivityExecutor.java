@@ -8,19 +8,25 @@ import com.didiglobal.turbo.engine.common.InstanceDataType;
 import com.didiglobal.turbo.engine.common.RuntimeContext;
 import com.didiglobal.turbo.engine.config.BusinessConfig;
 import com.didiglobal.turbo.engine.dao.FlowDeploymentDAO;
+import com.didiglobal.turbo.engine.dao.FlowInstanceMappingDAO;
+import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
+import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
 import com.didiglobal.turbo.engine.entity.InstanceDataPO;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.executor.ElementExecutor;
+import com.didiglobal.turbo.engine.executor.ExecutorFactory;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
+import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
 import com.didiglobal.turbo.engine.processor.RuntimeProcessor;
 import com.didiglobal.turbo.engine.service.NodeInstanceService;
+import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
+import com.didiglobal.turbo.engine.util.TurboBeanUtils;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-
-import javax.annotation.Resource;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -33,17 +39,21 @@ import java.util.Map;
  */
 public abstract class AbstractCallActivityExecutor extends ElementExecutor {
 
-    @Resource
-    protected RuntimeProcessor runtimeProcessor;
+    protected final RuntimeProcessor runtimeProcessor;
 
-    @Resource
-    protected FlowDeploymentDAO flowDeploymentDAO;
+    protected final FlowDeploymentDAO flowDeploymentDAO;
 
-    @Resource
-    protected NodeInstanceService nodeInstanceService;
+    protected final NodeInstanceService nodeInstanceService;
 
-    @Resource
-    protected BusinessConfig businessConfig;
+    protected final BusinessConfig businessConfig;
+
+    protected AbstractCallActivityExecutor(ExecutorFactory executorFactory, InstanceDataDAO instanceDataDAO, NodeInstanceDAO nodeInstanceDAO, ProcessInstanceDAO processInstanceDAO, NodeInstanceLogDAO nodeInstanceLogDAO, FlowInstanceMappingDAO flowInstanceMappingDAO, PluginManager pluginManager, RuntimeProcessor runtimeProcessor, FlowDeploymentDAO flowDeploymentDAO, NodeInstanceService nodeInstanceService, BusinessConfig businessConfig, ExpressionCalculator expressionCalculator) {
+        super(executorFactory, instanceDataDAO, nodeInstanceDAO, processInstanceDAO, nodeInstanceLogDAO, flowInstanceMappingDAO, pluginManager, expressionCalculator);
+        this.runtimeProcessor = runtimeProcessor;
+        this.flowDeploymentDAO = flowDeploymentDAO;
+        this.nodeInstanceService = nodeInstanceService;
+        this.businessConfig = businessConfig;
+    }
 
     protected List<InstanceData> getCallActivityVariables(RuntimeContext runtimeContext) throws ProcessException {
         List<InstanceData> callActivityInitData = InstanceDataUtil.getInstanceDataList(runtimeContext.getInstanceDataMap());
@@ -66,16 +76,16 @@ public abstract class AbstractCallActivityExecutor extends ElementExecutor {
         Map<String, InstanceData> mainInstanceDataMap = InstanceDataUtil.getInstanceDataMap(instanceDataPO.getInstanceData());
 
         return calculateCallActivityDataTransfer(currentNodeModel, mainInstanceDataMap,
-            Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_IN_PARAM_TYPE,
-            Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_IN_PARAM);
+                Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_IN_PARAM_TYPE,
+                Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_IN_PARAM);
     }
 
     // sub > main
     protected List<InstanceData> calculateCallActivityOutParamFromSubFlow(RuntimeContext runtimeContext, List<InstanceData> subFlowData) throws ProcessException {
         FlowElement currentNodeModel = runtimeContext.getCurrentNodeModel();
         return calculateCallActivityDataTransfer(currentNodeModel, InstanceDataUtil.getInstanceDataMap(subFlowData),
-            Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_OUT_PARAM_TYPE,
-            Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_OUT_PARAM);
+                Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_OUT_PARAM_TYPE,
+                Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_OUT_PARAM);
     }
 
     private List<InstanceData> calculateCallActivityDataTransfer(FlowElement currentNodeModel, Map<String, InstanceData> instanceDataMap, String callActivityParamType, String callActivityParam) throws ProcessException {
@@ -111,7 +121,7 @@ public abstract class AbstractCallActivityExecutor extends ElementExecutor {
 
     protected InstanceDataPO buildCallActivityEndInstanceData(String instanceDataId, RuntimeContext runtimeContext) {
         InstanceDataPO instanceDataPO = new InstanceDataPO();
-        BeanUtils.copyProperties(runtimeContext, instanceDataPO);
+        TurboBeanUtils.copyProperties(runtimeContext, instanceDataPO);
         instanceDataPO.setInstanceDataId(instanceDataId);
         instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataListStr(runtimeContext.getInstanceDataMap()));
         instanceDataPO.setNodeInstanceId(runtimeContext.getCurrentNodeInstance().getNodeInstanceId());

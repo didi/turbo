@@ -15,35 +15,37 @@ import com.didiglobal.turbo.engine.util.StrongUuidGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
-
 import java.util.List;
 
 public abstract class RuntimeExecutor {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(RuntimeExecutor.class);
 
-    @Resource
-    protected ExecutorFactory executorFactory;
+    protected final ExecutorFactory executorFactory;
 
-    @Resource
-    protected InstanceDataDAO instanceDataDAO;
+    protected final InstanceDataDAO instanceDataDAO;
 
-    @Resource
-    protected NodeInstanceDAO nodeInstanceDAO;
+    protected final NodeInstanceDAO nodeInstanceDAO;
 
-    @Resource
-    protected ProcessInstanceDAO processInstanceDAO;
+    protected final ProcessInstanceDAO processInstanceDAO;
 
-    @Resource
-    protected NodeInstanceLogDAO nodeInstanceLogDAO;
+    protected final NodeInstanceLogDAO nodeInstanceLogDAO;
+
+    protected final FlowInstanceMappingDAO flowInstanceMappingDAO;
+
+    protected final PluginManager pluginManager;
 
     private IdGenerator ID_GENERATOR;
-    @Resource
-    protected FlowInstanceMappingDAO flowInstanceMappingDAO;
 
-    @Resource
-    protected PluginManager pluginManager;
+    protected RuntimeExecutor(ExecutorFactory executorFactory, InstanceDataDAO instanceDataDAO, NodeInstanceDAO nodeInstanceDAO, ProcessInstanceDAO processInstanceDAO, NodeInstanceLogDAO nodeInstanceLogDAO, FlowInstanceMappingDAO flowInstanceMappingDAO, PluginManager pluginManager) {
+        this.executorFactory = executorFactory;
+        this.instanceDataDAO = instanceDataDAO;
+        this.nodeInstanceDAO = nodeInstanceDAO;
+        this.processInstanceDAO = processInstanceDAO;
+        this.nodeInstanceLogDAO = nodeInstanceLogDAO;
+        this.flowInstanceMappingDAO = flowInstanceMappingDAO;
+        this.pluginManager = pluginManager;
+    }
 
     protected String genId() {
         if (null == ID_GENERATOR) {
