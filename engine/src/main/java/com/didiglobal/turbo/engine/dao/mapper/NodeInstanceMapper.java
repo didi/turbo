@@ -40,6 +40,10 @@ public interface NodeInstanceMapper extends BaseMapper<NodeInstancePO> {
             "WHERE node_instance_id=#{nodeInstanceId}")
     void updateStatus(NodeInstancePO entity);
 
+    @Update("UPDATE ei_node_instance SET instance_data_id=#{instanceDataId}, status=#{status}, modify_time=#{modifyTime} " +
+            "WHERE node_instance_id=#{nodeInstanceId}")
+    void updateDataIdAndStatus(NodeInstancePO entity);
+
 
     @InsertProvider(type = NodeInstanceProvider.class, method = "batchInsert")
     @Options(useGeneratedKeys = true, keyProperty = "list.id")
