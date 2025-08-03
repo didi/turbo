@@ -104,7 +104,7 @@ public class FlowServiceImpl {
             FlowModuleResponse getFlowModuleResponse = new FlowModuleResponse();
             BeanUtils.copyProperties(flowDefinitionPO, getFlowModuleResponse);
             QueryWrapper<FlowDeploymentPO> flowDeployQuery = buildCountFlowDeployQueryWrapper(flowDefinitionPO.getFlowModuleId());
-            int count = flowDeploymentDAO.count(flowDeployQuery);
+            int count = Math.toIntExact(flowDeploymentDAO.count(flowDeployQuery));
             if (count >= 1) {
                 //4 已发布
                 getFlowModuleResponse.setStatus(FlowModuleStatusEnum.PUBLISHED.getValue());

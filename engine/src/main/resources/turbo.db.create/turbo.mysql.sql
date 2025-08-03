@@ -1,3 +1,5 @@
+create database if not exists `turbo`;
+use `turbo`;
 DROP TABLE IF EXISTS `em_flow_definition`;
 CREATE TABLE IF NOT EXISTS `em_flow_definition` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
