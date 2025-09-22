@@ -57,8 +57,8 @@ public class PluginConfig {
     public ExpressionCalculator getExpressionCalculator(PluginManager pluginManager) {
         List<ExpressionCalculatorPlugin> expressionCalculatorPlugins = pluginManager.getPluginsFor(ExpressionCalculatorPlugin.class);
         if (!expressionCalculatorPlugins.isEmpty()) {
-            LOGGER.info("Found expression calculator plugin: {}", expressionCalculatorPlugins.get(0).getName());
-            return expressionCalculatorPlugins.get(0).getExpressionCalculator();
+            LOGGER.info("Found expression calculator plugin: {}", expressionCalculatorPlugins.getFirst().getName());
+            return expressionCalculatorPlugins.getFirst().getExpressionCalculator();
         }
         return new GroovyExpressionCalculator();
     }
@@ -72,8 +72,8 @@ public class PluginConfig {
     public IdGenerator getIdGenerator(PluginManager pluginManager) {
         List<IdGeneratorPlugin> expressionCalculatorPlugins = pluginManager.getPluginsFor(IdGeneratorPlugin.class);
         if (!expressionCalculatorPlugins.isEmpty()) {
-            LOGGER.info("Found id generator plugin: {}", expressionCalculatorPlugins.get(0).getName());
-            return expressionCalculatorPlugins.get(0).getIdGenerator();
+            LOGGER.info("Found id generator plugin: {}", expressionCalculatorPlugins.getFirst().getName());
+            return expressionCalculatorPlugins.getFirst().getIdGenerator();
         }
         return new StrongUuidGenerator();
     }
