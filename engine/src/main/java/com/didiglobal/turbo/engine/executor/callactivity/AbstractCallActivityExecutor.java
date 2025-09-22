@@ -81,30 +81,32 @@ public abstract class AbstractCallActivityExecutor extends ElementExecutor {
     private List<InstanceData> calculateCallActivityDataTransfer(FlowElement currentNodeModel, Map<String, InstanceData> instanceDataMap, String callActivityParamType, String callActivityParam) throws ProcessException {
         // default FULL
         String callActivityInParamType = (String) currentNodeModel.getProperties().getOrDefault(callActivityParamType, Constants.CALL_ACTIVITY_PARAM_TYPE.FULL);
-        if (callActivityInParamType.equals(Constants.CALL_ACTIVITY_PARAM_TYPE.NONE)) {
-            return new ArrayList<>();
-        }
-        if (callActivityInParamType.equals(Constants.CALL_ACTIVITY_PARAM_TYPE.PART)) {
-            List<InstanceData> instanceDataList = Lists.newArrayList();
-            String callActivityInParam = (String) currentNodeModel.getProperties().getOrDefault(callActivityParam, StringUtils.EMPTY);
-            List<DataTransferBO> callActivityDataTransfers = JSON.parseArray(callActivityInParam, DataTransferBO.class);
-            for (DataTransferBO callActivityDataTransfer : callActivityDataTransfers) {
-                if (Constants.CALL_ACTIVITY_DATA_TRANSFER_TYPE.SOURCE_TYPE_CONTEXT.equals(callActivityDataTransfer.getSourceType())) {
-                    InstanceData sourceInstanceData = instanceDataMap.get(callActivityDataTransfer.getSourceKey());
-                    Object sourceValue = sourceInstanceData == null ? null : sourceInstanceData.getValue();
-                    InstanceData instanceData = new InstanceData(callActivityDataTransfer.getTargetKey(), sourceValue);
-                    instanceDataList.add(instanceData);
-                } else if (Constants.CALL_ACTIVITY_DATA_TRANSFER_TYPE.SOURCE_TYPE_FIXED.equals(callActivityDataTransfer.getSourceType())) {
-                    InstanceData instanceData = new InstanceData(callActivityDataTransfer.getTargetKey(), callActivityDataTransfer.getSourceValue());
-                    instanceDataList.add(instanceData);
-                } else {
-                    throw new ProcessException(ErrorEnum.MODEL_UNKNOWN_ELEMENT_VALUE);
-                }
+        switch (callActivityInParamType) {
+            case Constants.CALL_ACTIVITY_PARAM_TYPE.NONE -> {
+                return new ArrayList<>();
             }
-            return instanceDataList;
-        }
-        if (callActivityInParamType.equals(Constants.CALL_ACTIVITY_PARAM_TYPE.FULL)) {
-            return InstanceDataUtil.getInstanceDataList(instanceDataMap);
+            case Constants.CALL_ACTIVITY_PARAM_TYPE.PART -> {
+                List<InstanceData> instanceDataList = Lists.newArrayList();
+                String callActivityInParam = (String) currentNodeModel.getProperties().getOrDefault(callActivityParam, StringUtils.EMPTY);
+                List<DataTransferBO> callActivityDataTransfers = JSON.parseArray(callActivityInParam, DataTransferBO.class);
+                for (DataTransferBO callActivityDataTransfer : callActivityDataTransfers) {
+                    if (Constants.CALL_ACTIVITY_DATA_TRANSFER_TYPE.SOURCE_TYPE_CONTEXT.equals(callActivityDataTransfer.getSourceType())) {
+                        InstanceData sourceInstanceData = instanceDataMap.get(callActivityDataTransfer.getSourceKey());
+                        Object sourceValue = sourceInstanceData == null ? null : sourceInstanceData.getValue();
+                        InstanceData instanceData = new InstanceData(callActivityDataTransfer.getTargetKey(), sourceValue);
+                        instanceDataList.add(instanceData);
+                    } else if (Constants.CALL_ACTIVITY_DATA_TRANSFER_TYPE.SOURCE_TYPE_FIXED.equals(callActivityDataTransfer.getSourceType())) {
+                        InstanceData instanceData = new InstanceData(callActivityDataTransfer.getTargetKey(), callActivityDataTransfer.getSourceValue());
+                        instanceDataList.add(instanceData);
+                    } else {
+                        throw new ProcessException(ErrorEnum.MODEL_UNKNOWN_ELEMENT_VALUE);
+                    }
+                }
+                return instanceDataList;
+            }
+            case Constants.CALL_ACTIVITY_PARAM_TYPE.FULL -> {
+                return InstanceDataUtil.getInstanceDataList(instanceDataMap);
+            }
         }
         throw new ProcessException(ErrorEnum.MODEL_UNKNOWN_ELEMENT_VALUE);
     }
