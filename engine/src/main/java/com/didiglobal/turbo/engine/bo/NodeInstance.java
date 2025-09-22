@@ -16,14 +16,6 @@ public class NodeInstance extends ElementInstance {
     private Date modifyTime;
     private Map<String, Object> properties = new HashMap<>();
 
-    public String getNodeInstanceId() {
-        return nodeInstanceId;
-    }
-
-    public void setNodeInstanceId(String nodeInstanceId) {
-        this.nodeInstanceId = nodeInstanceId;
-    }
-
     public Date getCreateTime() {
         return createTime;
     }
