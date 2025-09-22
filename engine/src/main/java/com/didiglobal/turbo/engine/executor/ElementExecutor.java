@@ -23,6 +23,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class ElementExecutor extends RuntimeExecutor {
 
@@ -85,7 +86,9 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         currentNodeInstance.setStatus(NodeInstanceStatus.ACTIVE);
         currentNodeInstance.getProperties().putAll(runtimeContext.getExtendProperties());
         currentNodeInstance.setNodeType(runtimeContext.getCurrentNodeModel().getType());
-        currentNodeInstance.setInstanceDataId(StringUtils.defaultString(runtimeContext.getInstanceDataId(), StringUtils.EMPTY));
+        currentNodeInstance.setInstanceDataId(
+                Objects.toString(runtimeContext.getInstanceDataId(), StringUtils.EMPTY)
+        );
 
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
     }
