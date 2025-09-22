@@ -263,13 +263,8 @@ public abstract class ElementExecutor extends RuntimeExecutor {
             return false;
         }
 
-        //case 3.process completed
-        if (nodeInstance.getStatus() == NodeInstanceStatus.COMPLETED) {
-            return true;
-        }
-
-        //case 4.to process
-        return false;
+        //case 3.process completed, case 4.to process
+        return nodeInstance.getStatus() == NodeInstanceStatus.COMPLETED;
     }
 
     protected FlowElement getUniqueNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap) {
