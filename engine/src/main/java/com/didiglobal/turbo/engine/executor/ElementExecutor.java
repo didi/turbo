@@ -205,7 +205,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     }
 
     /**
-     * Update runtimeContext: update currentNodeInstance.status to DISABLED and add it to nodeInstanceList
+     * Update runtimeContext: update currentNodeInstance. Status to DISABLED and add it to nodeInstanceList
      *
      * @throws Exception
      */
@@ -274,7 +274,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
 
     protected FlowElement getUniqueNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap) {
         List<String> outgoingKeyList = currentFlowElement.getOutgoing();
-        String nextElementKey = outgoingKeyList.get(0);
+        String nextElementKey = outgoingKeyList.getFirst();
         FlowElement nextFlowElement = FlowModelUtil.getFlowElement(flowElementMap, nextElementKey);
         while (nextFlowElement.getType() == FlowElementType.SEQUENCE_FLOW) {
             nextFlowElement = getUniqueNextNode(nextFlowElement, flowElementMap);
