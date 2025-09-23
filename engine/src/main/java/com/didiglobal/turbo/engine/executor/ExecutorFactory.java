@@ -60,8 +60,8 @@ public class ExecutorFactory {
         executorMap.put(FlowElementType.END_EVENT, endEventExecutor);
         executorMap.put(FlowElementType.USER_TASK, userTaskExecutor);
         executorMap.put(FlowElementType.EXCLUSIVE_GATEWAY, exclusiveGatewayExecutor);
-        List<ElementPlugin> elementPlugins = pluginManager.getPluginsFor(ElementPlugin.class);
-        elementPlugins.forEach(elementPlugin -> executorMap.put(elementPlugin.getFlowElementType(), elementPlugin.getElementExecutor()));
+        pluginManager.getPluginsFor(ElementPlugin.class)
+                .forEach(elementPlugin -> executorMap.put(elementPlugin.getFlowElementType(), elementPlugin.getElementExecutor()));
     }
 
     public ElementExecutor getElementExecutor(FlowElement flowElement) throws ProcessException {
