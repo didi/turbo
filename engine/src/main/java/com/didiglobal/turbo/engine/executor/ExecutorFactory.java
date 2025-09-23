@@ -91,14 +91,13 @@ public class ExecutorFactory {
             return null;
         }
         Map<String, Object> properties = flowElement.getProperties();
-        String callActivityExecuteType = Constants.CALL_ACTIVITY_EXECUTE_TYPE.SYNC;
-        if (properties.containsKey(Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_EXECUTE_TYPE)) {
-            callActivityExecuteType = properties.get(Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_EXECUTE_TYPE).toString();
-        }
-        String callActivityInstanceType = Constants.CALL_ACTIVITY_INSTANCE_TYPE.SINGLE;
-        if (properties.containsKey(Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_INSTANCE_TYPE)) {
-            callActivityInstanceType = properties.get(Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_INSTANCE_TYPE).toString();
-        }
+        String callActivityExecuteType = properties.getOrDefault(
+                Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_EXECUTE_TYPE,
+                Constants.CALL_ACTIVITY_EXECUTE_TYPE.SYNC).toString();
+
+        String callActivityInstanceType = properties.getOrDefault(
+                Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_INSTANCE_TYPE,
+                Constants.CALL_ACTIVITY_INSTANCE_TYPE.SINGLE).toString();
 
         if (callActivityExecuteType.equals(Constants.CALL_ACTIVITY_EXECUTE_TYPE.SYNC)
             && callActivityInstanceType.equals(Constants.CALL_ACTIVITY_INSTANCE_TYPE.SINGLE)) {
