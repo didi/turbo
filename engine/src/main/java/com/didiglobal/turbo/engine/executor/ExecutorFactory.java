@@ -20,6 +20,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ExecutorFactory {
@@ -65,16 +66,13 @@ public class ExecutorFactory {
     }
 
     public ElementExecutor getElementExecutor(FlowElement flowElement) throws ProcessException {
-        ElementExecutor elementExecutor = getElementExecutorInternal(flowElement);
-
-        if (elementExecutor == null) {
-            LOGGER.warn("getElementExecutor failed: unsupported elementType.|elementType={}", flowElement.getType());
-            throw new ProcessException(ErrorEnum.UNSUPPORTED_ELEMENT_TYPE,
-                MessageFormat.format(Constants.NODE_INFO_FORMAT, flowElement.getKey(),
-                    FlowModelUtil.getElementName(flowElement), flowElement.getType()));
-        }
-
-        return elementExecutor;
+        return Optional.ofNullable(getElementExecutorInternal(flowElement))
+                .orElseThrow(() -> {
+                    LOGGER.warn("getElementExecutor failed: unsupported elementType.|elementType={}", flowElement.getType());
+                    return new ProcessException(ErrorEnum.UNSUPPORTED_ELEMENT_TYPE,
+                            MessageFormat.format(Constants.NODE_INFO_FORMAT, flowElement.getKey(),
+                                    FlowModelUtil.getElementName(flowElement), flowElement.getType()));
+                });
     }
 
     private ElementExecutor getElementExecutorInternal(FlowElement flowElement) {
