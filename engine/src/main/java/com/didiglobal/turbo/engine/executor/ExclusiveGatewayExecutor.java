@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ExclusiveGatewayExecutor extends ElementExecutor implements InitializingBean {
@@ -76,20 +78,22 @@ public class ExclusiveGatewayExecutor extends ElementExecutor implements Initial
     }
 
     private Map<String, InstanceData> getHookInfoValueMap(String flowInstanceId, String hookInfoParam, String nodeKey, String nodeInstanceId) {
-        List<InstanceData> dataList = Lists.newArrayList();
-        for (HookService service : hookServices) {
-            try {
-                List<InstanceData> list = service.invoke(flowInstanceId, hookInfoParam, nodeKey, nodeInstanceId);
-                if (CollectionUtils.isEmpty(list)) {
-                    LOGGER.warn("hook service invoke result is empty, serviceName={}, flowInstanceId={}, hookInfoParam={}",
-                        service.getClass().getName(), flowInstanceId, hookInfoParam);
-                }
-                dataList.addAll(list);
-            } catch (Exception e) {
-                LOGGER.warn("hook service invoke fail, serviceName={}, flowInstanceId={}, hookInfoParam={}",
-                    service.getClass().getName(), flowInstanceId, hookInfoParam);
-            }
-        }
+        List<InstanceData> dataList = hookServices.parallelStream()
+                .flatMap(service -> {
+                    try {
+                        List<InstanceData> list = service.invoke(flowInstanceId, hookInfoParam, nodeKey, nodeInstanceId);
+                        if (CollectionUtils.isEmpty(list)) {
+                            LOGGER.warn("hook service invoke result is empty, serviceName={}, flowInstanceId={}, hookInfoParam={}",
+                                    service.getClass().getName(), flowInstanceId, hookInfoParam);
+                        }
+                        return list.stream();
+                    } catch (Exception e) {
+                        LOGGER.warn("hook service invoke fail, serviceName={}, flowInstanceId={}, hookInfoParam={}",
+                                service.getClass().getName(), flowInstanceId, hookInfoParam);
+                        return Stream.empty();
+                    }
+                })
+                .collect(Collectors.toList());
         return InstanceDataUtil.getInstanceDataMap(dataList);
     }
 
