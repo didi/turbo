@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Resource;
 
 import java.util.List;
+import java.util.Objects;
 
 public abstract class RuntimeExecutor {
 
@@ -48,11 +49,10 @@ public abstract class RuntimeExecutor {
     protected String genId() {
         if (null == ID_GENERATOR) {
             List<IdGeneratorPlugin> idGeneratorPlugins = pluginManager.getPluginsFor(IdGeneratorPlugin.class);
-            if (!idGeneratorPlugins.isEmpty()) {
-                ID_GENERATOR = idGeneratorPlugins.get(0).getIdGenerator();
-            } else {
-                ID_GENERATOR = new StrongUuidGenerator();
-            }
+            ID_GENERATOR = Objects.requireNonNullElse(
+                    idGeneratorPlugins.isEmpty() ? null : idGeneratorPlugins.getFirst().getIdGenerator(),
+                    new StrongUuidGenerator()
+            );
         }
         return ID_GENERATOR.getNextId();
     }
