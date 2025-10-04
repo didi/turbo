@@ -76,11 +76,10 @@ public class ExecutorFactory {
     }
 
     private ElementExecutor getElementExecutorInternal(FlowElement flowElement) {
-        ElementExecutor elementExecutor = switch (flowElement.getType()) {
+        return switch (flowElement.getType()) {
             case FlowElementType.CALL_ACTIVITY -> getCallActivityExecutor(flowElement);
             default -> executorMap.get(flowElement.getType());
         };
-        return elementExecutor;
     }
 
     private ElementExecutor getCallActivityExecutor(FlowElement flowElement) {
