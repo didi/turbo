@@ -47,18 +47,14 @@ public abstract class AbstractPluginManager implements PluginManager {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends Plugin> List<T> getPluginsFor(Class<T> pluginInterface) {
-        switch (pluginInterface.getSimpleName()) {
-            case "ElementPlugin":
-                return (List<T>) pluginMap.get(PluginTypeEnum.ELEMENT_PLUGIN.getPluginType());
-            case "IdGeneratorPlugin":
-                return (List<T>) pluginMap.get(PluginTypeEnum.ID_GENERATOR_PLUGIN.getPluginType());
-            case "ExpressionCalculatorPlugin":
-                return (List<T>) pluginMap.get(PluginTypeEnum.EXPRESSION_CALCULATOR_PLUGIN.getPluginType());
-            case "ListenerPlugin":
-                return (List<T>) pluginMap.get(PluginTypeEnum.LISTENER_PLUGIN.getPluginType());
-            default:
-                return new ArrayList<>();
-        }
+        return switch (pluginInterface.getSimpleName()) {
+            case "ElementPlugin" -> (List<T>) pluginMap.get(PluginTypeEnum.ELEMENT_PLUGIN.getPluginType());
+            case "IdGeneratorPlugin" -> (List<T>) pluginMap.get(PluginTypeEnum.ID_GENERATOR_PLUGIN.getPluginType());
+            case "ExpressionCalculatorPlugin" ->
+                    (List<T>) pluginMap.get(PluginTypeEnum.EXPRESSION_CALCULATOR_PLUGIN.getPluginType());
+            case "ListenerPlugin" -> (List<T>) pluginMap.get(PluginTypeEnum.LISTENER_PLUGIN.getPluginType());
+            default -> new ArrayList<>();
+        };
     }
 
     @Override
