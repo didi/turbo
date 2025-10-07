@@ -14,7 +14,7 @@
         <version>1.2.0</version>
     </parent>
     <properties>
-        <groovy.version>2.3.7</groovy.version>
+        <groovy.version>4.0.22</groovy.version>
         <spring-boot-starter.version>3.2.2</spring-boot-starter.version>
     </properties>
 
@@ -76,8 +76,8 @@
             <artifactId>commons-collections4</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
