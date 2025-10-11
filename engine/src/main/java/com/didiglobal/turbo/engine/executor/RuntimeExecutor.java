@@ -49,10 +49,11 @@ public abstract class RuntimeExecutor {
     protected String genId() {
         if (null == ID_GENERATOR) {
             List<IdGeneratorPlugin> idGeneratorPlugins = pluginManager.getPluginsFor(IdGeneratorPlugin.class);
-            ID_GENERATOR = Objects.requireNonNullElse(
-                    idGeneratorPlugins.isEmpty() ? null : idGeneratorPlugins.get(0).getIdGenerator(),
-                    new StrongUuidGenerator()
-            );
+            if (!idGeneratorPlugins.isEmpty()) {
+                ID_GENERATOR = idGeneratorPlugins.get(0).getIdGenerator();
+            } else {
+                ID_GENERATOR = new StrongUuidGenerator();
+            }
         }
         return ID_GENERATOR.getNextId();
     }
