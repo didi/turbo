@@ -50,7 +50,7 @@ public abstract class RuntimeExecutor {
         if (null == ID_GENERATOR) {
             List<IdGeneratorPlugin> idGeneratorPlugins = pluginManager.getPluginsFor(IdGeneratorPlugin.class);
             ID_GENERATOR = Objects.requireNonNullElse(
-                    idGeneratorPlugins.isEmpty() ? null : idGeneratorPlugins.getFirst().getIdGenerator(),
+                    idGeneratorPlugins.isEmpty() ? null : idGeneratorPlugins.get(0).getIdGenerator(),
                     new StrongUuidGenerator()
             );
         }

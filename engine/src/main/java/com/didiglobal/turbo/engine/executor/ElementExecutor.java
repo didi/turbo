@@ -272,7 +272,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
 
     protected FlowElement getUniqueNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap) {
         List<String> outgoingKeyList = currentFlowElement.getOutgoing();
-        String nextElementKey = outgoingKeyList.getFirst();
+        String nextElementKey = outgoingKeyList.get(0);
         FlowElement nextFlowElement = FlowModelUtil.getFlowElement(flowElementMap, nextElementKey);
         while (nextFlowElement.getType() == FlowElementType.SEQUENCE_FLOW) {
             nextFlowElement = getUniqueNextNode(nextFlowElement, flowElementMap);
