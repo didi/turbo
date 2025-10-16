@@ -1,6 +1,6 @@
 package com.didiglobal.turbo.plugin.config;
 
-import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
+import com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure;
 import com.didiglobal.turbo.engine.common.EntityPOEnum;
 import com.didiglobal.turbo.engine.plugin.CustomOperationHandlerRegistry;
 import com.didiglobal.turbo.plugin.dao.ParallelNodeInstanceHandler;

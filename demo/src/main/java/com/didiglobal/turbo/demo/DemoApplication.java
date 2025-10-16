@@ -25,7 +25,7 @@ public class DemoApplication {
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
         //防全表更新与删除插件
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
-        //分页插件
+        //分页插件，设置数据源为 MySQL，为其他的需要重新配置
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
         return interceptor;
     }
