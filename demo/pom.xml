@@ -6,20 +6,20 @@
     <parent>
         <groupId>com.didiglobal.turbo</groupId>
         <artifactId>turbo</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>demo</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>21</java.version>
         <spring-boot.version>3.2.2</spring-boot.version>
-        <turbo.engine.version>1.2.0</turbo.engine.version>
+        <turbo.engine.version>1.2.1</turbo.engine.version>
         <h2.version>1.4.200</h2.version>
     </properties>
 

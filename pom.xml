@@ -6,7 +6,7 @@
     <groupId>com.didiglobal.turbo</groupId>
     <artifactId>turbo</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <name>turbo</name>
     <description>Turbo is a light-weight flow engine framework, support BPMN2.0</description>
     <url>https://www.github.com/didi/turbo</url>
@@ -55,6 +55,11 @@
             <organization>Didi</organization>
             <organizationUrl>http://www.didiglobal.com</organizationUrl>
         </developer>
+        <developer>
+            <name>zesenwu</name>
+            <organization>Didi</organization>
+            <organizationUrl>http://www.didiglobal.com</organizationUrl>
+        </developer>
     </developers>
 
     <modules>
@@ -66,7 +71,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>21</java.version>
-        <spring-boot.version>3.2.2</spring-boot.version>
+        <spring-boot.version>3.5.0</spring-boot.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
         <mysql-connector-java.version>8.0.28</mysql-connector-java.version>
