@@ -78,13 +78,14 @@ public class ExclusiveGatewayExecutor extends ElementExecutor implements Initial
     }
 
     private Map<String, InstanceData> getHookInfoValueMap(String flowInstanceId, String hookInfoParam, String nodeKey, String nodeInstanceId) {
-        List<InstanceData> dataList = hookServices.parallelStream()
+        List<InstanceData> dataList = hookServices.stream()
                 .flatMap(service -> {
                     try {
                         List<InstanceData> list = service.invoke(flowInstanceId, hookInfoParam, nodeKey, nodeInstanceId);
                         if (CollectionUtils.isEmpty(list)) {
                             LOGGER.warn("hook service invoke result is empty, serviceName={}, flowInstanceId={}, hookInfoParam={}",
                                     service.getClass().getName(), flowInstanceId, hookInfoParam);
+                            return Stream.empty();
                         }
                         return list.stream();
                     } catch (Exception e) {
