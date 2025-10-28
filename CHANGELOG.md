@@ -3,6 +3,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2025-10-29
+### Changed
+ - JDK Upgrade: Upgraded from JDK 8 to JDK 21
+ - Spring Boot Upgrade: Upgraded to Spring Boot 3.2.x+ (current version 3.5.0), completing Spring Boot 3.x adaptation
+### Bugfix
+  - Fix v1.2.0 release issues, fix the bug in the data merge part of Parallel & Inclusive Gateway
+
+### Notice
+ - Starting from version 1.3.x, JDK 1.8 is no longer supported. Previous versions will not be updated unless major bugs occur. It is recommended to upgrade to JDK 21+.
+
 ## [1.2.0] - 2024-11-21
 
 Support plugin extension function
