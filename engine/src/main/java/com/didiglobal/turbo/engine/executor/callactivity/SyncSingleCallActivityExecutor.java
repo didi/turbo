@@ -303,16 +303,13 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     protected void handleCallActivityResult(RuntimeContext runtimeContext, RuntimeResult runtimeResult) throws ProcessException {
         ErrorEnum errorEnum = ErrorEnum.getErrorEnum(runtimeResult.getErrCode());
         switch (errorEnum) {
-            case SUCCESS:
-                handleSuccessSubFlowResult(runtimeContext, runtimeResult);
-                break;
-            case COMMIT_SUSPEND:
-            case ROLLBACK_SUSPEND:
+            case SUCCESS -> handleSuccessSubFlowResult(runtimeContext, runtimeResult);
+            case COMMIT_SUSPEND,ROLLBACK_SUSPEND ->{
                 runtimeContext.getCurrentNodeInstance().setStatus(NodeInstanceStatus.ACTIVE);
                 runtimeContext.setCallActivityRuntimeResultList(Arrays.asList(runtimeResult));
                 throw new SuspendException(errorEnum);
-            default:
-                throw new ProcessException(errorEnum);
+            }
+            default -> throw new ProcessException(errorEnum);
         }
     }
 

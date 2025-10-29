@@ -10,7 +10,6 @@ import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -47,7 +46,6 @@ public class EndEventExecutor extends ElementExecutor {
         // when subFlowInstance, the EndEvent rollback is allowed
         if (isSubFlowInstance(runtimeContext)) {
             super.postRollback(runtimeContext);
-            return;
         }
         //do nothing
     }

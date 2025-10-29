@@ -168,12 +168,12 @@ Turbo的定位是兼容BPMN2.0的轻量级流程引擎（而非平台），支�
 
 ## 1.运行环境
 
-1. JDK1.8
+1. JDK21
 2. mysql
 
 ## 2.开发环境
 
-1. JDK1.8
+1. JDK21
 2. mysql
 3. maven 3.1+
 4. IntelliJ IDEA
@@ -181,11 +181,14 @@ Turbo的定位是兼容BPMN2.0的轻量级流程引擎（而非平台），支�
 ## maven
 
 流程引擎核心功能集合
+
+### JDK 1.8 版本
+JDK 1.8 支持的最后版本是 1.2.0 版本，后续版本除非出现重大 bug 修复，后续不再进行更新。
 ```
 <dependency>
   <groupId>com.didiglobal.turbo</groupId>
   <artifactId>engine</artifactId>
-  <version>1.0.0</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 
@@ -195,7 +198,25 @@ Turbo的定位是兼容BPMN2.0的轻量级流程引擎（而非平台），支�
 <dependency>
   <groupId>com.didiglobal.turbo</groupId>
   <artifactId>demo</artifactId>
-  <version>1.0.0</version>
+  <version>1.2.0</version>
+</dependency>
+```
+
+### JDK 21 版本
+从 1.3.0 版本开始，JDK 21 默认支持，并且会持续进行更新。
+```
+<dependency>
+  <groupId>com.didiglobal.turbo</groupId>
+  <artifactId>demo</artifactId>
+  <version>1.2.0</version>
+</dependency>
+```
+开发demo，非必须依赖
+```
+<dependency>
+  <groupId>com.didiglobal.turbo</groupId>
+  <artifactId>demo</artifactId>
+  <version>1.2.0</version>
 </dependency>
 ```
 
@@ -211,14 +232,13 @@ spring.datasource.dynamic.datasource.engine.username=username
 spring.datasource.dynamic.datasource.engine.password=password
 spring.datasource.dynamic.datasource.engine.driver-class-name=com.mysql.jdbc.Driver
 spring.datasource.dynamic.datasource.engine.url=jdbc:mysql://127.0.0.1:3306/db_engine
-
 ```
 
 ## 4. 根据demo开始你的Turbo之旅吧
 
 根据上文提到的turbo支持的特性，给出了两个例子，其中整体的流程如下图所示：
 
-![](http://img-ys011.didistatic.com/static/didi_opensource/do1_nR4XrLhyuruDqj9pQtlJ)
+![](img.png)
 
 其中与业务相关的是流程的定义和流程的执行，跟着下面的两个例子来看流程引擎的使用：
 

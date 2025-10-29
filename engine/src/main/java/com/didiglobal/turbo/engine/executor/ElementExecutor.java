@@ -15,14 +15,15 @@ import com.didiglobal.turbo.engine.model.InstanceData;
 import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class ElementExecutor extends RuntimeExecutor {
 
@@ -85,7 +86,9 @@ public abstract class ElementExecutor extends RuntimeExecutor {
         currentNodeInstance.setStatus(NodeInstanceStatus.ACTIVE);
         currentNodeInstance.getProperties().putAll(runtimeContext.getExtendProperties());
         currentNodeInstance.setNodeType(runtimeContext.getCurrentNodeModel().getType());
-        currentNodeInstance.setInstanceDataId(StringUtils.defaultString(runtimeContext.getInstanceDataId(), StringUtils.EMPTY));
+        currentNodeInstance.setInstanceDataId(
+                Objects.toString(runtimeContext.getInstanceDataId(), StringUtils.EMPTY)
+        );
 
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
     }
@@ -205,7 +208,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
     }
 
     /**
-     * Update runtimeContext: update currentNodeInstance.status to DISABLED and add it to nodeInstanceList
+     * Update runtimeContext: update currentNodeInstance. Status to DISABLED and add it to nodeInstanceList
      *
      * @throws Exception
      */
@@ -263,13 +266,8 @@ public abstract class ElementExecutor extends RuntimeExecutor {
             return false;
         }
 
-        //case 3.process completed
-        if (nodeInstance.getStatus() == NodeInstanceStatus.COMPLETED) {
-            return true;
-        }
-
-        //case 4.to process
-        return false;
+        //case 3.process completed, case 4.to process
+        return nodeInstance.getStatus() == NodeInstanceStatus.COMPLETED;
     }
 
     protected FlowElement getUniqueNextNode(FlowElement currentFlowElement, Map<String, FlowElement> flowElementMap) {

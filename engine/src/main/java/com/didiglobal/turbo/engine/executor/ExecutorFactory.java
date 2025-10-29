@@ -20,6 +20,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class ExecutorFactory {
@@ -60,8 +61,8 @@ public class ExecutorFactory {
         executorMap.put(FlowElementType.END_EVENT, endEventExecutor);
         executorMap.put(FlowElementType.USER_TASK, userTaskExecutor);
         executorMap.put(FlowElementType.EXCLUSIVE_GATEWAY, exclusiveGatewayExecutor);
-        List<ElementPlugin> elementPlugins = pluginManager.getPluginsFor(ElementPlugin.class);
-        elementPlugins.forEach(elementPlugin -> executorMap.put(elementPlugin.getFlowElementType(), elementPlugin.getElementExecutor()));
+        pluginManager.getPluginsFor(ElementPlugin.class)
+                .forEach(elementPlugin -> executorMap.put(elementPlugin.getFlowElementType(), elementPlugin.getElementExecutor()));
     }
 
     public ElementExecutor getElementExecutor(FlowElement flowElement) throws ProcessException {
@@ -70,19 +71,18 @@ public class ExecutorFactory {
         if (elementExecutor == null) {
             LOGGER.warn("getElementExecutor failed: unsupported elementType.|elementType={}", flowElement.getType());
             throw new ProcessException(ErrorEnum.UNSUPPORTED_ELEMENT_TYPE,
-                MessageFormat.format(Constants.NODE_INFO_FORMAT, flowElement.getKey(),
-                    FlowModelUtil.getElementName(flowElement), flowElement.getType()));
+                    MessageFormat.format(Constants.NODE_INFO_FORMAT, flowElement.getKey(),
+                            FlowModelUtil.getElementName(flowElement), flowElement.getType()));
         }
 
         return elementExecutor;
     }
 
     private ElementExecutor getElementExecutorInternal(FlowElement flowElement) {
-        int elementType = flowElement.getType();
-        if (elementType == FlowElementType.CALL_ACTIVITY) {
-            return getCallActivityExecutor(flowElement);
-        }
-        return executorMap.get(elementType);
+        return switch (flowElement.getType()) {
+            case FlowElementType.CALL_ACTIVITY -> getCallActivityExecutor(flowElement);
+            default -> executorMap.get(flowElement.getType());
+        };
     }
 
     private ElementExecutor getCallActivityExecutor(FlowElement flowElement) {
@@ -91,14 +91,13 @@ public class ExecutorFactory {
             return null;
         }
         Map<String, Object> properties = flowElement.getProperties();
-        String callActivityExecuteType = Constants.CALL_ACTIVITY_EXECUTE_TYPE.SYNC;
-        if (properties.containsKey(Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_EXECUTE_TYPE)) {
-            callActivityExecuteType = properties.get(Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_EXECUTE_TYPE).toString();
-        }
-        String callActivityInstanceType = Constants.CALL_ACTIVITY_INSTANCE_TYPE.SINGLE;
-        if (properties.containsKey(Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_INSTANCE_TYPE)) {
-            callActivityInstanceType = properties.get(Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_INSTANCE_TYPE).toString();
-        }
+        String callActivityExecuteType = properties.getOrDefault(
+                Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_EXECUTE_TYPE,
+                Constants.CALL_ACTIVITY_EXECUTE_TYPE.SYNC).toString();
+
+        String callActivityInstanceType = properties.getOrDefault(
+                Constants.ELEMENT_PROPERTIES.CALL_ACTIVITY_INSTANCE_TYPE,
+                Constants.CALL_ACTIVITY_INSTANCE_TYPE.SINGLE).toString();
 
         if (callActivityExecuteType.equals(Constants.CALL_ACTIVITY_EXECUTE_TYPE.SYNC)
             && callActivityInstanceType.equals(Constants.CALL_ACTIVITY_INSTANCE_TYPE.SINGLE)) {
