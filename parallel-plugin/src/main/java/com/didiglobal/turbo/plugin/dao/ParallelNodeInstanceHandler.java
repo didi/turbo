@@ -52,7 +52,7 @@ public class ParallelNodeInstanceHandler implements CustomOperationHandler {
 
     private void handleInsert(Object parameterObject, ParallelNodeInstanceMapper mapper) {
         if (parameterObject instanceof NodeInstancePO) {
-            ParallelNodeInstancePO parallelNodeInstancePO = convertToParallelLog((NodeInstancePO) parameterObject);
+            ParallelNodeInstancePO parallelNodeInstancePO = convertToParallelInstance((NodeInstancePO) parameterObject);
             mapper.insert(parallelNodeInstancePO);
         } else if (parameterObject instanceof Map) {
             List<Object> list = (List<Object>) ((Map<?,?>) parameterObject).get("list");
@@ -66,8 +66,9 @@ public class ParallelNodeInstanceHandler implements CustomOperationHandler {
     }
 
     private void handleUpdate(Object parameterObject, ParallelNodeInstanceMapper mapper) {
-        if (parameterObject instanceof NodeInstancePO) {
-            ParallelNodeInstancePO parallelNodeInstancePO = convertToParallelLog((NodeInstancePO) parameterObject);
+        NodeInstancePO nodeInstancePO = extractNodeInstancePO(parameterObject);
+        if (nodeInstancePO != null) {
+            ParallelNodeInstancePO parallelNodeInstancePO = convertToParallelInstance(nodeInstancePO);
             if (null == parallelNodeInstancePO.getExecuteId()) {
                 return;
             }
@@ -76,11 +77,40 @@ public class ParallelNodeInstanceHandler implements CustomOperationHandler {
     }
 
     private void handleDelete(Object parameterObject, ParallelNodeInstanceMapper mapper) {
-        if (parameterObject instanceof NodeInstancePO) {
-            ParallelNodeInstancePO parallelNodeInstancePO = convertToParallelLog((NodeInstancePO) parameterObject);
-            if (null != parallelNodeInstancePO.getId())
+        NodeInstancePO nodeInstancePO = extractNodeInstancePO(parameterObject);
+        if (nodeInstancePO != null) {
+            ParallelNodeInstancePO parallelNodeInstancePO = convertToParallelInstance(nodeInstancePO);
+            if (null != parallelNodeInstancePO.getId()) {
                 mapper.deleteById(parallelNodeInstancePO.getId());
+            }
         }
+    }
+
+    /**
+     * 从参数对象中提取 NodeInstancePO
+     * 处理直接传入 NodeInstancePO 或 MyBatis-Plus 包装的 Map 参数
+     *
+     * @param parameterObject 参数对象
+     * @return NodeInstancePO 对象，如果未找到则返回 null
+     */
+    private NodeInstancePO extractNodeInstancePO(Object parameterObject) {
+        if (parameterObject instanceof NodeInstancePO) {
+            return (NodeInstancePO) parameterObject;
+        } else if (parameterObject instanceof Map) {
+            // MyBatis-Plus updateById/deleteById 等方法会将实体对象包装在 Map 中
+            Map<?, ?> paramMap = (Map<?, ?>) parameterObject;
+            // 尝试从常见的键中获取实体对象
+            String[] possibleKeys = {"et", "param1", "entity"};
+            for (String key : possibleKeys) {
+                if (paramMap.containsKey(key)) {
+                    Object value = paramMap.get(key);
+                    if (value instanceof NodeInstancePO) {
+                        return (NodeInstancePO) value;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private void handleSelect(Object originalResult, ParallelNodeInstanceMapper mapper) {
@@ -98,7 +128,7 @@ public class ParallelNodeInstanceHandler implements CustomOperationHandler {
         }
     }
 
-    private ParallelNodeInstancePO convertToParallelLog(NodeInstancePO nodeInstancePO) {
+    private ParallelNodeInstancePO convertToParallelInstance(NodeInstancePO nodeInstancePO) {
         try {
             ParallelNodeInstancePO parallelNodeInstancePO = MapToObjectConverter.convertMapToObject(nodeInstancePO.getProperties(), ParallelNodeInstancePO.class);
             parallelNodeInstancePO.setId(nodeInstancePO.getId());
@@ -112,7 +142,7 @@ public class ParallelNodeInstanceHandler implements CustomOperationHandler {
     private ParallelNodeInstancePO convertToParallelLogSafe(Object obj) {
         try {
             if (obj instanceof NodeInstancePO) {
-                return convertToParallelLog((NodeInstancePO) obj);
+                return convertToParallelInstance((NodeInstancePO) obj);
             } else {
                 LOGGER.warn("Unexpected object type: {}", obj.getClass().getName());
                 return null;

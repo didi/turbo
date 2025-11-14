@@ -116,6 +116,32 @@ public class RuntimeProcessorTest extends BaseTest {
         return runtimeProcessor.startProcess(startProcessParam);
     }
 
+    private StartProcessResult startNestedParallelProcess(String flag) {
+        // prepare
+        FlowDeploymentPO flowDeploymentPO = EntityBuilder.buildNestedParallelFlowDeploymentPO();
+        flowDeploymentPO.setFlowModuleId(flowDeploymentPO.getFlowModuleId() + "_" + flag);
+        flowDeploymentPO.setFlowDeployId(flowDeploymentPO.getFlowDeployId() + "_" + flag);
+        FlowDeploymentPO _flowDeploymentPO = flowDeploymentMapper.selectByDeployId(flowDeploymentPO.getFlowDeployId());
+        if (_flowDeploymentPO != null) {
+            if (!StringUtils.equals(_flowDeploymentPO.getFlowModel(), flowDeploymentPO.getFlowModel())) {
+                flowDeploymentMapper.deleteById(_flowDeploymentPO.getId());
+                flowDeploymentMapper.insert(flowDeploymentPO);
+            }
+        } else {
+            flowDeploymentMapper.insert(flowDeploymentPO);
+        }
+
+        // start process
+        StartProcessParam startProcessParam = new StartProcessParam();
+        startProcessParam.setFlowDeployId(flowDeploymentPO.getFlowDeployId());
+        List<InstanceData> variables = new ArrayList<>();
+        variables.add(new InstanceData("aaa", 5));
+        variables.add(new InstanceData("bbb", 3));
+        startProcessParam.setVariables(variables);
+        // build
+        return runtimeProcessor.startProcess(startProcessParam);
+    }
+
     @Test
     public void testStartProcess() throws Exception {
         StartProcessResult startProcessResult = startParallelProcess(null);
@@ -606,13 +632,107 @@ public class RuntimeProcessorTest extends BaseTest {
         Assert.assertEquals(commitTaskResult5.getErrCode(), ErrorEnum.COMMIT_REJECTRD.getErrNo());
     }
 
+    /**
+     *                                                                     |---> 二级ParallelFork ---> UserTask_1e0chov(1-1) --|
+     *                                  |---> ExclusiveGateway_3uecfsr ----|                                                   |---> 二级ParallelJoin --|
+     *                                  |                                  |---> 二级ParallelFork ---> UserTask_0skk1nb(1-2) --|                         |
+     *                                  |                                                                                                                |
+     *  StartEvent ---> 一级ParallelFork |---> ExclusiveGateway_30qligf ---> UserTask_1sirm1d(2) --------------------------------------------------------|---> 一级ParallelJoin ---> UserTask_21bshkk(success) ---> EndEvent
+     *                                  |                                                                                                                |
+     *                                  |---> ExclusiveGateway_3ad9clv ---> UserTask_321tjcu(3) ---------------------------------------------------------|
+     */
+    @Test
+    public void testNestedParallelGateway() throws Exception {
+        // startEvent -> UserTask_1e0chov、UserTask_0skk1nb、UserTask_1sirm1d、UserTask_321tjcu
+        StartProcessResult startProcessResult = startNestedParallelProcess("test");
+        Assert.assertEquals(startProcessResult.getErrCode(), ErrorEnum.COMMIT_SUSPEND.getErrNo());
+        Assert.assertEquals(startProcessResult.getNodeExecuteResults().size(), 4);
+        // 找到各个任务的索引
+        int task1e0chovIndex = -1;
+        int task0skk1nbIndex = -1;
+        int task1sirm1dIndex = -1;
+        int task321tjcuIndex = -1;
+        for (int i = 0; i < startProcessResult.getNodeExecuteResults().size(); i++) {
+            String modelKey = startProcessResult.getNodeExecuteResults().get(i).getActiveTaskInstance().getModelKey();
+            if (StringUtils.equals(modelKey, "UserTask_1e0chov")) {
+                task1e0chovIndex = i;
+            } else if (StringUtils.equals(modelKey, "UserTask_0skk1nb")) {
+                task0skk1nbIndex = i;
+            } else if (StringUtils.equals(modelKey, "UserTask_1sirm1d")) {
+                task1sirm1dIndex = i;
+            } else if (StringUtils.equals(modelKey, "UserTask_321tjcu")) {
+                task321tjcuIndex = i;
+            }
+        }
+        Assert.assertTrue(task1e0chovIndex >= 0);
+        Assert.assertTrue(task0skk1nbIndex >= 0);
+        Assert.assertTrue(task1sirm1dIndex >= 0);
+        Assert.assertTrue(task321tjcuIndex >= 0);
+
+        // commit UserTask_321tjcu -> 一级ParallelJoin(waiting)
+        CommitTaskParam commitTaskParam1 = new CommitTaskParam();
+        commitTaskParam1.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam1.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(task321tjcuIndex).getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam1.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), task321tjcuIndex));
+        List<InstanceData> variables1 = new ArrayList<>();
+        commitTaskParam1.setVariables(variables1);
+        CommitTaskResult commitTaskResult1 = runtimeProcessor.commit(commitTaskParam1);
+        Assert.assertEquals(commitTaskResult1.getErrCode(), ParallelErrorEnum.WAITING_SUSPEND.getErrNo());
+        Assert.assertTrue(StringUtils.equals(commitTaskResult1.getActiveTaskInstance().getModelKey(), "ParallelGateway_00ic9ii"));
+
+        // commit UserTask_0skk1nb -> 二级ParallelJoin(waiting)
+        CommitTaskParam commitTaskParam2 = new CommitTaskParam();
+        commitTaskParam2.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam2.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(task0skk1nbIndex).getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam2.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), task0skk1nbIndex));
+        List<InstanceData> variables2 = new ArrayList<>();
+        commitTaskParam2.setVariables(variables2);
+        CommitTaskResult commitTaskResult2 = runtimeProcessor.commit(commitTaskParam2);
+        Assert.assertEquals(commitTaskResult2.getErrCode(), ParallelErrorEnum.WAITING_SUSPEND.getErrNo());
+        Assert.assertTrue(StringUtils.equals(commitTaskResult2.getActiveTaskInstance().getModelKey(), "ParallelGateway_28cge4l"));
+
+        // commit UserTask_1sirm1d -> 一级ParallelJoin(waiting)
+        CommitTaskParam commitTaskParam3 = new CommitTaskParam();
+        commitTaskParam3.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam3.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(task1sirm1dIndex).getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam3.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), task1sirm1dIndex));
+        List<InstanceData> variables3 = new ArrayList<>();
+        commitTaskParam3.setVariables(variables3);
+        CommitTaskResult commitTaskResult3 = runtimeProcessor.commit(commitTaskParam3);
+        Assert.assertEquals(commitTaskResult3.getErrCode(), ParallelErrorEnum.WAITING_SUSPEND.getErrNo());
+        Assert.assertTrue(StringUtils.equals(commitTaskResult3.getActiveTaskInstance().getModelKey(), "ParallelGateway_00ic9ii"));
+
+        // commit UserTask_1e0chov -> 二级ParallelJoin -> 一级ParallelJoin -> UserTask_21bshkk
+        CommitTaskParam commitTaskParam4 = new CommitTaskParam();
+        commitTaskParam4.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        commitTaskParam4.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(task1e0chovIndex).getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam4.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), task1e0chovIndex));
+        List<InstanceData> variables4 = new ArrayList<>();
+        commitTaskParam4.setVariables(variables4);
+        CommitTaskResult commitTaskResult4 = runtimeProcessor.commit(commitTaskParam4);
+        Assert.assertEquals(commitTaskResult4.getErrCode(), ErrorEnum.COMMIT_SUSPEND.getErrNo());
+        Assert.assertTrue(StringUtils.equals(commitTaskResult4.getActiveTaskInstance().getModelKey(), "UserTask_21bshkk"));
+
+        // commit UserTask_21bshkk -> EndEvent
+        CommitTaskParam commitTaskParam5 = new CommitTaskParam();
+        commitTaskParam5.setFlowInstanceId(commitTaskResult4.getFlowInstanceId());
+        commitTaskParam5.setTaskInstanceId(commitTaskResult4.getActiveTaskInstance().getNodeInstanceId());
+        commitTaskParam5.setExtendProperties(copyExtendProperties(commitTaskResult4.getExtendProperties(), 0));
+        List<InstanceData> variables5 = new ArrayList<>();
+        commitTaskParam5.setVariables(variables5);
+        CommitTaskResult commitTaskResult5 = runtimeProcessor.commit(commitTaskParam5);
+        Assert.assertEquals(commitTaskResult5.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
+    }
+
     private Map<String, Object> copyExtendProperties(Map<String, Object> extendProperties, int i) {
         Map<String, Object> copyExtendProperties = new HashMap<>();
         List<ParallelRuntimeContext> parallelRuntimeContextList = (List<ParallelRuntimeContext>) extendProperties.get("parallelRuntimeContextList");
         List<ParallelRuntimeContext> copyParallelRuntimeContextList = new ArrayList<>();
-        copyParallelRuntimeContextList.add(parallelRuntimeContextList.get(i));
+        if (parallelRuntimeContextList != null && parallelRuntimeContextList.size() > i) {
+            copyParallelRuntimeContextList.add(parallelRuntimeContextList.get(i));
+            copyExtendProperties.put("executeId", parallelRuntimeContextList.get(i).getExecuteId());
+        }
         copyExtendProperties.put("parallelRuntimeContextList", copyParallelRuntimeContextList);
-        copyExtendProperties.put("executeId", parallelRuntimeContextList.get(i).getExecuteId());
         return copyExtendProperties;
     }
 }

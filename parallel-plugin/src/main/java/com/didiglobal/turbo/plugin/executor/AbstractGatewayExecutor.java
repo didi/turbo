@@ -27,6 +27,8 @@ import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
+import com.didiglobal.turbo.plugin.config.ParallelMergeLockConfig;
+import com.didiglobal.turbo.plugin.lock.ParallelMergeLock;
 import com.didiglobal.turbo.plugin.service.ParallelNodeInstanceService;
 import com.didiglobal.turbo.plugin.util.ExecutorUtil;
 import com.google.common.collect.Lists;
@@ -69,6 +71,9 @@ public abstract class AbstractGatewayExecutor extends ElementExecutor {
 
     @Resource
     protected ParallelNodeInstanceService parallelNodeInstanceService;
+
+    @Resource
+    private ParallelMergeLock parallelMergeLock;
 
     /**
      * When parallel gateways and inclusive gateways are used as branch nodes,
@@ -138,6 +143,8 @@ public abstract class AbstractGatewayExecutor extends ElementExecutor {
     private void doExecuteByAsyn(RuntimeContext runtimeContext, List<RuntimeExecutor> runtimeExecutors) {
         List<RuntimeContext> contextList = Lists.newArrayList();
         CompletionService<RuntimeContext> completionService = new ExecutorCompletionService<>(asynTaskExecutor);
+        // 建立 Future 和 RuntimeContext 的映射关系
+        Map<Future<RuntimeContext>, RuntimeContext> futureContextMap = new HashMap<>();
 
         AtomicInteger processStatus = new AtomicInteger(ProcessStatus.SUCCESS);
         String parentExecuteIdStr = ExecutorUtil.getParentExecuteId((String) runtimeContext.getExtendProperties().getOrDefault("executeId", ""));
@@ -147,14 +154,15 @@ public abstract class AbstractGatewayExecutor extends ElementExecutor {
             RuntimeExecutor executor = runtimeExecutors.get(i);
             RuntimeContext rc = cloneRuntimeContext(runtimeContext, parentExecuteIdStr, executeIds, i);
             contextList.add(rc);
-            completionService.submit(() -> asynExecute(processStatus, executor, rc));
+            Future<RuntimeContext> future = completionService.submit(() -> asynExecute(processStatus, executor, rc));
+            futureContextMap.put(future, rc);
         }
 
         // execute result handle
-        asynExecuteResultHandle(runtimeContext, contextList, completionService, executeIds, asynTaskExecutor.getTimeout());
+        asynExecuteResultHandle(runtimeContext, futureContextMap, completionService, executeIds, asynTaskExecutor.getTimeout());
     }
 
-    private void asynExecuteResultHandle(RuntimeContext runtimeContext, List<RuntimeContext> contextList, CompletionService<RuntimeContext> completionService, List<String> executeIds, long timeout) {
+    private void asynExecuteResultHandle(RuntimeContext runtimeContext, Map<Future<RuntimeContext>, RuntimeContext> futureContextMap, CompletionService<RuntimeContext> completionService, List<String> executeIds, long timeout) {
         // system exception, execution exception, suspend exception
         Map<String, ProcessException> em = new HashMap<>();
         String systemErrorNodeKey = null;
@@ -162,8 +170,11 @@ public abstract class AbstractGatewayExecutor extends ElementExecutor {
         String suspendExceptionNodeKey = null;
         List<ParallelRuntimeContext> parallelRuntimeContextList = (List<ParallelRuntimeContext>) runtimeContext.getExtendProperties().getOrDefault("parallelRuntimeContextList", new ArrayList<ParallelRuntimeContext>());
         parallelRuntimeContextList.clear();
-        for (RuntimeContext context : contextList) {
+        
+        // 循环获取所有任务的执行结果
+        for (int i = 0; i < futureContextMap.size(); i++) {
             ParallelRuntimeContext prc = new ParallelRuntimeContext();
+            RuntimeContext actualContext = null;
             try {
                 Future<RuntimeContext> future;
                 if (timeout > 0) {
@@ -171,37 +182,70 @@ public abstract class AbstractGatewayExecutor extends ElementExecutor {
                 } else {
                     future = completionService.take();
                 }
-                parallelRuntimeContextList.add(prc);
+                // 通过 Future 获取对应的 RuntimeContext
+                actualContext = futureContextMap.get(future);
                 future.get();
             } catch (ExecutionException e) {
                 Throwable cause = e.getCause();
                 if (cause instanceof SuspendException) {
                     SuspendException exception = (SuspendException) cause;
-                    suspendExceptionNodeKey = context.getSuspendNodeInstance().getNodeKey();
-                    em.put(suspendExceptionNodeKey, exception);
+                    if (actualContext != null) {
+                        suspendExceptionNodeKey = actualContext.getSuspendNodeInstance().getNodeKey();
+                        em.put(suspendExceptionNodeKey, exception);
+                    }
                     prc.setException(exception);
                 } else if (cause instanceof ProcessException) {
                     ProcessException exception = (ProcessException) cause;
-                    processExceptionNodeKey = context.getSuspendNodeInstance().getNodeKey();
-                    em.put(processExceptionNodeKey, (ProcessException) cause);
+                    if (actualContext != null) {
+                        processExceptionNodeKey = actualContext.getSuspendNodeInstance().getNodeKey();
+                        em.put(processExceptionNodeKey, exception);
+                    }
                     prc.setException(exception);
                 } else {
                     LOGGER.error("parallel process exception", e);
-                    systemErrorNodeKey = context.getSuspendNodeInstance().getNodeKey();
-                    ProcessException exception = new ProcessException(ErrorEnum.SYSTEM_ERROR);
-                    em.put(systemErrorNodeKey, exception);
-                    prc.setException(exception);
+                    if (actualContext != null) {
+                        systemErrorNodeKey = actualContext.getSuspendNodeInstance().getNodeKey();
+                        ProcessException exception = new ProcessException(ErrorEnum.SYSTEM_ERROR);
+                        em.put(systemErrorNodeKey, exception);
+                        prc.setException(exception);
+                    } else {
+                        ProcessException exception = new ProcessException(ErrorEnum.SYSTEM_ERROR);
+                        prc.setException(exception);
+                    }
                 }
             } catch (Exception e) {
                 LOGGER.error("parallel process exception", e);
-                systemErrorNodeKey = context.getSuspendNodeInstance().getNodeKey();
-                ProcessException exception = new ProcessException(ErrorEnum.SYSTEM_ERROR);
-                em.put(systemErrorNodeKey, exception);
-                prc.setException(exception);
+                if (actualContext != null) {
+                    systemErrorNodeKey = actualContext.getSuspendNodeInstance().getNodeKey();
+                    ProcessException exception = new ProcessException(ErrorEnum.SYSTEM_ERROR);
+                    em.put(systemErrorNodeKey, exception);
+                    prc.setException(exception);
+                } else {
+                    ProcessException exception = new ProcessException(ErrorEnum.SYSTEM_ERROR);
+                    prc.setException(exception);
+                }
             } finally {
-                prc.setExecuteId((String) context.getExtendProperties().get("executeId"));
-                prc.setBranchExecuteDataMap(context.getInstanceDataMap());
-                prc.setBranchSuspendNodeInstance(context.getSuspendNodeInstance());
+                if (actualContext != null) {
+                    prc.setExecuteId((String) actualContext.getExtendProperties().get("executeId"));
+                    prc.setBranchExecuteDataMap(actualContext.getInstanceDataMap());
+                    prc.setBranchSuspendNodeInstance(actualContext.getSuspendNodeInstance());
+                    
+                    // 处理嵌套并行网关：如果分支内部还有并行网关，需要将内部的 parallelRuntimeContextList 合并到外层
+                    List<ParallelRuntimeContext> nestedParallelContextList = 
+                        (List<ParallelRuntimeContext>) actualContext.getExtendProperties().get("parallelRuntimeContextList");
+                    if (nestedParallelContextList != null && !nestedParallelContextList.isEmpty()) {
+                        // 有嵌套并行网关：只添加内部的并行上下文，不添加当前分支本身的prc
+                        parallelRuntimeContextList.addAll(nestedParallelContextList);
+                        LOGGER.info("Merge nested parallel context, nested size: {}, current total size: {}", 
+                            nestedParallelContextList.size(), parallelRuntimeContextList.size());
+                    } else {
+                        // 没有嵌套：添加当前分支的prc
+                        parallelRuntimeContextList.add(prc);
+                    }
+                } else {
+                    // actualContext为null的异常情况，仍然添加prc以保持列表完整性
+                    parallelRuntimeContextList.add(prc);
+                }
             }
         }
 
@@ -260,7 +304,12 @@ public abstract class AbstractGatewayExecutor extends ElementExecutor {
         saveNodeInstanceList(runtimeContext);
 
         // 3.update flowInstance status while completed
-        if (isCompleted(runtimeContext)) {
+        // 注意：只有在非并行分支执行中才检查流程是否完成
+        // 在并行分支中（executeId不为空），不应该检查流程完成状态，因为还有其他分支在执行
+        String executeId = (String) runtimeContext.getExtendProperties().get("executeId");
+        boolean isInParallelBranch = StringUtils.isNotEmpty(executeId);
+        
+        if (!isInParallelBranch && isCompletedForParallel(runtimeContext)) {
             if (isSubFlowInstance(runtimeContext)) {
                 processInstanceDAO.updateStatus(runtimeContext.getFlowInstanceId(), FlowInstanceStatus.END);
                 runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.END);
@@ -270,6 +319,37 @@ public abstract class AbstractGatewayExecutor extends ElementExecutor {
             }
             LOGGER.info("postExecute: flowInstance process completely.||flowInstanceId={}", runtimeContext.getFlowInstanceId());
         }
+    }
+
+    /**
+     * 判断流程是否完成（专门用于并行网关场景）
+     * 只有当挂起节点是 EndEvent 且状态为 COMPLETED 时才认为流程完成
+     */
+    private boolean isCompletedForParallel(RuntimeContext runtimeContext) throws ProcessException {
+        // 如果流程已经标记为完成，直接返回 true
+        if (runtimeContext.getFlowInstanceStatus() == FlowInstanceStatus.COMPLETED) {
+            return true;
+        }
+        if (runtimeContext.getFlowInstanceStatus() == FlowInstanceStatus.END) {
+            return false;
+        }
+
+        NodeInstanceBO suspendNodeInstance = runtimeContext.getSuspendNodeInstance();
+        if (suspendNodeInstance == null) {
+            LOGGER.warn("suspendNodeInstance is null.||runtimeContext={}", runtimeContext);
+            return false;
+        }
+
+        // 挂起节点必须是完成状态
+        if (suspendNodeInstance.getStatus() != NodeInstanceStatus.COMPLETED) {
+            return false;
+        }
+
+        // 只有挂起节点是 EndEvent 时，才认为流程完成
+        String nodeKey = suspendNodeInstance.getNodeKey();
+        Map<String, FlowElement> flowElementMap = runtimeContext.getFlowElementMap();
+        FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeKey);
+        return flowElement != null && flowElement.getType() == com.didiglobal.turbo.engine.common.FlowElementType.END_EVENT;
     }
 
     private void doParallelExecute(RuntimeContext runtimeContext, RuntimeExecutor runtimeExecutor) throws ProcessException {
@@ -332,45 +412,107 @@ public abstract class AbstractGatewayExecutor extends ElementExecutor {
 
     private void joinNodeHandle(RuntimeContext runtimeContext, FlowElement currentNodeModel, String forkKey, String flowInstanceId,
                                 NodeInstanceBO currentNodeInstance) {
-        // fixme  add concurrent lock(Concurrent lock)
-        // current join node info
-        String currentExecuteId = ExecutorUtil.getCurrentExecuteId((String) runtimeContext.getExtendProperties().get("executeId"));
-        String parentExecuteId = ExecutorUtil.getParentExecuteId((String) runtimeContext.getExtendProperties().get("executeId"));
-        // matched fork node info
-        NodeInstancePO forkNodeInstancePo = findForkNodeInstancePO(currentExecuteId, flowInstanceId, forkKey);
-        if (forkNodeInstancePo == null) {
-            LOGGER.error("Not found matched fork node instance||join_node_key={}", currentNodeModel.getKey());
-            throw new ProcessException(ParallelErrorEnum.NOT_FOUND_FORK_INSTANCE.getErrNo(), ParallelErrorEnum.NOT_FOUND_FORK_INSTANCE.getErrMsg());
-        }
-        Set<String> allExecuteIdSet = ExecutorUtil.getExecuteIdSet((String) forkNodeInstancePo.get("executeId"));
-        NodeInstancePO joinNodeInstancePo = findJoinNodeInstancePO(allExecuteIdSet, currentExecuteId, flowInstanceId, currentNodeInstance.getNodeKey());
-
-        Map<String, Object> properties = currentNodeModel.getProperties();
-        String branchMerge = (String) properties.getOrDefault(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.BRANCH_MERGE, MergeStrategy.BRANCH_MERGE.JOIN_ALL);
-        String dataMerch = (String) properties.getOrDefault(Constants.ELEMENT_PROPERTIES.DATA_MERGE, MergeStrategy.DATA_MERGE.ALL);
-        BranchMergeStrategy branchMergeStrategy = mergeStrategyFactory.getBranchMergeStrategy(branchMerge);
-        DataMergeStrategy dataMergeStrategy = mergeStrategyFactory.getDataMergeStrategy(dataMerch);
-
-        if (joinNodeInstancePo == null) {
-            // branch first arrival
-            runtimeContext.getExtendProperties().clear();
-            LOGGER.info("execute join first.||nodeKey={}||nodeInstanceId={}||executeId={}||dataMerge={}",
-                    currentNodeModel.getKey(), currentNodeInstance.getNodeInstanceId(), runtimeContext.getExtendProperties().get("executeId"), dataMergeStrategy.name());
-            branchMergeStrategy.joinFirst(runtimeContext, forkNodeInstancePo, currentNodeInstance, parentExecuteId, currentExecuteId, allExecuteIdSet, dataMergeStrategy);
-        } else {
-            runtimeContext.getExtendProperties().clear();
-            if (joinNodeInstancePo.getStatus() != ParallelNodeInstanceStatus.WAITING) {
-                LOGGER.warn("reentrant warning, arrival branch already exists||joinNodeKey={}||nodeInstanceId={}", joinNodeInstancePo.getNodeKey(), joinNodeInstancePo.getNodeInstanceId());
-                throw new ProcessException(ParallelErrorEnum.PARALLEL_EXECUTE_REENTRY.getErrNo(), ParallelErrorEnum.PARALLEL_EXECUTE_REENTRY.getErrMsg());
+        String nodeKey = currentNodeInstance.getNodeKey();
+        boolean lockAcquired = false;
+        
+        try {
+            // 使用锁机制防止并发分支覆盖问题，支持重试
+            lockAcquired = acquireLockWithRetry(flowInstanceId, nodeKey);
+            if (!lockAcquired) {
+                LOGGER.error("Failed to acquire lock after retries.||flowInstanceId={}||nodeKey={}", flowInstanceId, nodeKey);
+                throw new ProcessException(ErrorEnum.SYSTEM_ERROR);
             }
-            LOGGER.info("execute join other.||nodeKey={}||nodeInstanceId={}||executeId={}||dataMerge={}",
-                    currentNodeModel.getKey(), currentNodeInstance.getNodeInstanceId(), runtimeContext.getExtendProperties().get("executeId"), dataMergeStrategy.name());
-            branchMergeStrategy.joinMerge(runtimeContext, joinNodeInstancePo, currentNodeInstance, parentExecuteId, currentExecuteId, allExecuteIdSet, dataMergeStrategy);
-        }
+            
+            // current join node info
+            String currentExecuteId = ExecutorUtil.getCurrentExecuteId((String) runtimeContext.getExtendProperties().get("executeId"));
+            String parentExecuteId = ExecutorUtil.getParentExecuteId((String) runtimeContext.getExtendProperties().get("executeId"));
+            // matched fork node info
+            NodeInstancePO forkNodeInstancePo = findForkNodeInstancePO(currentExecuteId, flowInstanceId, forkKey);
+            if (forkNodeInstancePo == null) {
+                LOGGER.error("Not found matched fork node instance||join_node_key={}", currentNodeModel.getKey());
+                throw new ProcessException(ParallelErrorEnum.NOT_FOUND_FORK_INSTANCE.getErrNo(), ParallelErrorEnum.NOT_FOUND_FORK_INSTANCE.getErrMsg());
+            }
+            Set<String> allExecuteIdSet = ExecutorUtil.getExecuteIdSet((String) forkNodeInstancePo.get("executeId"));
+            NodeInstancePO joinNodeInstancePo = findJoinNodeInstancePO(allExecuteIdSet, currentExecuteId, flowInstanceId, nodeKey);
 
-        // clear parallel context and reset execute id
-        runtimeContext.getExtendProperties().put("parallelRuntimeContextList", null);
-        runtimeContext.getExtendProperties().put("executeId", parentExecuteId);
+            Map<String, Object> properties = currentNodeModel.getProperties();
+            String branchMerge = (String) properties.getOrDefault(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.BRANCH_MERGE, MergeStrategy.BRANCH_MERGE.JOIN_ALL);
+            String dataMerch = (String) properties.getOrDefault(Constants.ELEMENT_PROPERTIES.DATA_MERGE, MergeStrategy.DATA_MERGE.ALL);
+            BranchMergeStrategy branchMergeStrategy = mergeStrategyFactory.getBranchMergeStrategy(branchMerge);
+            DataMergeStrategy dataMergeStrategy = mergeStrategyFactory.getDataMergeStrategy(dataMerch);
+
+            if (joinNodeInstancePo == null) {
+                // branch first arrival
+                runtimeContext.getExtendProperties().clear();
+                LOGGER.info("execute join first.||nodeKey={}||nodeInstanceId={}||executeId={}||dataMerge={}",
+                        currentNodeModel.getKey(), currentNodeInstance.getNodeInstanceId(), runtimeContext.getExtendProperties().get("executeId"), dataMergeStrategy.name());
+                branchMergeStrategy.joinFirst(runtimeContext, forkNodeInstancePo, currentNodeInstance, parentExecuteId, currentExecuteId, allExecuteIdSet, dataMergeStrategy);
+            } else {
+                runtimeContext.getExtendProperties().clear();
+                if (joinNodeInstancePo.getStatus() != ParallelNodeInstanceStatus.WAITING) {
+                    LOGGER.warn("reentrant warning, arrival branch already exists||joinNodeKey={}||nodeInstanceId={}", joinNodeInstancePo.getNodeKey(), joinNodeInstancePo.getNodeInstanceId());
+                    throw new ProcessException(ParallelErrorEnum.PARALLEL_EXECUTE_REENTRY.getErrNo(), ParallelErrorEnum.PARALLEL_EXECUTE_REENTRY.getErrMsg());
+                }
+                LOGGER.info("execute join other.||nodeKey={}||nodeInstanceId={}||executeId={}||dataMerge={}",
+                        currentNodeModel.getKey(), currentNodeInstance.getNodeInstanceId(), runtimeContext.getExtendProperties().get("executeId"), dataMergeStrategy.name());
+                branchMergeStrategy.joinMerge(runtimeContext, joinNodeInstancePo, currentNodeInstance, parentExecuteId, currentExecuteId, allExecuteIdSet, dataMergeStrategy);
+            }
+
+            // clear parallel context and reset execute id
+            runtimeContext.getExtendProperties().put("parallelRuntimeContextList", null);
+            runtimeContext.getExtendProperties().put("executeId", parentExecuteId);
+        } finally {
+            // 确保释放锁
+            if (lockAcquired) {
+                try {
+                    parallelMergeLock.unlock(flowInstanceId, nodeKey);
+                } catch (Exception e) {
+                    LOGGER.error("Failed to release lock.||flowInstanceId={}||nodeKey={}", flowInstanceId, nodeKey, e);
+                }
+            }
+        }
+    }
+
+    /**
+     * 带重试的锁获取逻辑
+     * 
+     * <p>如果获取锁失败，会等待一段时间后重试，直到成功获取或达到最大重试次数
+     * 
+     * @param flowInstanceId 流程实例ID
+     * @param nodeKey 节点key
+     * @return true 如果成功获取锁，false 如果达到最大重试次数后仍失败
+     */
+    private boolean acquireLockWithRetry(String flowInstanceId, String nodeKey) {
+        long retryIntervalMs = ParallelMergeLockConfig.getRetryIntervalMs();
+        int maxRetryTimes = ParallelMergeLockConfig.getMaxRetryTimes();
+        
+        for (int retryCount = 0; retryCount < maxRetryTimes; retryCount++) {
+            // 每次尝试立即获取锁（waitTimeMs = 0），不等待
+            boolean acquired = parallelMergeLock.tryLock(flowInstanceId, nodeKey, 0);
+            if (acquired) {
+                if (retryCount > 0) {
+                    LOGGER.info("Acquired lock after retries.||flowInstanceId={}||nodeKey={}||retryCount={}", 
+                        flowInstanceId, nodeKey, retryCount);
+                }
+                return true;
+            }
+            
+            // 如果未获取到锁，等待后重试（最后一次重试不需要等待）
+            if (retryCount < maxRetryTimes - 1) {
+                try {
+                    Thread.sleep(retryIntervalMs);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    LOGGER.warn("Interrupted while waiting for lock retry.||flowInstanceId={}||nodeKey={}", 
+                        flowInstanceId, nodeKey);
+                    return false;
+                }
+            }
+        }
+        
+        LOGGER.warn("Failed to acquire lock after max retries.||flowInstanceId={}||nodeKey={}||maxRetryTimes={}", 
+            flowInstanceId, nodeKey, maxRetryTimes);
+        return false;
     }
 
     private NodeInstancePO findForkNodeInstancePO(String executeId, String flowInstanceId, String nodeKey) {

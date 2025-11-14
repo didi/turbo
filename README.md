@@ -204,19 +204,31 @@ JDK 1.8 支持的最后版本是 1.2.0 版本，后续版本除非出现重大 b
 
 ### JDK 21 版本
 从 1.3.0 版本开始，JDK 21 默认支持，并且会持续进行更新。
-```
+
+**流程引擎核心**
+```xml
 <dependency>
   <groupId>com.didiglobal.turbo</groupId>
-  <artifactId>demo</artifactId>
-  <version>1.2.0</version>
+  <artifactId>engine</artifactId>
+  <version>1.3.0</version>
 </dependency>
 ```
-开发demo，非必须依赖
+
+**并行网关插件**（可选）
+```xml
+<dependency>
+  <groupId>com.didiglobal.turbo</groupId>
+  <artifactId>parallel-plugin</artifactId>
+  <version>1.1.1</version>
+</dependency>
 ```
+
+**开发demo**（非必须依赖）
+```xml
 <dependency>
   <groupId>com.didiglobal.turbo</groupId>
   <artifactId>demo</artifactId>
-  <version>1.2.0</version>
+  <version>1.3.0</version>
 </dependency>
 ```
 
@@ -270,10 +282,28 @@ LogicFlow 是一款流程图编辑框架，提供了一系列流程图交互、�
 
 为了提高Turbo的易扩展性，我们提供了插件机制，通过插件机制，可以扩展节点类型、表达式计算规则以及id生成规则。
 
-为更好地回应社区伙伴的需求，我们推出了并行网关插件，不仅为流程引擎赋予并行执行能力，还可作为插件开发的参考样例，供大家借鉴。
-* 更新日志：[更新日志](./CHANGELOG.md)
-* 插件开发文档：[插件开发文档](./docs/PluginDevelopGuide.md)
-* 并行网关插件文档：[并行网关插件文档](./docs/Parallel&InclusiveGateway.md)
+为更好地回应社区伙伴的需求，我们推出了**并行网关&包容网关插件**，不仅为流程引擎赋予多分支并行执行能力，还可作为插件开发的参考样例，供大家借鉴。
+
+### 并行网关&包容网关插件 (parallel-plugin)
+
+**最新版本**: 1.1.1 (2025-11-14)
+
+**核心功能**：
+- ✅ **并行网关 (ParallelGateway)**：支持多分支并行执行，所有分支完成后汇聚
+- ✅ **包容网关 (InclusiveGateway)**：支持条件化的多分支并行执行，满足条件的分支执行后汇聚
+- ✅ **嵌套并行网关**：支持在并行分支内再次创建并行网关，实现多层并行编排
+- ✅ **虚拟线程支持 (JDK 21+)**：支持虚拟线程，轻松应对大规模并行场景
+- ✅ **灵活的汇聚策略**：支持 JoinAll（全部汇聚）、AnyOne（任一汇聚）、Custom（自定义）
+- ✅ **可配置的线程池**：支持通过配置文件或自定义 Bean 调整线程池参数
+
+**相关文档**：
+* 📖 [并行网关&包容网关使用指南](docs/parallel/Parallel&InclusiveGateway.md)
+* 📖 [线程池配置指南](docs/parallel/ThreadPoolConfiguration.md)
+* 📋 [更新日志](docs/parallel/CHANGELOG.md)
+* 🔧 [插件开发文档](./docs/PluginDevelopGuide.md)
+
+**引擎更新日志**：
+* [Engine CHANGELOG](./CHANGELOG.md)
 
 ## 7. 联系我们
 ### 加入微信群
