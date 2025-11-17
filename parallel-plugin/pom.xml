@@ -9,6 +9,7 @@
         <version>1.2.1</version>
     </parent>
 
+    <name>parallel-plugin</name>
     <artifactId>parallel-plugin</artifactId>
     <version>1.0.1</version>
     <packaging>jar</packaging>
