@@ -11,7 +11,7 @@
     <parent>
         <artifactId>turbo</artifactId>
         <groupId>com.didiglobal.turbo</groupId>
-        <version>1.2.0</version>
+        <version>1.2.1</version>
     </parent>
     <properties>
         <groovy.version>2.3.7</groovy.version>

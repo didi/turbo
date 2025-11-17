@@ -83,43 +83,75 @@ public class MyBatisInterceptor implements Interceptor {
         if (object == null) {
             return null;
         }
-        // 处理批量插入时的 Map 参数
+        // 处理 MyBatis-Plus 的 Map 参数
         if (object instanceof Map) {
             Map<?, ?> paramMap = (Map<?, ?>) object;
-            Object value = paramMap.getOrDefault("list", null);
-            if (value != null) {
-                // 假设批量插入的实体在 Map 中以特定键存在，如 "list" 或其他约定
-                if (value instanceof List) {
-                    List<?> list = (List<?>) value;
-                    if (!list.isEmpty()) {
-                        return getTableName(list.get(0));
+            // MyBatis-Plus updateById/insert 等方法的实体对象通常在 "et" 或 "param1" 键中
+            // 批量操作的实体列表通常在 "list" 或 "collection" 键中
+            String[] possibleKeys = {"et", "param1", "entity", "list", "collection"};
+            for (String key : possibleKeys) {
+                // 先检查 key 是否存在，避免某些特殊 Map 实现在 get 不存在的 key 时抛异常
+                if (paramMap.containsKey(key)) {
+                    try {
+                        Object value = paramMap.get(key);
+                        if (value != null) {
+                            String tableName = extractTableNameFromValue(value);
+                            if (tableName != null) {
+                                return tableName;
+                            }
+                        }
+                    } catch (Exception e) {
+                        // 忽略异常，继续尝试下一个 key
                     }
-                } else if (value.getClass().isArray()) {
-                    Object[] array = (Object[]) value;
-                    if (array.length > 0) {
-                        return getTableName(array[0]);
-                    }
-                } else {
-                    return getTableName(value);
                 }
+            }
+            // 如果上述键都没有找到，尝试遍历 Map 的所有值查找带 @TableName 注解的对象
+            try {
+                for (Object value : paramMap.values()) {
+                    if (value != null && value.getClass().isAnnotationPresent(TableName.class)) {
+                        TableName tableNameAnnotation = value.getClass().getAnnotation(TableName.class);
+                        return tableNameAnnotation.value();
+                    }
+                }
+            } catch (Exception e) {
+                // 忽略异常，返回 null
             }
         }
         // 处理单个对象的情况
-        if (object instanceof List) {
-            List<?> list = (List<?>) object;
+        return extractTableNameFromValue(object);
+    }
+
+    /**
+     * 从值中提取表名，处理单个对象、List、数组等情况
+     *
+     * @param value 要提取表名的值
+     * @return 表名，如果未找到则返回 null
+     */
+    private String extractTableNameFromValue(Object value) {
+        if (value == null) {
+            return null;
+        }
+        // 处理 List
+        if (value instanceof List) {
+            List<?> list = (List<?>) value;
             if (!list.isEmpty()) {
                 return getTableName(list.get(0));
             }
-        } else if (object.getClass().isArray()) {
-            Object[] array = (Object[]) object;
+        }
+        // 处理数组
+        else if (value.getClass().isArray()) {
+            Object[] array = (Object[]) value;
             if (array.length > 0) {
                 return getTableName(array[0]);
             }
         }
-        Class<?> clazz = object.getClass();
-        if (clazz.isAnnotationPresent(TableName.class)) {
-            TableName tableNameAnnotation = clazz.getAnnotation(TableName.class);
-            return tableNameAnnotation.value();
+        // 处理单个对象
+        else {
+            Class<?> clazz = value.getClass();
+            if (clazz.isAnnotationPresent(TableName.class)) {
+                TableName tableNameAnnotation = clazz.getAnnotation(TableName.class);
+                return tableNameAnnotation.value();
+            }
         }
         return null;
     }

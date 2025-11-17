@@ -3,6 +3,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] - 2025-11-17
+- Fix v1.2.0 release issues
+
 ## [1.2.0] - 2024-11-21
 
 Support plugin extension function
