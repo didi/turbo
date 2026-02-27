@@ -51,6 +51,8 @@ public class BranchMergeJoinAll extends BranchMergeStrategy {
         NodeInstancePO joinPo = buildNodeInstancePO(runtimeContext, currentNodeInstance);
         nodeInstanceDAO.insert(joinPo);
         nodeInstanceLogDAO.insert(buildNodeInstanceLogPO(joinPo));
+        // 第一个分支到达时，也将其 source 信息写入扩展表
+        saveNodeInstanceSource(joinPo, currentNodeInstance);
     }
 
     @Override

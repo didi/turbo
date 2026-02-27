@@ -2,12 +2,14 @@ package com.didiglobal.turbo.plugin;
 
 import com.didiglobal.turbo.engine.executor.ElementExecutor;
 import com.didiglobal.turbo.engine.plugin.ElementPlugin;
+import com.didiglobal.turbo.engine.plugin.SourceNodeResolver;
 import com.didiglobal.turbo.engine.plugin.manager.BasePlugin;
 import com.didiglobal.turbo.engine.util.PluginSqlExecutorUtil;
 import com.didiglobal.turbo.engine.validator.ElementValidator;
 import com.didiglobal.turbo.plugin.common.ExtendFlowElementType;
 import com.didiglobal.turbo.plugin.executor.ParallelGatewayExecutor;
 import com.didiglobal.turbo.engine.util.PluginPropertiesUtil;
+import com.didiglobal.turbo.plugin.resolver.ParallelSourceNodeResolver;
 import com.didiglobal.turbo.plugin.validator.ParallelGatewayValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,5 +62,10 @@ public class ParallelGatewayElementPlugin extends BasePlugin implements ElementP
             return false;
         }
         return true;
+    }
+
+    @Override
+    public SourceNodeResolver getSourceNodeResolver() {
+        return beanFactory.getBean(ParallelSourceNodeResolver.class);
     }
 }

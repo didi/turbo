@@ -46,6 +46,9 @@ import com.didiglobal.turbo.engine.result.TerminateResult;
 import com.didiglobal.turbo.engine.service.FlowInstanceService;
 import com.didiglobal.turbo.engine.service.InstanceDataService;
 import com.didiglobal.turbo.engine.service.NodeInstanceService;
+import com.didiglobal.turbo.engine.plugin.ElementPlugin;
+import com.didiglobal.turbo.engine.plugin.SourceNodeResolver;
+import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import com.didiglobal.turbo.engine.validator.ParamValidator;
@@ -59,6 +62,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import java.util.ArrayList;
@@ -95,6 +99,25 @@ public class RuntimeProcessor {
 
     @Resource
     private NodeInstanceService nodeInstanceService;
+
+    @Resource
+    private PluginManager pluginManager;
+
+    private List<SourceNodeResolver> sourceNodeResolvers;
+
+    @PostConstruct
+    public void initSourceNodeResolvers() {
+        sourceNodeResolvers = new ArrayList<>();
+        List<ElementPlugin> elementPlugins = pluginManager.getPluginsFor(ElementPlugin.class);
+        if (CollectionUtils.isNotEmpty(elementPlugins)) {
+            for (ElementPlugin plugin : elementPlugins) {
+                SourceNodeResolver resolver = plugin.getSourceNodeResolver();
+                if (resolver != null) {
+                    sourceNodeResolvers.add(resolver);
+                }
+            }
+        }
+    }
 
     ////////////////////////////////////////startProcess////////////////////////////////////////
 
@@ -507,7 +530,11 @@ public class RuntimeProcessor {
                 String nodeInstanceId = nodeInstancePO.getNodeInstanceId();
                 String instanceDataId = nodeInstancePO.getInstanceDataId();
                 //4.1 build the source sequenceFlow instance
-                if (StringUtils.isNotBlank(sourceNodeKey)) {
+                // try plugin SourceNodeResolver first
+                List<ElementInstance> resolvedSourceFlows = tryResolveSourceByPlugin(nodeInstancePO, flowElementMap);
+                if (resolvedSourceFlows != null) {
+                    elementInstanceList.addAll(resolvedSourceFlows);
+                } else if (StringUtils.isNotBlank(sourceNodeKey)) {
                     FlowElement sourceFlowElement = FlowModelUtil.getSequenceFlow(flowElementMap, sourceNodeKey, nodeKey);
                     if (sourceFlowElement == null) {
                         LOGGER.error("getHistoryElementList failed: sourceFlowElement is null."
@@ -561,6 +588,25 @@ public class RuntimeProcessor {
             }
         }
         return flowInstanceMappingPOList.get(0).getSubFlowInstanceId();
+    }
+
+    /**
+     * 尝试通过插件的 SourceNodeResolver 解析 source sequence flow。
+     * 如果有插件处理了该节点，则返回 ElementInstance 列表；否则返回 null 表示使用默认逻辑。
+     */
+    private List<ElementInstance> tryResolveSourceByPlugin(NodeInstancePO nodeInstancePO, Map<String, FlowElement> flowElementMap) {
+        if (CollectionUtils.isEmpty(sourceNodeResolvers)) {
+            return null;
+        }
+        for (SourceNodeResolver resolver : sourceNodeResolvers) {
+            if (resolver.supports(nodeInstancePO, flowElementMap)) {
+                List<ElementInstance> result = resolver.resolveSourceSequenceFlows(nodeInstancePO, flowElementMap);
+                if (result != null) {
+                    return result;
+                }
+            }
+        }
+        return null;
     }
 
     private List<NodeInstancePO> getHistoryNodeInstanceList(String flowInstanceId) {

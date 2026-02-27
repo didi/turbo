@@ -729,6 +729,103 @@ public class RuntimeProcessorTest extends BaseTest {
         Assert.assertEquals(commitTaskResult5.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
     }
 
+    private StartProcessResult startMultiBranchProcess(String flag) throws Exception {
+        // prepare
+        FlowDeploymentPO flowDeploymentPO = EntityBuilder.buildMultiBranchParallelFlowDeploymentPO();
+        flowDeploymentPO.setFlowModuleId(flowDeploymentPO.getFlowModuleId() + "_" + flag);
+        flowDeploymentPO.setFlowDeployId(flowDeploymentPO.getFlowDeployId() + "_" + flag);
+        FlowDeploymentPO _flowDeploymentPO = flowDeploymentMapper.selectByDeployId(flowDeploymentPO.getFlowDeployId());
+        if (_flowDeploymentPO != null) {
+            if (!StringUtils.equals(_flowDeploymentPO.getFlowModel(), flowDeploymentPO.getFlowModel())) {
+                flowDeploymentMapper.deleteById(_flowDeploymentPO.getId());
+                flowDeploymentMapper.insert(flowDeploymentPO);
+            }
+        } else {
+            flowDeploymentMapper.insert(flowDeploymentPO);
+        }
+
+        // start process
+        StartProcessParam startProcessParam = new StartProcessParam();
+        startProcessParam.setFlowDeployId(flowDeploymentPO.getFlowDeployId());
+        List<InstanceData> variables = new ArrayList<>();
+        variables.add(new InstanceData("orderId", "123"));
+        startProcessParam.setVariables(variables);
+        return runtimeProcessor.startProcess(startProcessParam);
+    }
+
+    /**
+     * Test multi-branch (7 branches) parallel gateway: fork and join
+     *
+     *                                |--> UserTask_mb001 --|
+     *                                |--> UserTask_mb002 --|
+     *                                |--> UserTask_mb003 --|
+     * StartEvent_mb001 --> PG_mbfork |--> UserTask_mb004 --|--> PG_mbjoin --> EndEvent_mb001
+     *                                |--> UserTask_mb005 --|
+     *                                |--> UserTask_mb006 --|
+     *                                |--> UserTask_mb007 --|
+     */
+    @Test
+    public void testMultiBranchParallelGateway() throws Exception {
+        int branchCount = 7;
+
+        // Step 1: Start process -> 7 UserTasks
+        StartProcessResult startProcessResult = startMultiBranchProcess("multiBranch");
+        Assert.assertEquals(ErrorEnum.COMMIT_SUSPEND.getErrNo(), startProcessResult.getErrCode());
+        Assert.assertEquals(branchCount, startProcessResult.getNodeExecuteResults().size());
+
+        // Verify all 7 UserTask branches are created
+        Map<String, Integer> taskIndexMap = new HashMap<>();
+        for (int i = 0; i < startProcessResult.getNodeExecuteResults().size(); i++) {
+            String modelKey = startProcessResult.getNodeExecuteResults().get(i).getActiveTaskInstance().getModelKey();
+            taskIndexMap.put(modelKey, i);
+        }
+        for (int b = 1; b <= branchCount; b++) {
+            String expectedKey = "UserTask_mb00" + b;
+            Assert.assertTrue("Expected UserTask " + expectedKey + " not found", taskIndexMap.containsKey(expectedKey));
+        }
+        LOGGER.info("testMultiBranchParallelGateway: Start process succeeded with {} branches", branchCount);
+
+        // Step 2: Commit first (branchCount - 1) UserTasks -> all should be WAITING_SUSPEND at PG_mbjoin
+        for (int b = 1; b < branchCount; b++) {
+            String taskKey = "UserTask_mb00" + b;
+            int idx = taskIndexMap.get(taskKey);
+
+            CommitTaskParam commitTaskParam = new CommitTaskParam();
+            commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+            commitTaskParam.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(idx).getActiveTaskInstance().getNodeInstanceId());
+            commitTaskParam.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), idx));
+            List<InstanceData> variables = new ArrayList<>();
+            variables.add(new InstanceData("branch_" + b, b));
+            commitTaskParam.setVariables(variables);
+
+            CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
+            Assert.assertEquals("Branch " + b + " should be WAITING_SUSPEND",
+                ParallelErrorEnum.WAITING_SUSPEND.getErrNo(), commitTaskResult.getErrCode());
+            Assert.assertTrue("Branch " + b + " should stop at PG_mbjoin",
+                StringUtils.equals(commitTaskResult.getActiveTaskInstance().getModelKey(), "PG_mbjoin"));
+            LOGGER.info("testMultiBranchParallelGateway: Branch {} committed, waiting at join gateway", b);
+        }
+
+        // Step 3: Commit last UserTask (branch 7) -> should trigger join and reach EndEvent (SUCCESS)
+        {
+            String taskKey = "UserTask_mb00" + branchCount;
+            int idx = taskIndexMap.get(taskKey);
+
+            CommitTaskParam commitTaskParam = new CommitTaskParam();
+            commitTaskParam.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+            commitTaskParam.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(idx).getActiveTaskInstance().getNodeInstanceId());
+            commitTaskParam.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), idx));
+            List<InstanceData> variables = new ArrayList<>();
+            variables.add(new InstanceData("branch_" + branchCount, branchCount));
+            commitTaskParam.setVariables(variables);
+
+            CommitTaskResult commitTaskResult = runtimeProcessor.commit(commitTaskParam);
+            Assert.assertEquals("Last branch should complete the flow",
+                ErrorEnum.SUCCESS.getErrNo(), commitTaskResult.getErrCode());
+            LOGGER.info("testMultiBranchParallelGateway: All {} branches joined, flow completed successfully!", branchCount);
+        }
+    }
+
     private Map<String, Object> copyExtendProperties(Map<String, Object> extendProperties, int i) {
         Map<String, Object> copyExtendProperties = new HashMap<>();
         List<ParallelRuntimeContext> parallelRuntimeContextList = (List<ParallelRuntimeContext>) extendProperties.get("parallelRuntimeContextList");

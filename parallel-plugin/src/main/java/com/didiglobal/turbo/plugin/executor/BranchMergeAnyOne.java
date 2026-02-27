@@ -36,6 +36,8 @@ public class BranchMergeAnyOne extends BranchMergeStrategy {
         NodeInstancePO joinNodeInstancePo = buildNodeInstancePO(runtimeContext, currentNodeInstance);
         nodeInstanceDAO.insert(joinNodeInstancePo);
         nodeInstanceLogDAO.insert(buildNodeInstanceLogPO(joinNodeInstancePo));
+        // 写入 source 扩展表
+        saveNodeInstanceSource(joinNodeInstancePo, currentNodeInstance);
 
         // Close other nodes with pending ACTIVE status
         parallelNodeInstanceService.closeParallelSuspendUserTask(runtimeContext, executeIds);

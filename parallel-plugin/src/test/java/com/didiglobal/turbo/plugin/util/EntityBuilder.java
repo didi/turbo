@@ -2119,4 +2119,207 @@ public class EntityBuilder {
         flowModel.setFlowElementList(flowElementList);
         return flowModel;
     }
+
+    // For multi-branch (7 branches) parallel gateway test
+    public static FlowDeploymentPO buildMultiBranchParallelFlowDeploymentPO() {
+        FlowDeploymentPO flowDeploymentPO = new FlowDeploymentPO();
+        flowDeploymentPO.setFlowName(flowName);
+        flowDeploymentPO.setFlowKey(flowKey);
+        flowDeploymentPO.setFlowModuleId("flowModuleId_multiBranch");
+        flowDeploymentPO.setFlowDeployId("flowDeployId_multiBranch");
+        flowDeploymentPO.setFlowModel(JSON.toJSONString(buildMultiBranchParallelFlowModel()));
+        flowDeploymentPO.setStatus(FlowDeploymentStatus.DEPLOYED);
+        flowDeploymentPO.setCreateTime(new Date());
+        flowDeploymentPO.setModifyTime(new Date());
+        flowDeploymentPO.setOperator(operator);
+        flowDeploymentPO.setRemark(remark);
+        return flowDeploymentPO;
+    }
+
+    /**
+     *                         |--> UserTask_mb001 --|
+     *                         |--> UserTask_mb002 --|
+     *                         |--> UserTask_mb003 --|
+     * StartEvent_mb001 --> PG_mbfork |--> UserTask_mb004 --|--> PG_mbjoin --> EndEvent_mb001
+     *                         |--> UserTask_mb005 --|
+     *                         |--> UserTask_mb006 --|
+     *                         |--> UserTask_mb007 --|
+     */
+    public static FlowModel buildMultiBranchParallelFlowModel() {
+        int branchCount = 7;
+        List<FlowElement> flowElementList = Lists.newArrayList();
+
+        // SequenceFlow keys
+        String sfStartToFork = "SF_mb_start";
+        String sfJoinToEnd = "SF_mb_end";
+        List<String> sfForkToBranch = new ArrayList<>();
+        List<String> sfBranchToJoin = new ArrayList<>();
+        for (int i = 1; i <= branchCount; i++) {
+            sfForkToBranch.add("SF_mb_b" + i);
+            sfBranchToJoin.add("SF_mb_b" + i + "j");
+        }
+
+        // StartEvent
+        {
+            StartEvent startEvent = new StartEvent();
+            startEvent.setKey("StartEvent_mb001");
+            startEvent.setType(FlowElementType.START_EVENT);
+            List<String> outgoings = new ArrayList<>();
+            outgoings.add(sfStartToFork);
+            startEvent.setOutgoing(outgoings);
+            flowElementList.add(startEvent);
+        }
+
+        // EndEvent
+        {
+            EndEvent endEvent = new EndEvent();
+            endEvent.setKey("EndEvent_mb001");
+            endEvent.setType(FlowElementType.END_EVENT);
+            List<String> incomings = new ArrayList<>();
+            incomings.add(sfJoinToEnd);
+            endEvent.setIncoming(incomings);
+            flowElementList.add(endEvent);
+        }
+
+        // ParallelGateway Fork
+        {
+            ParallelGateway parallelGateway = new ParallelGateway();
+            parallelGateway.setKey("PG_mbfork");
+            parallelGateway.setType(ExtendFlowElementType.PARALLEL_GATEWAY);
+
+            List<String> incomings = new ArrayList<>();
+            incomings.add(sfStartToFork);
+            parallelGateway.setIncoming(incomings);
+
+            parallelGateway.setOutgoing(new ArrayList<>(sfForkToBranch));
+
+            Map<String, Object> properties = new HashMap<>();
+            Map<String, String> forkJoinMatch = new HashMap<>();
+            forkJoinMatch.put(Constants.ELEMENT_PROPERTIES.FORK, "PG_mbfork");
+            forkJoinMatch.put(Constants.ELEMENT_PROPERTIES.JOIN, "PG_mbjoin");
+            properties.put(Constants.ELEMENT_PROPERTIES.FORK_JOIN_MATCH, JSONArray.toJSON(forkJoinMatch));
+            parallelGateway.setProperties(properties);
+
+            flowElementList.add(parallelGateway);
+        }
+
+        // ParallelGateway Join
+        {
+            ParallelGateway parallelGateway = new ParallelGateway();
+            parallelGateway.setKey("PG_mbjoin");
+            parallelGateway.setType(ExtendFlowElementType.PARALLEL_GATEWAY);
+
+            parallelGateway.setIncoming(new ArrayList<>(sfBranchToJoin));
+
+            List<String> outgoings = new ArrayList<>();
+            outgoings.add(sfJoinToEnd);
+            parallelGateway.setOutgoing(outgoings);
+
+            Map<String, Object> properties = new HashMap<>();
+            Map<String, String> forkJoinMatch = new HashMap<>();
+            forkJoinMatch.put(Constants.ELEMENT_PROPERTIES.FORK, "PG_mbfork");
+            forkJoinMatch.put(Constants.ELEMENT_PROPERTIES.JOIN, "PG_mbjoin");
+            properties.put(Constants.ELEMENT_PROPERTIES.FORK_JOIN_MATCH, JSONArray.toJSON(forkJoinMatch));
+            parallelGateway.setProperties(properties);
+
+            flowElementList.add(parallelGateway);
+        }
+
+        // UserTasks (7 branches)
+        for (int i = 1; i <= branchCount; i++) {
+            UserTask userTask = new UserTask();
+            userTask.setKey("UserTask_mb00" + i);
+            userTask.setType(FlowElementType.USER_TASK);
+
+            List<String> utIncomings = new ArrayList<>();
+            utIncomings.add(sfForkToBranch.get(i - 1));
+            userTask.setIncoming(utIncomings);
+
+            List<String> utOutgoings = new ArrayList<>();
+            utOutgoings.add(sfBranchToJoin.get(i - 1));
+            userTask.setOutgoing(utOutgoings);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("name", "branch-" + i);
+            userTask.setProperties(properties);
+
+            flowElementList.add(userTask);
+        }
+
+        // SequenceFlow: Start -> Fork
+        {
+            SequenceFlow sequenceFlow = new SequenceFlow();
+            sequenceFlow.setKey(sfStartToFork);
+            sequenceFlow.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("StartEvent_mb001");
+            sequenceFlow.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("PG_mbfork");
+            sequenceFlow.setOutgoing(sfOutgoings);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "false");
+            properties.put("conditionsequenceflow", "");
+            sequenceFlow.setProperties(properties);
+            flowElementList.add(sequenceFlow);
+        }
+
+        // SequenceFlow: Fork -> each branch UserTask
+        for (int i = 1; i <= branchCount; i++) {
+            SequenceFlow sequenceFlow = new SequenceFlow();
+            sequenceFlow.setKey(sfForkToBranch.get(i - 1));
+            sequenceFlow.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("PG_mbfork");
+            sequenceFlow.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("UserTask_mb00" + i);
+            sequenceFlow.setOutgoing(sfOutgoings);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "false");
+            properties.put("conditionsequenceflow", "");
+            sequenceFlow.setProperties(properties);
+            flowElementList.add(sequenceFlow);
+        }
+
+        // SequenceFlow: each branch UserTask -> Join
+        for (int i = 1; i <= branchCount; i++) {
+            SequenceFlow sequenceFlow = new SequenceFlow();
+            sequenceFlow.setKey(sfBranchToJoin.get(i - 1));
+            sequenceFlow.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("UserTask_mb00" + i);
+            sequenceFlow.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("PG_mbjoin");
+            sequenceFlow.setOutgoing(sfOutgoings);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "false");
+            properties.put("conditionsequenceflow", "");
+            sequenceFlow.setProperties(properties);
+            flowElementList.add(sequenceFlow);
+        }
+
+        // SequenceFlow: Join -> End
+        {
+            SequenceFlow sequenceFlow = new SequenceFlow();
+            sequenceFlow.setKey(sfJoinToEnd);
+            sequenceFlow.setType(FlowElementType.SEQUENCE_FLOW);
+            List<String> sfIncomings = new ArrayList<>();
+            sfIncomings.add("PG_mbjoin");
+            sequenceFlow.setIncoming(sfIncomings);
+            List<String> sfOutgoings = new ArrayList<>();
+            sfOutgoings.add("EndEvent_mb001");
+            sequenceFlow.setOutgoing(sfOutgoings);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put("defaultConditions", "false");
+            properties.put("conditionsequenceflow", "");
+            sequenceFlow.setProperties(properties);
+            flowElementList.add(sequenceFlow);
+        }
+
+        FlowModel flowModel = new FlowModel();
+        flowModel.setFlowElementList(flowElementList);
+        return flowModel;
+    }
 }
