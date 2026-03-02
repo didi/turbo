@@ -1,9 +1,12 @@
 package com.didiglobal.turbo.demo.util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.didiglobal.turbo.engine.common.Constants;
 import com.didiglobal.turbo.engine.common.FlowElementType;
 import com.didiglobal.turbo.engine.model.*;
+import com.didiglobal.turbo.plugin.common.ExtendFlowElementType;
+import com.didiglobal.turbo.plugin.model.ParallelGateway;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
@@ -901,5 +904,92 @@ public class EntityBuilder {
         FlowModel flowModel = new FlowModel();
         flowModel.setFlowElementList(flowElementList);
         return JSON.toJSONString(flowModel);
+    }
+
+    /**
+     * Parallel gateway demo flow model:
+     *
+     *                         --> UserTask_A -->
+     * StartEvent --> PGW_fork                   PGW_join --> EndEvent
+     *                         --> UserTask_B -->
+     */
+    public static String buildParallelGatewayFlowModelStr() {
+        List<FlowElement> flowElementList = Lists.newArrayList();
+
+        StartEvent startEvent = new StartEvent();
+        startEvent.setKey("StartEvent_pg");
+        startEvent.setType(FlowElementType.START_EVENT);
+        startEvent.setOutgoing(Lists.newArrayList("SequenceFlow_pg_start"));
+        flowElementList.add(startEvent);
+
+        EndEvent endEvent = new EndEvent();
+        endEvent.setKey("EndEvent_pg");
+        endEvent.setType(FlowElementType.END_EVENT);
+        endEvent.setIncoming(Lists.newArrayList("SequenceFlow_pg_end"));
+        flowElementList.add(endEvent);
+
+        ParallelGateway pgFork = new ParallelGateway();
+        pgFork.setKey("ParallelGateway_fork");
+        pgFork.setType(ExtendFlowElementType.PARALLEL_GATEWAY);
+        pgFork.setIncoming(Lists.newArrayList("SequenceFlow_pg_start"));
+        pgFork.setOutgoing(Lists.newArrayList("SequenceFlow_pg_toA", "SequenceFlow_pg_toB"));
+        Map<String, Object> forkProps = new HashMap<>();
+        Map<String, String> forkJoinMatch = new HashMap<>();
+        forkJoinMatch.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.FORK, "ParallelGateway_fork");
+        forkJoinMatch.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.JOIN, "ParallelGateway_join");
+        forkProps.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.FORK_JOIN_MATCH, JSONArray.toJSON(forkJoinMatch));
+        pgFork.setProperties(forkProps);
+        flowElementList.add(pgFork);
+
+        ParallelGateway pgJoin = new ParallelGateway();
+        pgJoin.setKey("ParallelGateway_join");
+        pgJoin.setType(ExtendFlowElementType.PARALLEL_GATEWAY);
+        pgJoin.setIncoming(Lists.newArrayList("SequenceFlow_pg_fromA", "SequenceFlow_pg_fromB"));
+        pgJoin.setOutgoing(Lists.newArrayList("SequenceFlow_pg_end"));
+        Map<String, Object> joinProps = new HashMap<>();
+        Map<String, String> joinForkJoinMatch = new HashMap<>();
+        joinForkJoinMatch.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.FORK, "ParallelGateway_fork");
+        joinForkJoinMatch.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.JOIN, "ParallelGateway_join");
+        joinProps.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.FORK_JOIN_MATCH, JSONArray.toJSON(joinForkJoinMatch));
+        pgJoin.setProperties(joinProps);
+        flowElementList.add(pgJoin);
+
+        UserTask userTaskA = new UserTask();
+        userTaskA.setKey("UserTask_A");
+        userTaskA.setType(FlowElementType.USER_TASK);
+        userTaskA.setIncoming(Lists.newArrayList("SequenceFlow_pg_toA"));
+        userTaskA.setOutgoing(Lists.newArrayList("SequenceFlow_pg_fromA"));
+        flowElementList.add(userTaskA);
+
+        UserTask userTaskB = new UserTask();
+        userTaskB.setKey("UserTask_B");
+        userTaskB.setType(FlowElementType.USER_TASK);
+        userTaskB.setIncoming(Lists.newArrayList("SequenceFlow_pg_toB"));
+        userTaskB.setOutgoing(Lists.newArrayList("SequenceFlow_pg_fromB"));
+        flowElementList.add(userTaskB);
+
+        addSequenceFlow(flowElementList, "SequenceFlow_pg_start", "StartEvent_pg", "ParallelGateway_fork");
+        addSequenceFlow(flowElementList, "SequenceFlow_pg_toA", "ParallelGateway_fork", "UserTask_A");
+        addSequenceFlow(flowElementList, "SequenceFlow_pg_toB", "ParallelGateway_fork", "UserTask_B");
+        addSequenceFlow(flowElementList, "SequenceFlow_pg_fromA", "UserTask_A", "ParallelGateway_join");
+        addSequenceFlow(flowElementList, "SequenceFlow_pg_fromB", "UserTask_B", "ParallelGateway_join");
+        addSequenceFlow(flowElementList, "SequenceFlow_pg_end", "ParallelGateway_join", "EndEvent_pg");
+
+        FlowModel flowModel = new FlowModel();
+        flowModel.setFlowElementList(flowElementList);
+        return JSON.toJSONString(flowModel);
+    }
+
+    private static void addSequenceFlow(List<FlowElement> list, String key, String from, String to) {
+        SequenceFlow sf = new SequenceFlow();
+        sf.setKey(key);
+        sf.setType(FlowElementType.SEQUENCE_FLOW);
+        sf.setIncoming(Lists.newArrayList(from));
+        sf.setOutgoing(Lists.newArrayList(to));
+        Map<String, Object> props = new HashMap<>();
+        props.put("defaultConditions", "false");
+        props.put("conditionsequenceflow", "");
+        sf.setProperties(props);
+        list.add(sf);
     }
 }
