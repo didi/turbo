@@ -106,11 +106,10 @@ public abstract class BranchMergeStrategy {
     }
 
     protected void buildParallelNodeInstancePo(NodeInstancePO joinNodeInstancePo, NodeInstanceBO currentNodeInstance, int status) {
-        String sourceNodeInstanceId = joinNodeInstancePo.getSourceNodeInstanceId();
-        String sourceNodeKey = joinNodeInstancePo.getSourceNodeKey();
+        // source_node_instance_id and source_node_key in ei_node_instance are varchar(128)/varchar(64).
+        // Accumulating comma-separated UUIDs for every arriving branch would overflow these fields.
+        // They are audit-only fields not used in join routing logic, so we retain the first branch's source.
         String executeId = (String) joinNodeInstancePo.get("executeId");
-        joinNodeInstancePo.setSourceNodeInstanceId(ExecutorUtil.append(sourceNodeInstanceId, currentNodeInstance.getSourceNodeInstanceId()));
-        joinNodeInstancePo.setSourceNodeKey(ExecutorUtil.append(sourceNodeKey, currentNodeInstance.getSourceNodeKey()));
         String newExecuteId = ExecutorUtil.append(executeId, ExecutorUtil.getCurrentExecuteId((String) currentNodeInstance.get("executeId")));
         joinNodeInstancePo.put("executeId", newExecuteId);
         joinNodeInstancePo.setStatus(status);
