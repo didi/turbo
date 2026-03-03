@@ -32,8 +32,7 @@ import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
+import com.didiglobal.turbo.engine.util.BeanUtil;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -51,7 +50,7 @@ import java.util.Map;
  * 3.When External systems compute subFlowModuleId success, need continue to submit downward
  * 4.CallActivity node support repeated submission
  */
-@Service
+
 public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SyncSingleCallActivityExecutor.class);
@@ -81,7 +80,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
     protected void preCommit(RuntimeContext runtimeContext) throws ProcessException {
         NodeInstanceBO suspendNodeInstance = runtimeContext.getSuspendNodeInstance();
         NodeInstanceBO currentNodeInstance = new NodeInstanceBO();
-        BeanUtils.copyProperties(suspendNodeInstance, currentNodeInstance);
+        BeanUtil.copyProperties(suspendNodeInstance, currentNodeInstance);
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
     }
 
@@ -231,7 +230,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
         runtimeResult.setStatus(subFlowInstancePO.getStatus());
 
         NodeInstance nodeInstance = new NodeInstance();
-        BeanUtils.copyProperties(nodeInstancePO, nodeInstance);
+        BeanUtil.copyProperties(nodeInstancePO, nodeInstance);
         nodeInstance.setCreateTime(null);
         nodeInstance.setModifyTime(null);
         nodeInstance.setModelKey(nodeInstancePO.getNodeKey());
@@ -274,7 +273,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
         runtimeContext.getNodeInstanceList().add(currentNodeInstance);
 
         NodeInstanceBO newNodeInstanceBO = new NodeInstanceBO();
-        BeanUtils.copyProperties(currentNodeInstance, newNodeInstanceBO);
+        BeanUtil.copyProperties(currentNodeInstance, newNodeInstanceBO);
         newNodeInstanceBO.setId(null);
         String newNodeInstanceId = genId();
         newNodeInstanceBO.setNodeInstanceId(newNodeInstanceId);
@@ -285,7 +284,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
         flowInstanceMappingDAO.updateType(oldFlowInstanceMappingPO.getFlowInstanceId(), oldFlowInstanceMappingPO.getNodeInstanceId(), FlowInstanceMappingType.TERMINATED);
 
         FlowInstanceMappingPO newFlowInstanceMappingPO = new FlowInstanceMappingPO();
-        BeanUtils.copyProperties(oldFlowInstanceMappingPO, newFlowInstanceMappingPO);
+        BeanUtil.copyProperties(oldFlowInstanceMappingPO, newFlowInstanceMappingPO);
         newFlowInstanceMappingPO.setId(null);
         newFlowInstanceMappingPO.setNodeInstanceId(newNodeInstanceId);
         newFlowInstanceMappingPO.setCreateTime(new Date());

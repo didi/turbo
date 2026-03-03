@@ -9,13 +9,11 @@ import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.plugin.common.ParallelErrorEnum;
 import com.didiglobal.turbo.plugin.service.ParallelNodeInstanceService;
 import com.didiglobal.turbo.plugin.util.ExecutorUtil;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
 import java.util.Set;
 
-@Component
 public class BranchMergeAnyOne extends BranchMergeStrategy {
 
     @Resource

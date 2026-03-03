@@ -4,9 +4,7 @@ import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.dao.mapper.InstanceDataMapper;
 import com.didiglobal.turbo.engine.entity.InstanceDataPO;
 import com.didiglobal.turbo.engine.exception.TurboException;
-import org.springframework.stereotype.Repository;
 
-@Repository
 public class InstanceDataDAO extends BaseDAO<InstanceDataMapper, InstanceDataPO> {
 
     public InstanceDataPO select(String flowInstanceId, String instanceDataId) {

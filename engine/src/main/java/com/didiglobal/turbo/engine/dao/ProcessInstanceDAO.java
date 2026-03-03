@@ -2,11 +2,9 @@ package com.didiglobal.turbo.engine.dao;
 
 import com.didiglobal.turbo.engine.dao.mapper.ProcessInstanceMapper;
 import com.didiglobal.turbo.engine.entity.FlowInstancePO;
-import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 
-@Repository
 public class ProcessInstanceDAO extends BaseDAO<ProcessInstanceMapper, FlowInstancePO> {
 
     public FlowInstancePO selectByFlowInstanceId(String flowInstanceId) {

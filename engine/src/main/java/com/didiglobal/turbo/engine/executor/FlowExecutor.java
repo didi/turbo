@@ -11,6 +11,7 @@ import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.exception.ReentrantException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
+import com.didiglobal.turbo.engine.util.BeanUtil;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import com.google.common.collect.Lists;
@@ -21,15 +22,12 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-@Service
 public class FlowExecutor extends RuntimeExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FlowExecutor.class);
@@ -88,7 +86,7 @@ public class FlowExecutor extends RuntimeExecutor {
     private FlowInstancePO buildFlowInstancePO(RuntimeContext runtimeContext) {
         FlowInstancePO flowInstancePO = new FlowInstancePO();
         // copy flow info
-        BeanUtils.copyProperties(runtimeContext, flowInstancePO);
+        BeanUtil.copyProperties(runtimeContext, flowInstancePO);
         // generate flowInstanceId
         flowInstancePO.setFlowInstanceId(genId());
         RuntimeContext parentRuntimeContext = runtimeContext.getParentRuntimeContext();
@@ -120,7 +118,7 @@ public class FlowExecutor extends RuntimeExecutor {
     private InstanceDataPO buildInstanceDataPO(FlowInstancePO flowInstancePO, Map<String, InstanceData> instanceDataMap) {
         InstanceDataPO instanceDataPO = new InstanceDataPO();
         // copy flow info & flowInstanceId
-        BeanUtils.copyProperties(flowInstancePO, instanceDataPO);
+        BeanUtil.copyProperties(flowInstancePO, instanceDataPO);
         // fix primary key duplicated
         instanceDataPO.setId(null);
 
@@ -288,7 +286,7 @@ public class FlowExecutor extends RuntimeExecutor {
     private InstanceDataPO buildCommitInstanceData(RuntimeContext runtimeContext, String nodeInstanceId, String nodeKey,
                                                    String newInstanceDataId, Map<String, InstanceData> instanceDataMap) {
         InstanceDataPO instanceDataPO = new InstanceDataPO();
-        BeanUtils.copyProperties(runtimeContext, instanceDataPO);
+        BeanUtil.copyProperties(runtimeContext, instanceDataPO);
 
         instanceDataPO.setNodeInstanceId(nodeInstanceId);
         instanceDataPO.setNodeKey(nodeKey);
@@ -383,7 +381,7 @@ public class FlowExecutor extends RuntimeExecutor {
             LOGGER.warn("invalid preRollback: FlowInstance has been processed completely."
                 + "||flowInstanceId={}||flowDeployId={}", flowInstanceId, runtimeContext.getFlowDeployId());
             NodeInstanceBO suspendNodeInstance = new NodeInstanceBO();
-            BeanUtils.copyProperties(rollbackNodeInstancePO, suspendNodeInstance);
+            BeanUtil.copyProperties(rollbackNodeInstancePO, suspendNodeInstance);
             runtimeContext.setSuspendNodeInstance(suspendNodeInstance);
             runtimeContext.setFlowInstanceStatus(FlowInstanceStatus.COMPLETED);
             throw new ProcessException(ErrorEnum.ROLLBACK_FAILED);
@@ -497,7 +495,7 @@ public class FlowExecutor extends RuntimeExecutor {
 
     private NodeInstanceBO buildSuspendNodeInstanceBO(NodeInstancePO nodeInstancePO) {
         NodeInstanceBO suspendNodeInstanceBO = new NodeInstanceBO();
-        BeanUtils.copyProperties(nodeInstancePO, suspendNodeInstanceBO);
+        BeanUtil.copyProperties(nodeInstancePO, suspendNodeInstanceBO);
         return suspendNodeInstanceBO;
     }
 
@@ -607,7 +605,7 @@ public class FlowExecutor extends RuntimeExecutor {
         }
 
         NodeInstancePO nodeInstancePO = new NodeInstancePO();
-        BeanUtils.copyProperties(nodeInstanceBO, nodeInstancePO);
+        BeanUtil.copyProperties(nodeInstanceBO, nodeInstancePO);
         nodeInstancePO.setFlowInstanceId(runtimeContext.getFlowInstanceId());
         nodeInstancePO.setFlowDeployId(runtimeContext.getFlowDeployId());
         nodeInstancePO.setTenant(runtimeContext.getTenant());
@@ -621,7 +619,7 @@ public class FlowExecutor extends RuntimeExecutor {
     private NodeInstanceLogPO buildNodeInstanceLogPO(NodeInstancePO nodeInstancePO, int nodeInstanceType) {
         NodeInstanceLogPO nodeInstanceLogPO = new NodeInstanceLogPO();
         // fix primary key duplicated
-        BeanUtils.copyProperties(nodeInstancePO, nodeInstanceLogPO);
+        BeanUtil.copyProperties(nodeInstancePO, nodeInstanceLogPO);
         nodeInstanceLogPO.setId(null);
         nodeInstanceLogPO.setType(nodeInstanceType);
         return nodeInstanceLogPO;

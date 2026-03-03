@@ -2,12 +2,10 @@ package com.didiglobal.turbo.engine.dao;
 
 import com.didiglobal.turbo.engine.dao.mapper.FlowInstanceMappingMapper;
 import com.didiglobal.turbo.engine.entity.FlowInstanceMappingPO;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 
-@Service
 public class FlowInstanceMappingDAO extends BaseDAO<FlowInstanceMappingMapper, FlowInstanceMappingPO> {
 
     /**

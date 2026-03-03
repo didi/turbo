@@ -11,7 +11,6 @@ import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Service
 public class ExecutorFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutorFactory.class);

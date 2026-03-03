@@ -13,14 +13,12 @@ import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
-@Component
 public class FlowModelValidator {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(FlowModelValidator.class);

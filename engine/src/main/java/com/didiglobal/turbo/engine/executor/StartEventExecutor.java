@@ -7,11 +7,9 @@ import com.didiglobal.turbo.engine.common.RuntimeContext;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
-@Service
 public class StartEventExecutor extends ElementExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StartEventExecutor.class);

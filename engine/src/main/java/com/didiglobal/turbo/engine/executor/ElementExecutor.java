@@ -12,6 +12,7 @@ import com.didiglobal.turbo.engine.exception.ReentrantException;
 import com.didiglobal.turbo.engine.exception.SuspendException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
+import com.didiglobal.turbo.engine.util.BeanUtil;
 import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
@@ -19,7 +20,6 @@ import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -69,7 +69,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
                     sourceNodeInstance.getNodeInstanceId(), nodeKey);
             //reentrant check
             if (nodeInstancePO != null) {
-                BeanUtils.copyProperties(nodeInstancePO, currentNodeInstance);
+                BeanUtil.copyProperties(nodeInstancePO, currentNodeInstance);
                 runtimeContext.setCurrentNodeInstance(currentNodeInstance);
                 LOGGER.warn("preExecute reentrant.||nodeInstancePO={}", nodeInstancePO);
                 return;
@@ -179,7 +179,7 @@ public abstract class ElementExecutor extends RuntimeExecutor {
                 throw new ProcessException(ErrorEnum.GET_NODE_INSTANCE_FAILED);
             }
             currentNodeInstance = new NodeInstanceBO();
-            BeanUtils.copyProperties(currentNodeInstancePO, currentNodeInstance);
+            BeanUtil.copyProperties(currentNodeInstancePO, currentNodeInstance);
 
             String currentInstanceDataId = currentNodeInstance.getInstanceDataId();
             runtimeContext.setInstanceDataId(currentInstanceDataId);

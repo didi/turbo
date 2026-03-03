@@ -15,10 +15,10 @@ import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
 import com.didiglobal.turbo.engine.processor.RuntimeProcessor;
 import com.didiglobal.turbo.engine.service.NodeInstanceService;
+import com.didiglobal.turbo.engine.util.BeanUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 
 import javax.annotation.Resource;
 
@@ -111,7 +111,7 @@ public abstract class AbstractCallActivityExecutor extends ElementExecutor {
 
     protected InstanceDataPO buildCallActivityEndInstanceData(String instanceDataId, RuntimeContext runtimeContext) {
         InstanceDataPO instanceDataPO = new InstanceDataPO();
-        BeanUtils.copyProperties(runtimeContext, instanceDataPO);
+        BeanUtil.copyProperties(runtimeContext, instanceDataPO);
         instanceDataPO.setInstanceDataId(instanceDataId);
         instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataListStr(runtimeContext.getInstanceDataMap()));
         instanceDataPO.setNodeInstanceId(runtimeContext.getCurrentNodeInstance().getNodeInstanceId());

@@ -9,6 +9,7 @@ import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
 import com.didiglobal.turbo.engine.spi.HookService;
+import com.didiglobal.turbo.engine.util.BeanUtil;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -16,11 +17,8 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import java.util.ArrayList;
@@ -30,15 +28,22 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Service
-public class ExclusiveGatewayExecutor extends ElementExecutor implements InitializingBean {
+public class ExclusiveGatewayExecutor extends ElementExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExclusiveGatewayExecutor.class);
 
     @Resource
-    private ApplicationContext applicationContext;
-
     private List<HookService> hookServices;
+
+    /**
+     * Initializes the hook services list to an empty list if none were injected.
+     */
+    @PostConstruct
+    public void init() {
+        if (hookServices == null) {
+            hookServices = new ArrayList<>();
+        }
+    }
 
     /**
      * Update data map: invoke hook service to update data map
@@ -106,7 +111,7 @@ public class ExclusiveGatewayExecutor extends ElementExecutor implements Initial
 
     private InstanceDataPO buildHookInstanceData(String instanceDataId, RuntimeContext runtimeContext) {
         InstanceDataPO instanceDataPO = new InstanceDataPO();
-        BeanUtils.copyProperties(runtimeContext, instanceDataPO);
+        BeanUtil.copyProperties(runtimeContext, instanceDataPO);
         instanceDataPO.setInstanceDataId(instanceDataId);
         instanceDataPO.setInstanceData(InstanceDataUtil.getInstanceDataListStr(runtimeContext.getInstanceDataMap()));
         instanceDataPO.setNodeInstanceId(runtimeContext.getCurrentNodeInstance().getNodeInstanceId());
@@ -139,31 +144,5 @@ public class ExclusiveGatewayExecutor extends ElementExecutor implements Initial
 
         runtimeContext.setCurrentNodeModel(nextNode);
         return executorFactory.getElementExecutor(nextNode);
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        ensureHookService();
-    }
-
-    private void ensureHookService() {
-        if (hookServices != null) {
-            return;
-        }
-
-        // init hook services by Spring application context
-        synchronized (ExclusiveGatewayExecutor.class) {
-            if (hookServices != null) {
-                return;
-            }
-            hookServices = new ArrayList<>();
-            String[] names = applicationContext.getBeanNamesForType(HookService.class);
-            for (String name : names) {
-                Object bean = applicationContext.getBean(name);
-                if (bean != null) {
-                    hookServices.add((HookService) bean);
-                }
-            }
-        }
     }
 }

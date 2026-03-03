@@ -24,8 +24,6 @@ import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import com.google.common.collect.Maps;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 
@@ -36,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-@Service
 public class CallActivityValidator extends ElementValidator {
 
     @Resource

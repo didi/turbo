@@ -26,15 +26,13 @@ import com.didiglobal.turbo.engine.validator.ParamValidator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Component;
+import com.didiglobal.turbo.engine.util.BeanUtil;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
-@Component
 public class DefinitionProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefinitionProcessor.class);
@@ -69,7 +67,7 @@ public class DefinitionProcessor {
             ParamValidator.validate(createFlowParam);
 
             FlowDefinitionPO flowDefinitionPO = new FlowDefinitionPO();
-            BeanUtils.copyProperties(createFlowParam, flowDefinitionPO);
+            BeanUtil.copyProperties(createFlowParam, flowDefinitionPO);
             String flowModuleId = idGenerator.getNextId();
             flowDefinitionPO.setFlowModuleId(flowModuleId);
             flowDefinitionPO.setStatus(FlowDefinitionStatus.INIT);
@@ -83,7 +81,7 @@ public class DefinitionProcessor {
                 throw new DefinitionException(ErrorEnum.DEFINITION_INSERT_INVALID);
             }
 
-            BeanUtils.copyProperties(flowDefinitionPO, createFlowResult);
+            BeanUtil.copyProperties(flowDefinitionPO, createFlowResult);
             fillCommonResult(createFlowResult, ErrorEnum.SUCCESS);
         } catch (TurboException te) {
             fillCommonResult(createFlowResult, te);
@@ -97,7 +95,7 @@ public class DefinitionProcessor {
             ParamValidator.validate(updateFlowParam);
 
             FlowDefinitionPO flowDefinitionPO = new FlowDefinitionPO();
-            BeanUtils.copyProperties(updateFlowParam, flowDefinitionPO);
+            BeanUtil.copyProperties(updateFlowParam, flowDefinitionPO);
             flowDefinitionPO.setStatus(FlowDefinitionStatus.EDITING);
             flowDefinitionPO.setModifyTime(new Date());
 
@@ -134,7 +132,7 @@ public class DefinitionProcessor {
             modelValidator.validate(flowModel, deployFlowParam);
 
             FlowDeploymentPO flowDeploymentPO = new FlowDeploymentPO();
-            BeanUtils.copyProperties(flowDefinitionPO, flowDeploymentPO);
+            BeanUtil.copyProperties(flowDefinitionPO, flowDeploymentPO);
             // fix primary key duplicated
             flowDeploymentPO.setId(null);
             String flowDeployId = idGenerator.getNextId();
@@ -147,7 +145,7 @@ public class DefinitionProcessor {
                 throw new DefinitionException(ErrorEnum.DEFINITION_INSERT_INVALID);
             }
 
-            BeanUtils.copyProperties(flowDeploymentPO, deployFlowResult);
+            BeanUtil.copyProperties(flowDeploymentPO, deployFlowResult);
             fillCommonResult(deployFlowResult, ErrorEnum.SUCCESS);
         } catch (TurboException te) {
             fillCommonResult(deployFlowResult, te);
@@ -180,7 +178,7 @@ public class DefinitionProcessor {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDefinitionPO is not exist");
         }
         FlowModuleResult flowModuleResult = new FlowModuleResult();
-        BeanUtils.copyProperties(flowDefinitionPO, flowModuleResult);
+        BeanUtil.copyProperties(flowDefinitionPO, flowModuleResult);
         Integer status = FlowModuleEnum.getStatusByDefinitionStatus(flowDefinitionPO.getStatus());
         flowModuleResult.setStatus(status);
         LOGGER.info("getFlowModuleByFlowModuleId||flowModuleId={}||FlowModuleResult={}", flowModuleId, JSON.toJSONString(flowModuleResult));
@@ -194,7 +192,7 @@ public class DefinitionProcessor {
             throw new ParamException(ErrorEnum.PARAM_INVALID.getErrNo(), "flowDefinitionPO is not exist");
         }
         FlowModuleResult flowModuleResult = new FlowModuleResult();
-        BeanUtils.copyProperties(flowDeploymentPO, flowModuleResult);
+        BeanUtil.copyProperties(flowDeploymentPO, flowModuleResult);
         Integer status = FlowModuleEnum.getStatusByDeploymentStatus(flowDeploymentPO.getStatus());
         flowModuleResult.setStatus(status);
         LOGGER.info("getFlowModuleByFlowDeployId||flowDeployId={}||response={}", flowDeployId, JSON.toJSONString(flowModuleResult));

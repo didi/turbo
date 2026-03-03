@@ -39,7 +39,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
+import com.didiglobal.turbo.engine.util.BeanUtil;
 
 import javax.annotation.Resource;
 
@@ -646,7 +646,7 @@ public abstract class AbstractGatewayExecutor extends ElementExecutor {
 
     private NodeInstancePO buildNodeInstancePO(RuntimeContext runtimeContext, NodeInstanceBO nodeInstanceBO) {
         NodeInstancePO nodeInstancePO = new NodeInstancePO();
-        BeanUtils.copyProperties(nodeInstanceBO, nodeInstancePO);
+        BeanUtil.copyProperties(nodeInstanceBO, nodeInstancePO);
         nodeInstancePO.setFlowInstanceId(runtimeContext.getFlowInstanceId());
         nodeInstancePO.setFlowDeployId(runtimeContext.getFlowDeployId());
         nodeInstancePO.setTenant(runtimeContext.getTenant());
@@ -666,7 +666,7 @@ public abstract class AbstractGatewayExecutor extends ElementExecutor {
 
     private NodeInstanceLogPO buildNodeInstanceLogPO(NodeInstancePO nodeInstancePO) {
         NodeInstanceLogPO nodeInstanceLogPO = new NodeInstanceLogPO();
-        BeanUtils.copyProperties(nodeInstancePO, nodeInstanceLogPO);
+        BeanUtil.copyProperties(nodeInstancePO, nodeInstanceLogPO);
         nodeInstanceLogPO.setId(null);
         nodeInstanceLogPO.setType(NodeInstanceType.EXECUTE);
         return nodeInstanceLogPO;

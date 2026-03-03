@@ -10,7 +10,6 @@ import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -19,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component
 public class ElementValidatorFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ElementValidatorFactory.class);

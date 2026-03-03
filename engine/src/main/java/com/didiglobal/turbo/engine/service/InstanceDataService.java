@@ -13,13 +13,11 @@ import com.didiglobal.turbo.engine.entity.InstanceDataPO;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 
 import java.util.Map;
 
-@Service
 public class InstanceDataService {
 
     @Resource

@@ -9,8 +9,6 @@ import com.didiglobal.turbo.engine.plugin.Plugin;
 import com.didiglobal.turbo.engine.util.PluginSqlExecutorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,7 +19,7 @@ import java.util.Set;
 public class DefaultPluginManager extends AbstractPluginManager{
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultPluginManager.class);
 
-    public DefaultPluginManager(DefaultListableBeanFactory beanFactory) {
+    public DefaultPluginManager(TurboBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
         loadPlugins();
         initialize();
@@ -38,7 +36,7 @@ public class DefaultPluginManager extends AbstractPluginManager{
         initializePlugins(pluginMap.getOrDefault(PluginTypeEnum.LISTENER_PLUGIN.getPluginType(), new ArrayList<>()), ListenerPlugin.class);
     }
 
-    public DefaultListableBeanFactory getBeanFactory() {
+    public TurboBeanFactory getBeanFactory() {
         return beanFactory;
     }
 

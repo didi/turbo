@@ -10,11 +10,9 @@ import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 
-@Service
 public class EndEventExecutor extends ElementExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EndEventExecutor.class);

@@ -4,6 +4,7 @@ import com.didiglobal.turbo.engine.plugin.ExpressionCalculatorPlugin;
 import com.didiglobal.turbo.engine.plugin.IdGeneratorPlugin;
 import com.didiglobal.turbo.engine.plugin.manager.DefaultPluginManager;
 import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
+import com.didiglobal.turbo.engine.plugin.manager.TurboBeanFactory;
 import com.didiglobal.turbo.engine.util.ExpressionCalculator;
 import com.didiglobal.turbo.engine.util.IdGenerator;
 import com.didiglobal.turbo.engine.util.StrongUuidGenerator;
@@ -26,7 +27,19 @@ public class PluginConfig {
     private String customManagerClass;
 
     @Resource
-    private DefaultListableBeanFactory beanFactory;
+    private DefaultListableBeanFactory defaultListableBeanFactory;
+
+    /**
+     * Spring adapter that wraps DefaultListableBeanFactory into TurboBeanFactory.
+     */
+    private TurboBeanFactory turboBeanFactory() {
+        return new TurboBeanFactory() {
+            @Override
+            public <T> T getBean(Class<T> requiredType) {
+                return defaultListableBeanFactory.getBean(requiredType);
+            }
+        };
+    }
 
     /**
      * 若指定了自定义的PluginManager，则使用指定的，否则使用默认的DefaultPluginManager
@@ -34,14 +47,14 @@ public class PluginConfig {
      */
     @Bean
     public PluginManager getPluginManager() {
+        TurboBeanFactory beanFactory = turboBeanFactory();
         if (null == customManagerClass) {
             LOGGER.info("No custom PluginManager specified, using default PluginManager.");
-            DefaultPluginManager pluginManager = new DefaultPluginManager(beanFactory);
-            return pluginManager;
+            return new DefaultPluginManager(beanFactory);
         } else {
             try {
                 Class<?> clazz = Class.forName(customManagerClass);
-                return (PluginManager) clazz.getDeclaredConstructor().newInstance(beanFactory);
+                return (PluginManager) clazz.getDeclaredConstructor(TurboBeanFactory.class).newInstance(beanFactory);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to instantiate custom PluginManager", e);
             }

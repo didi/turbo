@@ -8,16 +8,14 @@ import com.didiglobal.turbo.engine.common.RuntimeContext;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.engine.exception.SuspendException;
 import com.didiglobal.turbo.engine.model.FlowElement;
+import com.didiglobal.turbo.engine.util.BeanUtil;
 import com.didiglobal.turbo.engine.util.FlowModelUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
 import java.util.Map;
 
-@Service
 public class UserTaskExecutor extends ElementExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserTaskExecutor.class);
@@ -54,7 +52,7 @@ public class UserTaskExecutor extends ElementExecutor {
         String nodeKey = flowElement.getKey();
 
         NodeInstanceBO currentNodeInstance = new NodeInstanceBO();
-        BeanUtils.copyProperties(suspendNodeInstance, currentNodeInstance);
+        BeanUtil.copyProperties(suspendNodeInstance, currentNodeInstance);
         runtimeContext.setCurrentNodeInstance(currentNodeInstance);
 
         //invalid commit node
@@ -105,7 +103,7 @@ public class UserTaskExecutor extends ElementExecutor {
         runtimeContext.getNodeInstanceList().add(currentNodeInstance);
         if (currentStatus == NodeInstanceStatus.COMPLETED) {
             NodeInstanceBO newNodeInstanceBO = new NodeInstanceBO();
-            BeanUtils.copyProperties(currentNodeInstance, newNodeInstanceBO);
+            BeanUtil.copyProperties(currentNodeInstance, newNodeInstanceBO);
             // TODO: 2019/12/31 to insert new record
             newNodeInstanceBO.setId(null);
             String newNodeInstanceId = genId();

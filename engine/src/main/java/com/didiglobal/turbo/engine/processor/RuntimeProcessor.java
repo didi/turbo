@@ -56,8 +56,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Component;
+import com.didiglobal.turbo.engine.util.BeanUtil;
 
 import javax.annotation.Resource;
 
@@ -67,7 +66,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-@Component
 public class RuntimeProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RuntimeProcessor.class);
@@ -143,13 +141,13 @@ public class RuntimeProcessor {
 
     private StartProcessResult buildStartProcessResult(RuntimeContext runtimeContext) {
         StartProcessResult startProcessResult = new StartProcessResult();
-        BeanUtils.copyProperties(runtimeContext, startProcessResult);
+        BeanUtil.copyProperties(runtimeContext, startProcessResult);
         return (StartProcessResult) fillRuntimeResult(startProcessResult, runtimeContext);
     }
 
     private StartProcessResult buildStartProcessResult(RuntimeContext runtimeContext, TurboException e) {
         StartProcessResult startProcessResult = new StartProcessResult();
-        BeanUtils.copyProperties(runtimeContext, startProcessResult);
+        BeanUtil.copyProperties(runtimeContext, startProcessResult);
         return (StartProcessResult) fillRuntimeResult(startProcessResult, runtimeContext, e);
     }
 
@@ -231,7 +229,7 @@ public class RuntimeProcessor {
     private CommitTaskResult buildCommitTaskResult(RuntimeContext runtimeContext) {
         CommitTaskResult commitTaskResult = new CommitTaskResult();
         if (null != runtimeContext) {
-            BeanUtils.copyProperties(runtimeContext, commitTaskResult);
+            BeanUtil.copyProperties(runtimeContext, commitTaskResult);
         }
         return (CommitTaskResult) fillRuntimeResult(commitTaskResult, runtimeContext);
     }
@@ -239,7 +237,7 @@ public class RuntimeProcessor {
     private CommitTaskResult buildCommitTaskResult(RuntimeContext runtimeContext, TurboException e) {
         CommitTaskResult commitTaskResult = new CommitTaskResult();
         if (null != runtimeContext) {
-            BeanUtils.copyProperties(runtimeContext, commitTaskResult);
+            BeanUtil.copyProperties(runtimeContext, commitTaskResult);
         }
         return (CommitTaskResult) fillRuntimeResult(commitTaskResult, runtimeContext, e);
     }
@@ -323,7 +321,7 @@ public class RuntimeProcessor {
     private RollbackTaskResult buildRollbackTaskResult(RuntimeContext runtimeContext) {
         RollbackTaskResult rollbackTaskResult = new RollbackTaskResult();
         if (null != runtimeContext) {
-            BeanUtils.copyProperties(runtimeContext, rollbackTaskResult);
+            BeanUtil.copyProperties(runtimeContext, rollbackTaskResult);
         }
         return (RollbackTaskResult) fillRuntimeResult(rollbackTaskResult, runtimeContext);
     }
@@ -331,7 +329,7 @@ public class RuntimeProcessor {
     private RollbackTaskResult buildRollbackTaskResult(RuntimeContext runtimeContext, TurboException e) {
         RollbackTaskResult rollbackTaskResult = new RollbackTaskResult();
         if (null != runtimeContext) {
-            BeanUtils.copyProperties(runtimeContext, rollbackTaskResult);
+            BeanUtil.copyProperties(runtimeContext, rollbackTaskResult);
         }
         return (RollbackTaskResult) fillRuntimeResult(rollbackTaskResult, runtimeContext, e);
     }
@@ -428,7 +426,7 @@ public class RuntimeProcessor {
                 //build effective userTask instance
                 NodeInstance nodeInstance = new NodeInstance();
                 //set instanceId & status
-                BeanUtils.copyProperties(nodeInstancePO, nodeInstance);
+                BeanUtil.copyProperties(nodeInstancePO, nodeInstance);
 
                 //set ElementModel info
                 FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
@@ -578,7 +576,7 @@ public class RuntimeProcessor {
             String flowDeployId = nodeInstancePO.getFlowDeployId();
             Map<String, FlowElement> flowElementMap = getFlowElementMap(flowDeployId);
             NodeInstance nodeInstance = new NodeInstance();
-            BeanUtils.copyProperties(nodeInstancePO, nodeInstance);
+            BeanUtil.copyProperties(nodeInstancePO, nodeInstance);
             FlowElement flowElement = FlowModelUtil.getFlowElement(flowElementMap, nodeInstancePO.getNodeKey());
             if (flowElement.getType() == FlowElementType.CALL_ACTIVITY) {
                 List<FlowInstanceMappingPO> flowInstanceMappingPOList = flowInstanceMappingDAO.selectFlowInstanceMappingPOList(flowInstanceId, nodeInstanceId);
@@ -653,7 +651,7 @@ public class RuntimeProcessor {
             throw new ProcessException(ErrorEnum.GET_FLOW_DEPLOYMENT_FAILED);
         }
         FlowInfo flowInfo = new FlowInfo();
-        BeanUtils.copyProperties(flowDeploymentPO, flowInfo);
+        BeanUtil.copyProperties(flowDeploymentPO, flowInfo);
 
         return flowInfo;
     }
@@ -667,7 +665,7 @@ public class RuntimeProcessor {
         }
 
         FlowInfo flowInfo = new FlowInfo();
-        BeanUtils.copyProperties(flowDeploymentPO, flowInfo);
+        BeanUtil.copyProperties(flowDeploymentPO, flowInfo);
 
         return flowInfo;
     }
@@ -680,14 +678,14 @@ public class RuntimeProcessor {
             throw new ProcessException(ErrorEnum.GET_FLOW_INSTANCE_FAILED);
         }
         FlowInstanceBO flowInstanceBO = new FlowInstanceBO();
-        BeanUtils.copyProperties(flowInstancePO, flowInstanceBO);
+        BeanUtil.copyProperties(flowInstancePO, flowInstanceBO);
 
         return flowInstanceBO;
     }
 
     private RuntimeContext buildRuntimeContext(FlowInfo flowInfo) {
         RuntimeContext runtimeContext = new RuntimeContext();
-        BeanUtils.copyProperties(flowInfo, runtimeContext);
+        BeanUtil.copyProperties(flowInfo, runtimeContext);
         runtimeContext.setFlowElementMap(FlowModelUtil.getFlowElementMap(flowInfo.getFlowModel()));
         return runtimeContext;
     }
@@ -747,7 +745,7 @@ public class RuntimeProcessor {
 
     private NodeInstance buildActiveTaskInstance(NodeInstanceBO nodeInstanceBO, RuntimeContext runtimeContext) {
         NodeInstance activeNodeInstance = new NodeInstance();
-        BeanUtils.copyProperties(nodeInstanceBO, activeNodeInstance);
+        BeanUtil.copyProperties(nodeInstanceBO, activeNodeInstance);
         activeNodeInstance.setModelKey(nodeInstanceBO.getNodeKey());
         FlowElement flowElement = runtimeContext.getFlowElementMap().get(nodeInstanceBO.getNodeKey());
         activeNodeInstance.setModelName(FlowModelUtil.getElementName(flowElement));

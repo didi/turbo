@@ -1,19 +1,16 @@
 package com.didiglobal.turbo.engine.plugin.manager;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-
 /**
- * 用于支持Spring
+ * Base class for plugins that need access to a bean factory.
  */
 public class BasePlugin {
-    protected DefaultListableBeanFactory beanFactory;
+    protected TurboBeanFactory beanFactory;
 
-    public BeanFactory getBeanFactory() {
+    public TurboBeanFactory getBeanFactory() {
         return beanFactory;
     }
 
-    public void setBeanFactory(DefaultListableBeanFactory beanFactory) {
+    public void setBeanFactory(TurboBeanFactory beanFactory) {
         this.beanFactory = beanFactory;
     }
 }
