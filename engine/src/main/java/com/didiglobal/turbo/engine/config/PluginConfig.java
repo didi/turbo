@@ -54,9 +54,15 @@ public class PluginConfig {
         } else {
             try {
                 Class<?> clazz = Class.forName(customManagerClass);
-                return (PluginManager) clazz.getDeclaredConstructor(TurboBeanFactory.class).newInstance(beanFactory);
+                try {
+                    // Try constructor with TurboBeanFactory parameter first
+                    return (PluginManager) clazz.getDeclaredConstructor(TurboBeanFactory.class).newInstance(beanFactory);
+                } catch (NoSuchMethodException e) {
+                    // Fall back to no-arg constructor
+                    return (PluginManager) clazz.getDeclaredConstructor().newInstance();
+                }
             } catch (Exception e) {
-                throw new RuntimeException("Failed to instantiate custom PluginManager", e);
+                throw new RuntimeException("Failed to instantiate custom PluginManager: " + customManagerClass, e);
             }
         }
     }

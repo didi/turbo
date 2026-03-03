@@ -32,9 +32,31 @@ public class AsynTaskExecutor extends ThreadPoolExecutor {
      * Should be called after all setters have been invoked.
      */
     public void initialize() {
-        setCorePoolSize(corePoolSize);
-        setMaximumPoolSize(maxPoolSize);
-        setKeepAliveTime(keepAliveSeconds, TimeUnit.SECONDS);
+        super.setCorePoolSize(corePoolSize);
+        super.setMaximumPoolSize(maxPoolSize);
+        super.setKeepAliveTime(keepAliveSeconds, TimeUnit.SECONDS);
+        if (virtualThreads) {
+            try {
+                // Use virtual thread factory when available (Java 21+)
+                java.util.concurrent.ThreadFactory vtFactory =
+                        (java.util.concurrent.ThreadFactory) Thread.class
+                                .getMethod("ofVirtual")
+                                .invoke(null);
+                // ofVirtual() returns a Thread.Builder.OfVirtual; call .factory() on it
+                java.util.concurrent.ThreadFactory factory =
+                        (java.util.concurrent.ThreadFactory) vtFactory.getClass()
+                                .getMethod("factory")
+                                .invoke(vtFactory);
+                setThreadFactory(factory);
+            } catch (Exception ignored) {
+                // Virtual threads not available; fall back to platform threads
+            }
+        }
+        setThreadFactory(r -> {
+            Thread thread = new Thread(r, threadNamePrefix + r.hashCode());
+            thread.setDaemon(true);
+            return thread;
+        });
     }
 
     public long getTimeout() {
@@ -55,6 +77,11 @@ public class AsynTaskExecutor extends ThreadPoolExecutor {
         super.setMaximumPoolSize(maxPoolSize);
     }
 
+    /**
+     * Sets the queue capacity. Note: for an already-constructed executor the queue size is
+     * fixed. Changing this value only affects the initial setup via {@link #initialize()}.
+     * To apply a different queue capacity, construct a new {@code AsynTaskExecutor}.
+     */
     public void setQueueCapacity(int queueCapacity) {
         this.queueCapacity = queueCapacity;
     }
@@ -66,13 +93,12 @@ public class AsynTaskExecutor extends ThreadPoolExecutor {
 
     public void setThreadNamePrefix(String threadNamePrefix) {
         this.threadNamePrefix = threadNamePrefix;
-        setThreadFactory(r -> {
-            Thread thread = new Thread(r, threadNamePrefix + "-thread");
-            thread.setDaemon(true);
-            return thread;
-        });
     }
 
+    /**
+     * Enables virtual thread mode (Java 21+). When set to {@code true}, virtual threads
+     * will be used if supported by the current JVM; otherwise platform threads are used.
+     */
     public void setVirtualThreads(boolean virtualThreads) {
         this.virtualThreads = virtualThreads;
     }
