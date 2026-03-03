@@ -32,6 +32,7 @@ import com.didiglobal.turbo.engine.validator.SequenceFlowValidator;
 import com.didiglobal.turbo.engine.validator.StartEventValidator;
 import com.didiglobal.turbo.engine.validator.UserTaskValidator;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -42,6 +43,15 @@ import org.springframework.context.annotation.Configuration;
 @MapperScan("com.didiglobal.turbo.engine.dao")
 @EnableAutoConfiguration(exclude = {DruidDataSourceAutoConfigure.class})
 public class TurboEngineConfig {
+
+    // ==================== Config beans ====================
+
+    @Bean
+    public BusinessConfig businessConfig(@Value("${callActivity.nested.level:#{null}}") String callActivityNestedLevel) {
+        BusinessConfig config = new BusinessConfig();
+        config.setCallActivityNestedLevel(callActivityNestedLevel);
+        return config;
+    }
 
     // ==================== DAO beans ====================
 

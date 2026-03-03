@@ -12,7 +12,7 @@ import com.didiglobal.turbo.engine.util.impl.GroovyExpressionCalculator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,16 +27,16 @@ public class PluginConfig {
     private String customManagerClass;
 
     @Resource
-    private DefaultListableBeanFactory defaultListableBeanFactory;
+    private ApplicationContext applicationContext;
 
     /**
-     * Spring adapter that wraps DefaultListableBeanFactory into TurboBeanFactory.
+     * Spring adapter that wraps ApplicationContext into TurboBeanFactory.
      */
     private TurboBeanFactory turboBeanFactory() {
         return new TurboBeanFactory() {
             @Override
             public <T> T getBean(Class<T> requiredType) {
-                return defaultListableBeanFactory.getBean(requiredType);
+                return applicationContext.getBean(requiredType);
             }
         };
     }

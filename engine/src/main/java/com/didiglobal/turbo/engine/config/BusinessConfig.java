@@ -2,24 +2,28 @@ package com.didiglobal.turbo.engine.config;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.didiglobal.turbo.engine.util.PluginPropertiesUtil;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 /**
  * @Author: james zhangxiao
  * @Date: 11/30/22
  * @Description:
  */
-@Component
 public class BusinessConfig {
 
-    @Value("${callActivity.nested.level:#{null}}")
-    private String callActivityNestedLevel;
+    private String callActivityNestedLevel =
+            PluginPropertiesUtil.getPropertyValue("callActivity.nested.level");
 
     public static final int COMPUTING_FLOW_NESTED_LEVEL = -1; // computing flow nested level
     public static final int MIN_FLOW_NESTED_LEVEL = 0; // Flow don't use CallActivity node
     public static final int MAX_FLOW_NESTED_LEVEL = 10;
+
+    public void setCallActivityNestedLevel(String callActivityNestedLevel) {
+        if (callActivityNestedLevel != null) {
+            this.callActivityNestedLevel = callActivityNestedLevel;
+        }
+    }
 
     /**
      * Query callActivityNestedLevel according to caller
