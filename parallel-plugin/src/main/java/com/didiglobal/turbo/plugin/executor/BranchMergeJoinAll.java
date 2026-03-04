@@ -51,6 +51,9 @@ public class BranchMergeJoinAll extends BranchMergeStrategy {
         NodeInstancePO joinPo = buildNodeInstancePO(runtimeContext, currentNodeInstance);
         nodeInstanceDAO.insert(joinPo);
         nodeInstanceLogDAO.insert(buildNodeInstanceLogPO(joinPo));
+        // Record the first arriving branch's source in the plugin-owned join source table.
+        saveJoinSource(joinPo.getFlowInstanceId(), joinPo.getNodeInstanceId(),
+                currentNodeInstance.getSourceNodeInstanceId(), currentNodeInstance.getSourceNodeKey());
     }
 
     @Override
