@@ -70,7 +70,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <spring-boot.version>3.5.0</spring-boot.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
@@ -185,8 +185,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>21</source>
+                    <target>21</target>
                     <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <arg>-parameters</arg>
@@ -223,7 +223,7 @@
                     <charset>UTF-8</charset>
                     <docencoding>UTF-8</docencoding>
                     <doclint>none</doclint>
-                    <source>17</source>
+                    <source>21</source>
                 </configuration>
                 <executions>
                     <execution>
