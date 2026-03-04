@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.inner.BlockAttackInnerIntercep
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.didiglobal.turbo.engine.annotation.EnableTurboEngine;
+import com.didiglobal.turbo.plugin.annotation.EnableParallelPlugin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @EnableTurboEngine
+@EnableParallelPlugin
 @SpringBootApplication(scanBasePackages = {"com.didiglobal.turbo.demo"})
 public class DemoApplication {
 
