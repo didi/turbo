@@ -44,16 +44,57 @@ import java.util.Collections;
 
 /**
  * Builder for creating a fully-wired {@link ProcessEngine} without any IoC container.
- * <p>
- * Usage:
- * <pre>
- *   ProcessEngine engine = TurboEngineBuilder.create()
- *       .flowDefinitionDAO(myFlowDefinitionDAO)
- *       .flowDeploymentDAO(myFlowDeploymentDAO)
- *       // ... other DAOs
- *       .build();
- * </pre>
- * All DAO dependencies must be provided. Other services/executors are wired automatically.
+ *
+ * <h3>Standalone (non-Spring) usage</h3>
+ * <p>New integrators who do not use Spring can use this builder directly. You only need to
+ * supply implementations of the 7 DAO interfaces; everything else (executors, processors,
+ * validators, services) is wired automatically.
+ *
+ * <pre>{@code
+ * // 1. Provide your own DAO implementations (backed by any DB library you prefer).
+ * ProcessEngine engine = TurboEngineBuilder.create()
+ *     .flowDefinitionDAO(new MyFlowDefinitionDAO())
+ *     .flowDeploymentDAO(new MyFlowDeploymentDAO())
+ *     .processInstanceDAO(new MyProcessInstanceDAO())
+ *     .nodeInstanceDAO(new MyNodeInstanceDAO())
+ *     .instanceDataDAO(new MyInstanceDataDAO())
+ *     .flowInstanceMappingDAO(new MyFlowInstanceMappingDAO())
+ *     .nodeInstanceLogDAO(new MyNodeInstanceLogDAO())
+ *     .build();
+ *
+ * // 2. Create a flow.
+ * CreateFlowParam createParam = new CreateFlowParam("tenant", "caller");
+ * createParam.setFlowName("My First Flow");
+ * CreateFlowResult created = engine.createFlow(createParam);
+ *
+ * // 3. Set the flow model (JSON describing nodes and edges).
+ * UpdateFlowParam updateParam = new UpdateFlowParam("tenant", "caller");
+ * updateParam.setFlowModuleId(created.getFlowModuleId());
+ * updateParam.setFlowModel(myFlowModelJson);
+ * engine.updateFlow(updateParam);
+ *
+ * // 4. Deploy the flow.
+ * DeployFlowParam deployParam = new DeployFlowParam("tenant", "caller");
+ * deployParam.setFlowModuleId(created.getFlowModuleId());
+ * DeployFlowResult deployed = engine.deployFlow(deployParam);
+ *
+ * // 5. Start a process instance.
+ * StartProcessParam startParam = new StartProcessParam();
+ * startParam.setFlowDeployId(deployed.getFlowDeployId());
+ * StartProcessResult result = engine.startProcess(startParam);
+ * }</pre>
+ *
+ * <h3>Optional customization</h3>
+ * <ul>
+ *   <li>{@link #pluginManager(PluginManager)} — custom plugin manager</li>
+ *   <li>{@link #expressionCalculator(ExpressionCalculator)} — custom expression evaluator (default: Groovy)</li>
+ *   <li>{@link #idGenerator(IdGenerator)} — custom ID generator (default: UUID)</li>
+ *   <li>{@link #businessConfig(BusinessConfig)} — engine configuration (e.g. call-activity nesting limits)</li>
+ * </ul>
+ *
+ * <h3>Spring Boot users</h3>
+ * <p>If you use Spring Boot, you do not need this builder. Simply add the
+ * {@code turbo-spring-boot-starter} dependency — the engine is auto-configured for you.
  */
 public class TurboEngineBuilder {
 
@@ -75,71 +116,116 @@ public class TurboEngineBuilder {
     private TurboEngineBuilder() {
     }
 
+    /** Create a new builder instance. */
     public static TurboEngineBuilder create() {
         return new TurboEngineBuilder();
     }
 
+    /** Set the {@link FlowDefinitionDAO} implementation. <b>Required.</b> */
     public TurboEngineBuilder flowDefinitionDAO(FlowDefinitionDAO dao) {
         this.flowDefinitionDAO = dao;
         return this;
     }
 
+    /** Set the {@link FlowDeploymentDAO} implementation. <b>Required.</b> */
     public TurboEngineBuilder flowDeploymentDAO(FlowDeploymentDAO dao) {
         this.flowDeploymentDAO = dao;
         return this;
     }
 
+    /** Set the {@link ProcessInstanceDAO} implementation. <b>Required.</b> */
     public TurboEngineBuilder processInstanceDAO(ProcessInstanceDAO dao) {
         this.processInstanceDAO = dao;
         return this;
     }
 
+    /** Set the {@link NodeInstanceDAO} implementation. <b>Required.</b> */
     public TurboEngineBuilder nodeInstanceDAO(NodeInstanceDAO dao) {
         this.nodeInstanceDAO = dao;
         return this;
     }
 
+    /** Set the {@link InstanceDataDAO} implementation. <b>Required.</b> */
     public TurboEngineBuilder instanceDataDAO(InstanceDataDAO dao) {
         this.instanceDataDAO = dao;
         return this;
     }
 
+    /** Set the {@link FlowInstanceMappingDAO} implementation. <b>Required.</b> */
     public TurboEngineBuilder flowInstanceMappingDAO(FlowInstanceMappingDAO dao) {
         this.flowInstanceMappingDAO = dao;
         return this;
     }
 
+    /** Set the {@link NodeInstanceLogDAO} implementation. <b>Required.</b> */
     public TurboEngineBuilder nodeInstanceLogDAO(NodeInstanceLogDAO dao) {
         this.nodeInstanceLogDAO = dao;
         return this;
     }
 
+    /**
+     * Override the {@link PluginManager}.
+     * <p>If not set, a default plugin manager is used that loads plugins via Java SPI
+     * ({@link java.util.ServiceLoader}).
+     */
     public TurboEngineBuilder pluginManager(PluginManager pm) {
         this.pluginManager = pm;
         return this;
     }
 
+    /**
+     * Override the expression calculator used to evaluate gateway conditions.
+     * <p>Defaults to a Groovy-based calculator.
+     */
     public TurboEngineBuilder expressionCalculator(ExpressionCalculator ec) {
         this.expressionCalculator = ec;
         return this;
     }
 
+    /**
+     * Override the ID generator.
+     * <p>Defaults to a UUID-based generator.
+     */
     public TurboEngineBuilder idGenerator(IdGenerator ig) {
         this.idGenerator = ig;
         return this;
     }
 
+    /**
+     * Override the business configuration (e.g. CallActivity nesting level limits).
+     * <p>Defaults to an instance with no special limits set.
+     */
     public TurboEngineBuilder businessConfig(BusinessConfig bc) {
         this.businessConfig = bc;
         return this;
     }
 
     /**
-     * Build a fully-wired {@link ProcessEngine} using pure Java field injection (reflection).
-     * No Spring context required.
+     * Build a fully-wired {@link ProcessEngine}.
+     * <p>All seven DAO dependencies must have been set via the corresponding setter methods.
+     * Calling this method without providing all required DAOs will throw an
+     * {@link IllegalStateException} with a descriptive message.
+     *
+     * @throws IllegalStateException if any required DAO is missing
      */
     public ProcessEngine build() {
-        // Defaults
+        // Validate required DAOs
+        requireDAO(flowDefinitionDAO, "flowDefinitionDAO",
+                "Implement FlowDefinitionDAO to persist flow definitions (table: em_flow_definition)");
+        requireDAO(flowDeploymentDAO, "flowDeploymentDAO",
+                "Implement FlowDeploymentDAO to persist flow deployments (table: em_flow_deployment)");
+        requireDAO(processInstanceDAO, "processInstanceDAO",
+                "Implement ProcessInstanceDAO to persist flow instances (table: ei_flow_instance)");
+        requireDAO(nodeInstanceDAO, "nodeInstanceDAO",
+                "Implement NodeInstanceDAO to persist node instances (table: ei_node_instance)");
+        requireDAO(instanceDataDAO, "instanceDataDAO",
+                "Implement InstanceDataDAO to persist instance data / variables (table: ei_instance_data)");
+        requireDAO(flowInstanceMappingDAO, "flowInstanceMappingDAO",
+                "Implement FlowInstanceMappingDAO to persist call-activity mappings (table: ei_flow_instance_mapping)");
+        requireDAO(nodeInstanceLogDAO, "nodeInstanceLogDAO",
+                "Implement NodeInstanceLogDAO to persist node execution logs (table: ei_node_instance_log)");
+
+        // Defaults for optional overrides
         if (pluginManager == null) {
             pluginManager = new DefaultPluginManager(new TurboBeanFactory() {
                 @Override
@@ -249,7 +335,6 @@ public class TurboEngineBuilder {
         // Wire flowExecutor-specific field
         inject(flowExecutor, "processInstanceDAO", processInstanceDAO);
 
-        // Wire SyncSingleCallActivityExecutor's runtimeProcessor (set after processor creation)
         // --- Processors ---
         DefinitionProcessor definitionProcessor = new DefinitionProcessor();
         inject(definitionProcessor, "pluginManager", pluginManager);
@@ -311,5 +396,17 @@ public class TurboEngineBuilder {
             }
         }
         // Field not found: silently ignore (field may not exist on this class hierarchy)
+    }
+
+    /**
+     * Assert that a required DAO is not null.
+     */
+    private static void requireDAO(Object dao, String name, String hint) {
+        if (dao == null) {
+            throw new IllegalStateException(
+                    "TurboEngineBuilder: required DAO '" + name + "' is not set.\n" +
+                    "  Hint: " + hint + ".\n" +
+                    "  Call TurboEngineBuilder.create()." + name + "(yourImpl).build()");
+        }
     }
 }

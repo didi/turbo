@@ -41,7 +41,8 @@ public class BeanUtil {
             if (sourceField == null) {
                 continue;
             }
-            if (!targetField.getType().isAssignableFrom(sourceField.getType())) {
+            if (!targetField.getType().isAssignableFrom(sourceField.getType())
+                    && !isCompatibleTypes(targetField.getType(), sourceField.getType())) {
                 continue;
             }
             try {
@@ -68,5 +69,34 @@ public class BeanUtil {
             current = current.getSuperclass();
         }
         return fieldMap;
+    }
+
+    /**
+     * Returns true if the two types are compatible for assignment, including
+     * primitive-to-wrapper and wrapper-to-primitive conversions.
+     * <p>
+     * This is needed because {@code Integer.class.isAssignableFrom(int.class)} returns
+     * {@code false} in Java reflection, even though the types are compatible at the language level.
+     */
+    private static boolean isCompatibleTypes(Class<?> targetType, Class<?> sourceType) {
+        if (targetType == sourceType) return true;
+        // Handle primitive <-> wrapper pairs
+        if (targetType == int.class) return sourceType == Integer.class;
+        if (targetType == Integer.class) return sourceType == int.class;
+        if (targetType == long.class) return sourceType == Long.class;
+        if (targetType == Long.class) return sourceType == long.class;
+        if (targetType == double.class) return sourceType == Double.class;
+        if (targetType == Double.class) return sourceType == double.class;
+        if (targetType == float.class) return sourceType == Float.class;
+        if (targetType == Float.class) return sourceType == float.class;
+        if (targetType == boolean.class) return sourceType == Boolean.class;
+        if (targetType == Boolean.class) return sourceType == boolean.class;
+        if (targetType == byte.class) return sourceType == Byte.class;
+        if (targetType == Byte.class) return sourceType == byte.class;
+        if (targetType == short.class) return sourceType == Short.class;
+        if (targetType == Short.class) return sourceType == short.class;
+        if (targetType == char.class) return sourceType == Character.class;
+        if (targetType == Character.class) return sourceType == char.class;
+        return false;
     }
 }
