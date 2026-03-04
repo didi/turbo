@@ -1,5 +1,7 @@
 package com.didiglobal.turbo.plugin.processor;
 
+import com.didiglobal.turbo.engine.bo.ElementInstance;
+import com.didiglobal.turbo.engine.bo.NodeInstance;
 import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.dao.mapper.FlowDeploymentMapper;
 import com.didiglobal.turbo.engine.entity.FlowDeploymentPO;
@@ -9,6 +11,8 @@ import com.didiglobal.turbo.engine.param.RollbackTaskParam;
 import com.didiglobal.turbo.engine.param.StartProcessParam;
 import com.didiglobal.turbo.engine.processor.RuntimeProcessor;
 import com.didiglobal.turbo.engine.result.CommitTaskResult;
+import com.didiglobal.turbo.engine.result.ElementInstanceListResult;
+import com.didiglobal.turbo.engine.result.NodeInstanceListResult;
 import com.didiglobal.turbo.engine.result.RollbackTaskResult;
 import com.didiglobal.turbo.engine.result.StartProcessResult;
 import com.didiglobal.turbo.engine.result.TerminateResult;
@@ -26,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RuntimeProcessorTest extends BaseTest {
 
@@ -727,6 +732,331 @@ public class RuntimeProcessorTest extends BaseTest {
         commitTaskParam5.setVariables(variables5);
         CommitTaskResult commitTaskResult5 = runtimeProcessor.commit(commitTaskParam5);
         Assert.assertEquals(commitTaskResult5.getErrCode(), ErrorEnum.SUCCESS.getErrNo());
+    }
+
+    /**
+     * Verifies that getHistoryElementList returns ALL sequence-flow edges for join nodes in a
+     * completed parallel gateway flow, including the edges from branches that arrived non-first.
+     *
+     * Before the fix, only the FIRST branch's edge was emitted for each join gateway.
+     * After the fix, all N branches' incoming edges appear (via ei_node_instance_join_source).
+     *
+     * Flow:
+     *                                                                                                    --> UserTask_1ram9jm --> UserTask_32ed01b
+     *                                                                                                   |                                         |
+     *  StartEvent_2s70149 --> ParallelGateway_38ad233 --> UserTask_0iv55sh --> ParallelGateway_1djgrgp --> UserTask_2npcbgp --> UserTask_01tuns9 --> ParallelGateway_3a1nn9f --> ParallelGateway_10lo44j --> EndEvent_2c8j53d
+     *                                                 |                                                                                                                      |
+     *                                                  -------------------------------------------------> UserTask_0m7qih6 --------------------------------------------------
+     *
+     * Expected element count after full completion = 27:
+     *   1 (StartEvent) + 11 * 2 (normal nodes with 1 edge each) + 2 * 1 (extra edge for each 2-branch join) = 27
+     */
+    @Test
+    public void testParallelGatewayGetHistoryElementList() throws Exception {
+        // Run full parallel flow to completion (same steps as testParallelGateway, flag="history_element")
+        StartProcessResult startProcessResult = startParallelProcess("history_element");
+        Assert.assertEquals(ErrorEnum.COMMIT_SUSPEND.getErrNo(), startProcessResult.getErrCode());
+
+        // UserTask_0iv55sh -> ParallelGateway_1djgrgp (fork) -> UserTask_2npcbgp & UserTask_1ram9jm
+        CommitTaskParam cp1 = new CommitTaskParam();
+        cp1.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        cp1.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(0).getActiveTaskInstance().getNodeInstanceId());
+        cp1.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), 0));
+        cp1.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 0)));
+        CommitTaskResult cr1 = runtimeProcessor.commit(cp1);
+        Assert.assertEquals(ErrorEnum.COMMIT_SUSPEND.getErrNo(), cr1.getErrCode());
+
+        // UserTask_2npcbgp -> UserTask_01tuns9
+        CommitTaskParam cp2 = new CommitTaskParam();
+        cp2.setFlowInstanceId(cr1.getFlowInstanceId());
+        cp2.setTaskInstanceId(cr1.getNodeExecuteResults().get(0).getActiveTaskInstance().getNodeInstanceId());
+        cp2.setExtendProperties(copyExtendProperties(cr1.getExtendProperties(), 0));
+        cp2.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 1)));
+        CommitTaskResult cr2 = runtimeProcessor.commit(cp2);
+        Assert.assertEquals(ErrorEnum.COMMIT_SUSPEND.getErrNo(), cr2.getErrCode());
+
+        // UserTask_01tuns9 -> ParallelGateway_3a1nn9f (first arrival, WAITING)
+        CommitTaskParam cp3 = new CommitTaskParam();
+        cp3.setFlowInstanceId(cr2.getFlowInstanceId());
+        cp3.setTaskInstanceId(cr2.getActiveTaskInstance().getNodeInstanceId());
+        cp3.setExtendProperties(copyExtendProperties(cr2.getExtendProperties(), 0));
+        cp3.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 2)));
+        CommitTaskResult cr3 = runtimeProcessor.commit(cp3);
+        Assert.assertEquals(ParallelErrorEnum.WAITING_SUSPEND.getErrNo(), cr3.getErrCode());
+
+        // UserTask_1ram9jm -> UserTask_32ed01b
+        CommitTaskParam cp4 = new CommitTaskParam();
+        cp4.setFlowInstanceId(cr1.getFlowInstanceId());
+        cp4.setTaskInstanceId(cr1.getNodeExecuteResults().get(1).getActiveTaskInstance().getNodeInstanceId());
+        cp4.setExtendProperties(copyExtendProperties(cr1.getExtendProperties(), 1));
+        cp4.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 3)));
+        CommitTaskResult cr4 = runtimeProcessor.commit(cp4);
+        Assert.assertEquals(ErrorEnum.COMMIT_SUSPEND.getErrNo(), cr4.getErrCode());
+
+        // UserTask_32ed01b -> ParallelGateway_3a1nn9f (second arrival, COMPLETED) -> ParallelGateway_10lo44j (first, WAITING)
+        CommitTaskParam cp5 = new CommitTaskParam();
+        cp5.setFlowInstanceId(cr4.getFlowInstanceId());
+        cp5.setTaskInstanceId(cr4.getActiveTaskInstance().getNodeInstanceId());
+        cp5.setExtendProperties(copyExtendProperties(cr4.getExtendProperties(), 0));
+        cp5.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 4)));
+        CommitTaskResult cr5 = runtimeProcessor.commit(cp5);
+        Assert.assertEquals(ParallelErrorEnum.WAITING_SUSPEND.getErrNo(), cr5.getErrCode());
+
+        // UserTask_0m7qih6 -> ParallelGateway_10lo44j (second arrival, COMPLETED) -> EndEvent -> SUCCESS
+        CommitTaskParam cp6 = new CommitTaskParam();
+        cp6.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        cp6.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(1).getActiveTaskInstance().getNodeInstanceId());
+        cp6.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), 1));
+        cp6.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 5)));
+        CommitTaskResult cr6 = runtimeProcessor.commit(cp6);
+        Assert.assertEquals(ErrorEnum.SUCCESS.getErrNo(), cr6.getErrCode());
+
+        // Verify getHistoryElementList
+        String flowInstanceId = startProcessResult.getFlowInstanceId();
+        ElementInstanceListResult result = runtimeProcessor.getHistoryElementList(flowInstanceId, false);
+
+        Assert.assertEquals(ErrorEnum.SUCCESS.getErrNo(), result.getErrCode());
+        List<ElementInstance> elements = result.getElementInstanceList();
+
+        // Collect all element model keys for easy assertion
+        List<String> elementKeys = elements.stream()
+                .map(ElementInstance::getModelKey)
+                .collect(Collectors.toList());
+        LOGGER.info("testParallelGatewayGetHistoryElementList.||elementKeys={}", elementKeys);
+
+        // ---- Verify join node ParallelGateway_3a1nn9f has BOTH incoming edges ----
+        // SequenceFlow_1h65e8t: UserTask_01tuns9 -> ParallelGateway_3a1nn9f (stored in sourceNodeKey - first branch)
+        Assert.assertTrue("Missing SequenceFlow_1h65e8t (first branch → PG_3a1nn9f)",
+                elementKeys.contains("SequenceFlow_1h65e8t"));
+        // SequenceFlow_25kdv36: UserTask_32ed01b -> ParallelGateway_3a1nn9f (from additionalSourceNodeKeys - fix)
+        Assert.assertTrue("Missing SequenceFlow_25kdv36 (second branch → PG_3a1nn9f) - getHistory fix regression",
+                elementKeys.contains("SequenceFlow_25kdv36"));
+
+        // ---- Verify join node ParallelGateway_10lo44j has BOTH incoming edges ----
+        // SequenceFlow_3jkd63g: ParallelGateway_3a1nn9f -> ParallelGateway_10lo44j (first branch)
+        Assert.assertTrue("Missing SequenceFlow_3jkd63g (first branch → PG_10lo44j)",
+                elementKeys.contains("SequenceFlow_3jkd63g"));
+        // SequenceFlow_3bgdrp0: UserTask_0m7qih6 -> ParallelGateway_10lo44j (from additionalSourceNodeKeys - fix)
+        Assert.assertTrue("Missing SequenceFlow_3bgdrp0 (second branch → PG_10lo44j) - getHistory fix regression",
+                elementKeys.contains("SequenceFlow_3bgdrp0"));
+
+        // ---- Verify all nodes are present ----
+        Assert.assertTrue(elementKeys.contains("StartEvent_2s70149"));
+        Assert.assertTrue(elementKeys.contains("ParallelGateway_38ad233"));
+        Assert.assertTrue(elementKeys.contains("UserTask_0iv55sh"));
+        Assert.assertTrue(elementKeys.contains("UserTask_0m7qih6"));
+        Assert.assertTrue(elementKeys.contains("ParallelGateway_1djgrgp"));
+        Assert.assertTrue(elementKeys.contains("UserTask_2npcbgp"));
+        Assert.assertTrue(elementKeys.contains("UserTask_1ram9jm"));
+        Assert.assertTrue(elementKeys.contains("UserTask_01tuns9"));
+        Assert.assertTrue(elementKeys.contains("UserTask_32ed01b"));
+        Assert.assertTrue(elementKeys.contains("ParallelGateway_3a1nn9f"));
+        Assert.assertTrue(elementKeys.contains("ParallelGateway_10lo44j"));
+        Assert.assertTrue(elementKeys.contains("EndEvent_2c8j53d"));
+
+        // ---- Verify exact element count: 27 ----
+        // Breakdown: 12 node instances each contribute:
+        //   StartEvent                       : 0 edges + 1 node =  1
+        //   PG_38ad233, UT_0iv55sh, UT_0m7qih6, PG_1djgrgp,
+        //   UT_2npcbgp, UT_1ram9jm, UT_01tuns9, UT_32ed01b, EndEvent (9 nodes): 1 edge + 1 node = 18
+        //   PG_3a1nn9f (2-branch join)       : 2 edges + 1 node =  3  ← additionalSourceNodeKeys fix
+        //   PG_10lo44j (2-branch join)       : 2 edges + 1 node =  3  ← additionalSourceNodeKeys fix
+        //   Total = 1 + 18 + 3 + 3 = 27
+        Assert.assertEquals("Element list size must be exactly 27 for completed parallel flow", 27, elements.size());
+    }
+
+    /**
+     * Verifies that getHistoryUserTaskList is NOT broken by the parallel gateway fix.
+     * It should still return all completed user tasks in a completed parallel flow.
+     *
+     * Flow same as testParallelGatewayGetHistoryElementList.
+     * Expected: 6 user tasks in DESC id order:
+     *   UserTask_32ed01b, UserTask_01tuns9, UserTask_1ram9jm, UserTask_2npcbgp, UserTask_0m7qih6, UserTask_0iv55sh
+     */
+    @Test
+    public void testParallelGatewayGetHistoryUserTaskList() throws Exception {
+        // Run full parallel flow to completion (flag="history_usertask")
+        StartProcessResult startProcessResult = startParallelProcess("history_usertask");
+        Assert.assertEquals(ErrorEnum.COMMIT_SUSPEND.getErrNo(), startProcessResult.getErrCode());
+
+        CommitTaskParam cp1 = new CommitTaskParam();
+        cp1.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        cp1.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(0).getActiveTaskInstance().getNodeInstanceId());
+        cp1.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), 0));
+        cp1.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 0)));
+        CommitTaskResult cr1 = runtimeProcessor.commit(cp1);
+
+        CommitTaskParam cp2 = new CommitTaskParam();
+        cp2.setFlowInstanceId(cr1.getFlowInstanceId());
+        cp2.setTaskInstanceId(cr1.getNodeExecuteResults().get(0).getActiveTaskInstance().getNodeInstanceId());
+        cp2.setExtendProperties(copyExtendProperties(cr1.getExtendProperties(), 0));
+        cp2.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 1)));
+        CommitTaskResult cr2 = runtimeProcessor.commit(cp2);
+
+        CommitTaskParam cp3 = new CommitTaskParam();
+        cp3.setFlowInstanceId(cr2.getFlowInstanceId());
+        cp3.setTaskInstanceId(cr2.getActiveTaskInstance().getNodeInstanceId());
+        cp3.setExtendProperties(copyExtendProperties(cr2.getExtendProperties(), 0));
+        cp3.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 2)));
+        runtimeProcessor.commit(cp3); // WAITING at PG_3a1nn9f
+
+        CommitTaskParam cp4 = new CommitTaskParam();
+        cp4.setFlowInstanceId(cr1.getFlowInstanceId());
+        cp4.setTaskInstanceId(cr1.getNodeExecuteResults().get(1).getActiveTaskInstance().getNodeInstanceId());
+        cp4.setExtendProperties(copyExtendProperties(cr1.getExtendProperties(), 1));
+        cp4.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 3)));
+        CommitTaskResult cr4 = runtimeProcessor.commit(cp4);
+
+        CommitTaskParam cp5 = new CommitTaskParam();
+        cp5.setFlowInstanceId(cr4.getFlowInstanceId());
+        cp5.setTaskInstanceId(cr4.getActiveTaskInstance().getNodeInstanceId());
+        cp5.setExtendProperties(copyExtendProperties(cr4.getExtendProperties(), 0));
+        cp5.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 4)));
+        runtimeProcessor.commit(cp5); // WAITING at PG_10lo44j
+
+        CommitTaskParam cp6 = new CommitTaskParam();
+        cp6.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        cp6.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(1).getActiveTaskInstance().getNodeInstanceId());
+        cp6.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), 1));
+        cp6.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 5)));
+        CommitTaskResult cr6 = runtimeProcessor.commit(cp6);
+        Assert.assertEquals(ErrorEnum.SUCCESS.getErrNo(), cr6.getErrCode());
+
+        // Verify getHistoryUserTaskList
+        String flowInstanceId = startProcessResult.getFlowInstanceId();
+        NodeInstanceListResult result = runtimeProcessor.getHistoryUserTaskList(flowInstanceId, false);
+
+        Assert.assertEquals(ErrorEnum.SUCCESS.getErrNo(), result.getErrCode());
+        List<NodeInstance> userTasks = result.getNodeInstanceList();
+        LOGGER.info("testParallelGatewayGetHistoryUserTaskList.||userTasks={}", userTasks);
+
+        // 6 user tasks: UserTask_0iv55sh, UserTask_0m7qih6, UserTask_2npcbgp, UserTask_1ram9jm, UserTask_01tuns9, UserTask_32ed01b
+        Assert.assertEquals("Expected 6 completed user tasks in the parallel flow", 6, userTasks.size());
+
+        List<String> taskKeys = userTasks.stream()
+                .map(NodeInstance::getModelKey)
+                .collect(Collectors.toList());
+        Assert.assertTrue(taskKeys.contains("UserTask_0iv55sh"));
+        Assert.assertTrue(taskKeys.contains("UserTask_0m7qih6"));
+        Assert.assertTrue(taskKeys.contains("UserTask_2npcbgp"));
+        Assert.assertTrue(taskKeys.contains("UserTask_1ram9jm"));
+        Assert.assertTrue(taskKeys.contains("UserTask_01tuns9"));
+        Assert.assertTrue(taskKeys.contains("UserTask_32ed01b"));
+        // DESC order: UserTask_32ed01b inserted last (highest id) should appear first
+        Assert.assertEquals("UserTask_32ed01b", userTasks.get(0).getModelKey());
+    }
+
+    /**
+     * Verifies getHistoryElementList for a completed inclusive gateway flow.
+     * The inclusive gateway fork selects only ONE branch (a=11 satisfies a>=10),
+     * so the inner join (InclusiveGateway_3a1nn9f) receives only ONE branch → no additionalSourceNodeKeys.
+     * The outer join (ParallelGateway_10lo44j) still receives TWO branches (InclusiveGateway_3a1nn9f + UserTask_0m7qih6)
+     * and MUST have both edges present after the fix.
+     *
+     * Flow:
+     *  StartEvent_2s70149 --> ParallelGateway_38ad233 --> UserTask_0iv55sh --> InclusiveGateway_1djgrgp --> UserTask_2npcbgp --> UserTask_01tuns9 --> InclusiveGateway_3a1nn9f --> ParallelGateway_10lo44j --> EndEvent_2c8j53d
+     *                                                 |                                                                                                                        |
+     *                                                  -------------------------------------------------> UserTask_0m7qih6 ----------------------------------------------------
+     */
+    @Test
+    public void testInclusiveGatewayGetHistoryElementList() throws Exception {
+        // Run full inclusive flow to completion (flag="history_inclusive")
+        StartProcessResult startProcessResult = startInclusiveProcess("history_inclusive");
+        Assert.assertEquals(ErrorEnum.COMMIT_SUSPEND.getErrNo(), startProcessResult.getErrCode());
+
+        // UserTask_0iv55sh -> InclusiveGateway_1djgrgp -> UserTask_2npcbgp (only branch, a=11 >= 10)
+        CommitTaskParam cp1 = new CommitTaskParam();
+        cp1.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        cp1.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(0).getActiveTaskInstance().getNodeInstanceId());
+        cp1.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), 0));
+        cp1.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 0)));
+        CommitTaskResult cr1 = runtimeProcessor.commit(cp1);
+        Assert.assertEquals(ErrorEnum.COMMIT_SUSPEND.getErrNo(), cr1.getErrCode());
+
+        // UserTask_2npcbgp -> UserTask_01tuns9
+        CommitTaskParam cp2 = new CommitTaskParam();
+        cp2.setFlowInstanceId(cr1.getFlowInstanceId());
+        cp2.setTaskInstanceId(cr1.getNodeExecuteResults().get(0).getActiveTaskInstance().getNodeInstanceId());
+        cp2.setExtendProperties(copyExtendProperties(cr1.getExtendProperties(), 0));
+        cp2.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 1)));
+        CommitTaskResult cr2 = runtimeProcessor.commit(cp2);
+        Assert.assertEquals(ErrorEnum.COMMIT_SUSPEND.getErrNo(), cr2.getErrCode());
+
+        // UserTask_01tuns9 -> InclusiveGateway_3a1nn9f (single branch, immediately COMPLETED) -> ParallelGateway_10lo44j (WAITING)
+        CommitTaskParam cp3 = new CommitTaskParam();
+        cp3.setFlowInstanceId(cr2.getFlowInstanceId());
+        cp3.setTaskInstanceId(cr2.getActiveTaskInstance().getNodeInstanceId());
+        cp3.setExtendProperties(copyExtendProperties(cr2.getExtendProperties(), 0));
+        cp3.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 2)));
+        CommitTaskResult cr3 = runtimeProcessor.commit(cp3);
+        Assert.assertEquals(ParallelErrorEnum.WAITING_SUSPEND.getErrNo(), cr3.getErrCode());
+
+        // UserTask_0m7qih6 -> ParallelGateway_10lo44j (second arrival, COMPLETED) -> EndEvent -> SUCCESS
+        CommitTaskParam cp4 = new CommitTaskParam();
+        cp4.setFlowInstanceId(startProcessResult.getFlowInstanceId());
+        cp4.setTaskInstanceId(startProcessResult.getNodeExecuteResults().get(1).getActiveTaskInstance().getNodeInstanceId());
+        cp4.setExtendProperties(copyExtendProperties(startProcessResult.getExtendProperties(), 1));
+        cp4.setVariables(List.of(new InstanceData("danxuankuang_ytgyk", 5)));
+        CommitTaskResult cr4 = runtimeProcessor.commit(cp4);
+        Assert.assertEquals(ErrorEnum.SUCCESS.getErrNo(), cr4.getErrCode());
+
+        // Verify getHistoryElementList
+        String flowInstanceId = startProcessResult.getFlowInstanceId();
+        ElementInstanceListResult result = runtimeProcessor.getHistoryElementList(flowInstanceId, false);
+
+        Assert.assertEquals(ErrorEnum.SUCCESS.getErrNo(), result.getErrCode());
+        List<ElementInstance> elements = result.getElementInstanceList();
+
+        List<String> elementKeys = elements.stream()
+                .map(ElementInstance::getModelKey)
+                .collect(Collectors.toList());
+        LOGGER.info("testInclusiveGatewayGetHistoryElementList.||elementKeys={}", elementKeys);
+
+        // ---- Inner join (InclusiveGateway_3a1nn9f): single branch → only ONE incoming edge ----
+        // SequenceFlow_1h65e8t: UserTask_01tuns9 → InclusiveGateway_3a1nn9f
+        Assert.assertTrue("Missing SequenceFlow_1h65e8t (UT_01tuns9 → IG_3a1nn9f)",
+                elementKeys.contains("SequenceFlow_1h65e8t"));
+        // SequenceFlow_25kdv36 (UserTask_32ed01b → IG_3a1nn9f) should NOT be present since that branch wasn't activated
+        Assert.assertFalse("SequenceFlow_25kdv36 should not appear (branch not activated)",
+                elementKeys.contains("SequenceFlow_25kdv36"));
+
+        // ---- Outer join (ParallelGateway_10lo44j): TWO branches → both edges present (fix) ----
+        // SequenceFlow_3jkd63g: InclusiveGateway_3a1nn9f → ParallelGateway_10lo44j (first branch)
+        Assert.assertTrue("Missing SequenceFlow_3jkd63g (IG_3a1nn9f → PG_10lo44j)",
+                elementKeys.contains("SequenceFlow_3jkd63g"));
+        // SequenceFlow_3bgdrp0: UserTask_0m7qih6 → ParallelGateway_10lo44j (second branch, from additionalSourceNodeKeys)
+        Assert.assertTrue("Missing SequenceFlow_3bgdrp0 (UT_0m7qih6 → PG_10lo44j) - getHistory fix regression",
+                elementKeys.contains("SequenceFlow_3bgdrp0"));
+
+        // ---- All expected nodes are present ----
+        Assert.assertTrue(elementKeys.contains("StartEvent_2s70149"));
+        Assert.assertTrue(elementKeys.contains("ParallelGateway_38ad233"));
+        Assert.assertTrue(elementKeys.contains("UserTask_0iv55sh"));
+        Assert.assertTrue(elementKeys.contains("UserTask_0m7qih6"));
+        Assert.assertTrue(elementKeys.contains("InclusiveGateway_1djgrgp"));
+        Assert.assertTrue(elementKeys.contains("UserTask_2npcbgp"));
+        Assert.assertTrue(elementKeys.contains("UserTask_01tuns9"));
+        Assert.assertTrue(elementKeys.contains("InclusiveGateway_3a1nn9f"));
+        Assert.assertTrue(elementKeys.contains("ParallelGateway_10lo44j"));
+        Assert.assertTrue(elementKeys.contains("EndEvent_2c8j53d"));
+
+        // UserTask_1ram9jm and UserTask_32ed01b were NOT activated; must not appear
+        Assert.assertFalse("UserTask_1ram9jm should not appear (branch not activated)",
+                elementKeys.contains("UserTask_1ram9jm"));
+        Assert.assertFalse("UserTask_32ed01b should not appear (branch not activated)",
+                elementKeys.contains("UserTask_32ed01b"));
+
+        // ---- Verify exact element count: 22 ----
+        // Breakdown: 10 node instances each contribute:
+        //   StartEvent                       : 0 edges + 1 node =  1
+        //   PG_38ad233, UT_0iv55sh, UT_0m7qih6, IG_1djgrgp,
+        //   UT_2npcbgp, UT_01tuns9, EndEvent (7 nodes)         : 1 edge + 1 node = 14
+        //   IG_3a1nn9f (single-branch join)  : 1 edge + 1 node =  2  (no additionalSourceNodeKeys)
+        //   PG_10lo44j (2-branch join)       : 2 edges + 1 node =  3  ← additionalSourceNodeKeys fix
+        //   Total = 1 + 14 + 2 + 3 = 20 ... nope wait, 7 nodes = 7*2=14, 1+14+2+3=20
+        // Actually: StartEvent(1) + PG_38ad233(2) + UT_0iv55sh(2) + UT_0m7qih6(2) + IG_1djgrgp(2)
+        //         + UT_2npcbgp(2) + UT_01tuns9(2) + IG_3a1nn9f(2) + PG_10lo44j(3) + EndEvent(2) = 22
+        Assert.assertEquals("Element list size must be exactly 22 for completed inclusive gateway flow", 22, elements.size());
     }
 
     private Map<String, Object> copyExtendProperties(Map<String, Object> extendProperties, int i) {
