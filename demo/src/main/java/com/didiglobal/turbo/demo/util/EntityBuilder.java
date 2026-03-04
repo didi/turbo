@@ -6,6 +6,7 @@ import com.didiglobal.turbo.engine.common.Constants;
 import com.didiglobal.turbo.engine.common.FlowElementType;
 import com.didiglobal.turbo.engine.model.*;
 import com.didiglobal.turbo.plugin.common.ExtendFlowElementType;
+import com.didiglobal.turbo.plugin.model.InclusiveGateway;
 import com.didiglobal.turbo.plugin.model.ParallelGateway;
 import com.google.common.collect.Lists;
 
@@ -907,11 +908,14 @@ public class EntityBuilder {
     }
 
     /**
-     * Parallel gateway demo flow model:
+     * 并行网关 Demo 流程模型（费用报销审批场景）：
      *
-     *                         --> UserTask_A -->
-     * StartEvent --> PGW_fork                   PGW_join --> EndEvent
-     *                         --> UserTask_B -->
+     * 场景说明：员工提交费用报销申请后，财务部审核与部门主管审批同时进行（并行），
+     *          两者均完成后报销流程结束。
+     *
+     *                                --> UserTask_Finance（财务部审核）-->
+     * StartEvent --> ParallelGW_fork                                     ParallelGW_join --> EndEvent
+     *                                --> UserTask_Manager（部门主管审批）-->
      */
     public static String buildParallelGatewayFlowModelStr() {
         List<FlowElement> flowElementList = Lists.newArrayList();
@@ -932,7 +936,7 @@ public class EntityBuilder {
         pgFork.setKey("ParallelGateway_fork");
         pgFork.setType(ExtendFlowElementType.PARALLEL_GATEWAY);
         pgFork.setIncoming(Lists.newArrayList("SequenceFlow_pg_start"));
-        pgFork.setOutgoing(Lists.newArrayList("SequenceFlow_pg_toA", "SequenceFlow_pg_toB"));
+        pgFork.setOutgoing(Lists.newArrayList("SequenceFlow_pg_toFinance", "SequenceFlow_pg_toManager"));
         Map<String, Object> forkProps = new HashMap<>();
         Map<String, String> forkJoinMatch = new HashMap<>();
         forkJoinMatch.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.FORK, "ParallelGateway_fork");
@@ -944,7 +948,7 @@ public class EntityBuilder {
         ParallelGateway pgJoin = new ParallelGateway();
         pgJoin.setKey("ParallelGateway_join");
         pgJoin.setType(ExtendFlowElementType.PARALLEL_GATEWAY);
-        pgJoin.setIncoming(Lists.newArrayList("SequenceFlow_pg_fromA", "SequenceFlow_pg_fromB"));
+        pgJoin.setIncoming(Lists.newArrayList("SequenceFlow_pg_fromFinance", "SequenceFlow_pg_fromManager"));
         pgJoin.setOutgoing(Lists.newArrayList("SequenceFlow_pg_end"));
         Map<String, Object> joinProps = new HashMap<>();
         Map<String, String> joinForkJoinMatch = new HashMap<>();
@@ -954,30 +958,133 @@ public class EntityBuilder {
         pgJoin.setProperties(joinProps);
         flowElementList.add(pgJoin);
 
-        UserTask userTaskA = new UserTask();
-        userTaskA.setKey("UserTask_A");
-        userTaskA.setType(FlowElementType.USER_TASK);
-        userTaskA.setIncoming(Lists.newArrayList("SequenceFlow_pg_toA"));
-        userTaskA.setOutgoing(Lists.newArrayList("SequenceFlow_pg_fromA"));
-        flowElementList.add(userTaskA);
+        // 财务部审核节点
+        UserTask financeTask = new UserTask();
+        financeTask.setKey("UserTask_Finance");
+        financeTask.setType(FlowElementType.USER_TASK);
+        financeTask.setIncoming(Lists.newArrayList("SequenceFlow_pg_toFinance"));
+        financeTask.setOutgoing(Lists.newArrayList("SequenceFlow_pg_fromFinance"));
+        flowElementList.add(financeTask);
 
-        UserTask userTaskB = new UserTask();
-        userTaskB.setKey("UserTask_B");
-        userTaskB.setType(FlowElementType.USER_TASK);
-        userTaskB.setIncoming(Lists.newArrayList("SequenceFlow_pg_toB"));
-        userTaskB.setOutgoing(Lists.newArrayList("SequenceFlow_pg_fromB"));
-        flowElementList.add(userTaskB);
+        // 部门主管审批节点
+        UserTask managerTask = new UserTask();
+        managerTask.setKey("UserTask_Manager");
+        managerTask.setType(FlowElementType.USER_TASK);
+        managerTask.setIncoming(Lists.newArrayList("SequenceFlow_pg_toManager"));
+        managerTask.setOutgoing(Lists.newArrayList("SequenceFlow_pg_fromManager"));
+        flowElementList.add(managerTask);
 
         addSequenceFlow(flowElementList, "SequenceFlow_pg_start", "StartEvent_pg", "ParallelGateway_fork");
-        addSequenceFlow(flowElementList, "SequenceFlow_pg_toA", "ParallelGateway_fork", "UserTask_A");
-        addSequenceFlow(flowElementList, "SequenceFlow_pg_toB", "ParallelGateway_fork", "UserTask_B");
-        addSequenceFlow(flowElementList, "SequenceFlow_pg_fromA", "UserTask_A", "ParallelGateway_join");
-        addSequenceFlow(flowElementList, "SequenceFlow_pg_fromB", "UserTask_B", "ParallelGateway_join");
+        addSequenceFlow(flowElementList, "SequenceFlow_pg_toFinance", "ParallelGateway_fork", "UserTask_Finance");
+        addSequenceFlow(flowElementList, "SequenceFlow_pg_toManager", "ParallelGateway_fork", "UserTask_Manager");
+        addSequenceFlow(flowElementList, "SequenceFlow_pg_fromFinance", "UserTask_Finance", "ParallelGateway_join");
+        addSequenceFlow(flowElementList, "SequenceFlow_pg_fromManager", "UserTask_Manager", "ParallelGateway_join");
         addSequenceFlow(flowElementList, "SequenceFlow_pg_end", "ParallelGateway_join", "EndEvent_pg");
 
         FlowModel flowModel = new FlowModel();
         flowModel.setFlowElementList(flowElementList);
         return JSON.toJSONString(flowModel);
+    }
+
+    /**
+     * 包容网关 Demo 流程模型（采购审批场景）：
+     *
+     * 场景说明：根据采购金额动态激活审批分支：
+     *   - 小额采购（金额 < 5000）：仅触发部门主管审批（满足 < 10000，不满足 >= 5000）
+     *   - 中等金额（5000 <= 金额 < 10000）：同时触发部门主管审批和CFO审批（两个条件均满足）
+     *   - 大额采购（金额 >= 10000）：仅触发CFO审批（不满足 < 10000，满足 >= 5000）
+     *
+     *                                  --> UserTask_Dept（部门主管审批，条件: purchaseAmount < 10000）-->
+     * StartEvent --> InclusiveGW_fork                                                                   InclusiveGW_join --> EndEvent
+     *                                  --> UserTask_CFO（CFO审批，条件: purchaseAmount >= 5000）      -->
+     */
+    public static String buildInclusiveGatewayFlowModelStr() {
+        List<FlowElement> flowElementList = Lists.newArrayList();
+
+        StartEvent startEvent = new StartEvent();
+        startEvent.setKey("StartEvent_ig");
+        startEvent.setType(FlowElementType.START_EVENT);
+        startEvent.setOutgoing(Lists.newArrayList("SequenceFlow_ig_start"));
+        flowElementList.add(startEvent);
+
+        EndEvent endEvent = new EndEvent();
+        endEvent.setKey("EndEvent_ig");
+        endEvent.setType(FlowElementType.END_EVENT);
+        endEvent.setIncoming(Lists.newArrayList("SequenceFlow_ig_end"));
+        flowElementList.add(endEvent);
+
+        // 包容网关 - 分叉节点
+        InclusiveGateway igFork = new InclusiveGateway();
+        igFork.setKey("InclusiveGateway_fork");
+        igFork.setType(ExtendFlowElementType.INCLUSIVE_GATEWAY);
+        igFork.setIncoming(Lists.newArrayList("SequenceFlow_ig_start"));
+        igFork.setOutgoing(Lists.newArrayList("SequenceFlow_ig_toDept", "SequenceFlow_ig_toCFO"));
+        Map<String, Object> forkProps = new HashMap<>();
+        Map<String, String> forkJoinMatch = new HashMap<>();
+        forkJoinMatch.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.FORK, "InclusiveGateway_fork");
+        forkJoinMatch.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.JOIN, "InclusiveGateway_join");
+        forkProps.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.FORK_JOIN_MATCH, JSONArray.toJSON(forkJoinMatch));
+        igFork.setProperties(forkProps);
+        flowElementList.add(igFork);
+
+        // 包容网关 - 汇聚节点
+        InclusiveGateway igJoin = new InclusiveGateway();
+        igJoin.setKey("InclusiveGateway_join");
+        igJoin.setType(ExtendFlowElementType.INCLUSIVE_GATEWAY);
+        igJoin.setIncoming(Lists.newArrayList("SequenceFlow_ig_fromDept", "SequenceFlow_ig_fromCFO"));
+        igJoin.setOutgoing(Lists.newArrayList("SequenceFlow_ig_end"));
+        Map<String, Object> joinProps = new HashMap<>();
+        Map<String, String> joinForkJoinMatch = new HashMap<>();
+        joinForkJoinMatch.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.FORK, "InclusiveGateway_fork");
+        joinForkJoinMatch.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.JOIN, "InclusiveGateway_join");
+        joinProps.put(com.didiglobal.turbo.plugin.common.Constants.ELEMENT_PROPERTIES.FORK_JOIN_MATCH, JSONArray.toJSON(joinForkJoinMatch));
+        igJoin.setProperties(joinProps);
+        flowElementList.add(igJoin);
+
+        // 部门主管审批节点
+        UserTask deptTask = new UserTask();
+        deptTask.setKey("UserTask_Dept");
+        deptTask.setType(FlowElementType.USER_TASK);
+        deptTask.setIncoming(Lists.newArrayList("SequenceFlow_ig_toDept"));
+        deptTask.setOutgoing(Lists.newArrayList("SequenceFlow_ig_fromDept"));
+        flowElementList.add(deptTask);
+
+        // CFO审批节点
+        UserTask cfoTask = new UserTask();
+        cfoTask.setKey("UserTask_CFO");
+        cfoTask.setType(FlowElementType.USER_TASK);
+        cfoTask.setIncoming(Lists.newArrayList("SequenceFlow_ig_toCFO"));
+        cfoTask.setOutgoing(Lists.newArrayList("SequenceFlow_ig_fromCFO"));
+        flowElementList.add(cfoTask);
+
+        // 无条件：开始节点 → 包容网关分叉
+        addSequenceFlow(flowElementList, "SequenceFlow_ig_start", "StartEvent_ig", "InclusiveGateway_fork");
+        // 条件分支：金额 < 10000 → 部门主管审批
+        addSequenceFlowWithCondition(flowElementList, "SequenceFlow_ig_toDept", "InclusiveGateway_fork", "UserTask_Dept",
+                "${(purchaseAmount < 10000)}");
+        // 条件分支：金额 >= 5000 → CFO审批
+        addSequenceFlowWithCondition(flowElementList, "SequenceFlow_ig_toCFO", "InclusiveGateway_fork", "UserTask_CFO",
+                "${(purchaseAmount >= 5000)}");
+        addSequenceFlow(flowElementList, "SequenceFlow_ig_fromDept", "UserTask_Dept", "InclusiveGateway_join");
+        addSequenceFlow(flowElementList, "SequenceFlow_ig_fromCFO", "UserTask_CFO", "InclusiveGateway_join");
+        addSequenceFlow(flowElementList, "SequenceFlow_ig_end", "InclusiveGateway_join", "EndEvent_ig");
+
+        FlowModel flowModel = new FlowModel();
+        flowModel.setFlowElementList(flowElementList);
+        return JSON.toJSONString(flowModel);
+    }
+
+    private static void addSequenceFlowWithCondition(List<FlowElement> list, String key, String from, String to, String condition) {
+        SequenceFlow sf = new SequenceFlow();
+        sf.setKey(key);
+        sf.setType(FlowElementType.SEQUENCE_FLOW);
+        sf.setIncoming(Lists.newArrayList(from));
+        sf.setOutgoing(Lists.newArrayList(to));
+        Map<String, Object> props = new HashMap<>();
+        props.put("defaultConditions", "false");
+        props.put("conditionsequenceflow", condition);
+        sf.setProperties(props);
+        list.add(sf);
     }
 
     private static void addSequenceFlow(List<FlowElement> list, String key, String from, String to) {
