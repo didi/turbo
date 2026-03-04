@@ -1,18 +1,18 @@
-package com.didiglobal.turbo.engine.dao;
+package com.didiglobal.turbo.engine.dao.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.didiglobal.turbo.engine.dao.BaseDAO;
+import com.didiglobal.turbo.engine.dao.FlowDefinitionDAO;
 import com.didiglobal.turbo.engine.dao.mapper.FlowDefinitionMapper;
 import com.didiglobal.turbo.engine.entity.FlowDefinitionPO;
 import org.apache.commons.lang3.StringUtils;
 
-public class FlowDefinitionDAO extends BaseDAO<FlowDefinitionMapper, FlowDefinitionPO> {
+@DS("engine")
+public class FlowDefinitionDAOImpl extends BaseDAO<FlowDefinitionMapper, FlowDefinitionPO>
+        implements FlowDefinitionDAO {
 
-    /**
-     * Insert: insert flowDefinitionPO, return -1 while insert failed.
-     *
-     * @param flowDefinitionPO
-     * @return int
-     */
+    @Override
     public int insert(FlowDefinitionPO flowDefinitionPO) {
         try {
             return baseMapper.insert(flowDefinitionPO);
@@ -22,12 +22,7 @@ public class FlowDefinitionDAO extends BaseDAO<FlowDefinitionMapper, FlowDefinit
         return -1;
     }
 
-    /**
-     * UpdateByModuleId: update flowDefinitionPO by flowModuleId, return -1 while updateByModuleId failed.
-     *
-     * @param flowDefinitionPO
-     * @return int
-     */
+    @Override
     public int updateByModuleId(FlowDefinitionPO flowDefinitionPO) {
         if (null == flowDefinitionPO) {
             LOGGER.warn("updateByModuleId failed: flowDefinitionPO is null.");
@@ -48,12 +43,7 @@ public class FlowDefinitionDAO extends BaseDAO<FlowDefinitionMapper, FlowDefinit
         return -1;
     }
 
-    /**
-     * SelectByModuleId: query flowDefinitionPO by flowModuleId, return null while flowDefinitionPO can't be found.
-     *
-     * @param flowModuleId
-     * @return flowDefinitionPO
-     */
+    @Override
     public FlowDefinitionPO selectByModuleId(String flowModuleId) {
         if (StringUtils.isBlank(flowModuleId)) {
             LOGGER.warn("getById failed: flowModuleId is empty.");

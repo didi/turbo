@@ -63,7 +63,10 @@
     </developers>
 
     <modules>
+        <module>turbo-core</module>
         <module>engine</module>
+        <module>turbo-spring</module>
+        <module>turbo-spring-boot-starter</module>
         <module>demo</module>
         <module>parallel-plugin</module>
     </modules>

@@ -8,6 +8,13 @@ import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
 import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
 import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
 import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
+import com.didiglobal.turbo.engine.dao.impl.FlowDefinitionDAOImpl;
+import com.didiglobal.turbo.engine.dao.impl.FlowDeploymentDAOImpl;
+import com.didiglobal.turbo.engine.dao.impl.FlowInstanceMappingDAOImpl;
+import com.didiglobal.turbo.engine.dao.impl.InstanceDataDAOImpl;
+import com.didiglobal.turbo.engine.dao.impl.NodeInstanceDAOImpl;
+import com.didiglobal.turbo.engine.dao.impl.NodeInstanceLogDAOImpl;
+import com.didiglobal.turbo.engine.dao.impl.ProcessInstanceDAOImpl;
 import com.didiglobal.turbo.engine.engine.impl.ProcessEngineImpl;
 import com.didiglobal.turbo.engine.executor.EndEventExecutor;
 import com.didiglobal.turbo.engine.executor.ExclusiveGatewayExecutor;
@@ -57,37 +64,37 @@ public class TurboEngineConfig {
 
     @Bean
     public FlowDefinitionDAO flowDefinitionDAO() {
-        return new FlowDefinitionDAO();
+        return new FlowDefinitionDAOImpl();
     }
 
     @Bean
     public FlowDeploymentDAO flowDeploymentDAO() {
-        return new FlowDeploymentDAO();
+        return new FlowDeploymentDAOImpl();
     }
 
     @Bean
     public FlowInstanceMappingDAO flowInstanceMappingDAO() {
-        return new FlowInstanceMappingDAO();
+        return new FlowInstanceMappingDAOImpl();
     }
 
     @Bean
     public InstanceDataDAO instanceDataDAO() {
-        return new InstanceDataDAO();
+        return new InstanceDataDAOImpl();
     }
 
     @Bean
     public NodeInstanceDAO nodeInstanceDAO() {
-        return new NodeInstanceDAO();
+        return new NodeInstanceDAOImpl();
     }
 
     @Bean
     public NodeInstanceLogDAO nodeInstanceLogDAO() {
-        return new NodeInstanceLogDAO();
+        return new NodeInstanceLogDAOImpl();
     }
 
     @Bean
     public ProcessInstanceDAO processInstanceDAO() {
-        return new ProcessInstanceDAO();
+        return new ProcessInstanceDAOImpl();
     }
 
     // ==================== Service beans ====================

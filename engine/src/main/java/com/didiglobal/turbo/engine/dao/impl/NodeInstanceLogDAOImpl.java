@@ -1,18 +1,18 @@
-package com.didiglobal.turbo.engine.dao;
+package com.didiglobal.turbo.engine.dao.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
+import com.didiglobal.turbo.engine.dao.BaseDAO;
+import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
 import com.didiglobal.turbo.engine.dao.mapper.NodeInstanceLogMapper;
 import com.didiglobal.turbo.engine.entity.NodeInstanceLogPO;
 
 import java.util.List;
 
-public class NodeInstanceLogDAO extends BaseDAO<NodeInstanceLogMapper, NodeInstanceLogPO> {
+@DS("engine")
+public class NodeInstanceLogDAOImpl extends BaseDAO<NodeInstanceLogMapper, NodeInstanceLogPO>
+        implements NodeInstanceLogDAO {
 
-    /**
-     * insert nodeInstanceLogPO
-     *
-     * @param nodeInstanceLogPO
-     * @return -1 while insert failed
-     */
+    @Override
     public int insert(NodeInstanceLogPO nodeInstanceLogPO) {
         try {
             return baseMapper.insert(nodeInstanceLogPO);
@@ -22,12 +22,7 @@ public class NodeInstanceLogDAO extends BaseDAO<NodeInstanceLogMapper, NodeInsta
         return -1;
     }
 
-    /**
-     * nodeInstanceLogList batch insert
-     *
-     * @param nodeInstanceLogList
-     * @return
-     */
+    @Override
     public boolean insertList(List<NodeInstanceLogPO> nodeInstanceLogList) {
         return baseMapper.batchInsert(nodeInstanceLogList.get(0).getFlowInstanceId(), nodeInstanceLogList);
     }

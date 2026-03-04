@@ -1,41 +1,29 @@
-package com.didiglobal.turbo.engine.dao;
+package com.didiglobal.turbo.engine.dao.impl;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
+import com.didiglobal.turbo.engine.dao.BaseDAO;
+import com.didiglobal.turbo.engine.dao.FlowInstanceMappingDAO;
 import com.didiglobal.turbo.engine.dao.mapper.FlowInstanceMappingMapper;
 import com.didiglobal.turbo.engine.entity.FlowInstanceMappingPO;
 
 import java.util.Date;
 import java.util.List;
 
-public class FlowInstanceMappingDAO extends BaseDAO<FlowInstanceMappingMapper, FlowInstanceMappingPO> {
+@DS("engine")
+public class FlowInstanceMappingDAOImpl extends BaseDAO<FlowInstanceMappingMapper, FlowInstanceMappingPO>
+        implements FlowInstanceMappingDAO {
 
-    /**
-     * Used for multiple instances scene
-     *
-     * @param flowInstanceId
-     * @param nodeInstanceId
-     * @return
-     */
+    @Override
     public List<FlowInstanceMappingPO> selectFlowInstanceMappingPOList(String flowInstanceId, String nodeInstanceId) {
         return baseMapper.selectFlowInstanceMappingPOList(flowInstanceId, nodeInstanceId);
     }
 
-    /**
-     * Used for single instances scene
-     *
-     * @param flowInstanceId
-     * @param nodeInstanceId
-     * @return
-     */
+    @Override
     public FlowInstanceMappingPO selectFlowInstanceMappingPO(String flowInstanceId, String nodeInstanceId) {
         return baseMapper.selectFlowInstanceMappingPO(flowInstanceId, nodeInstanceId);
     }
 
-    /**
-     * Insert: insert flowInstanceMappingPO, return -1 while insert failed.
-     *
-     * @param  flowInstanceMappingPO
-     * @return
-     */
+    @Override
     public int insert(FlowInstanceMappingPO flowInstanceMappingPO) {
         try {
             return baseMapper.insert(flowInstanceMappingPO);
@@ -45,6 +33,7 @@ public class FlowInstanceMappingDAO extends BaseDAO<FlowInstanceMappingMapper, F
         return -1;
     }
 
+    @Override
     public void updateType(String flowInstanceId, String nodeInstanceId, int type) {
         FlowInstanceMappingPO flowInstanceMappingPO = new FlowInstanceMappingPO();
         flowInstanceMappingPO.setFlowInstanceId(flowInstanceId);

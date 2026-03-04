@@ -4,22 +4,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>engine</artifactId>
-    <version>1.3.1</version>
-    <packaging>jar</packaging>
-    <name>engine</name>
-
     <parent>
-        <artifactId>turbo</artifactId>
         <groupId>com.didiglobal.turbo</groupId>
+        <artifactId>turbo</artifactId>
         <version>1.3.1</version>
     </parent>
+
+    <artifactId>turbo-spring</artifactId>
+    <version>1.3.1</version>
+    <packaging>jar</packaging>
+    <name>turbo-spring</name>
+    <description>Turbo Spring adapter module - Spring-specific configuration and DAO implementations</description>
+
     <properties>
-        <groovy.version>4.0.22</groovy.version>
         <spring-boot.version>3.5.0</spring-boot.version>
-        <!-- Override to allow build with Java 17 in CI -->
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <dependencyManagement>
@@ -35,7 +33,7 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- Turbo Core (pure Java engine, no Spring) -->
+        <!-- Turbo core (pure Java engine) -->
         <dependency>
             <groupId>com.didiglobal.turbo</groupId>
             <artifactId>turbo-core</artifactId>
@@ -45,35 +43,25 @@
         <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
         <!-- MyBatis-Plus Spring integration -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
-            <optional>true</optional>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -82,16 +70,17 @@
             </exclusions>
         </dependency>
 
-        <!-- Datasource -->
+        <!-- Druid datasource -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-3-starter</artifactId>
+        </dependency>
+
+        <!-- DB driver -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-3-starter</artifactId>
-            <optional>true</optional>
         </dependency>
 
         <!-- Standard Java annotations -->
@@ -106,25 +95,16 @@
 
         <!-- Test -->
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
