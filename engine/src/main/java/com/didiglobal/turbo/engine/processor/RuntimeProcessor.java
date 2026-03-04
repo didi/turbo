@@ -524,6 +524,27 @@ public class RuntimeProcessor {
                     elementInstanceList.add(sequenceFlowInstance);
                 }
 
+                //4.1.1 build additional source sequenceFlow instances for join nodes
+                // (populated by the plugin into NodeInstancePO.properties when the plugin is enabled)
+                // NOTE: the key "additionalSourceNodeKeys" must stay in sync with
+                //       ParallelNodeInstanceHandler.ADDITIONAL_SOURCE_NODE_KEYS in parallel-plugin.
+                //       A string literal is used here instead of the constant to avoid introducing
+                //       a compile-time dependency from the core engine module onto the plugin module.
+                @SuppressWarnings("unchecked")
+                List<String> additionalSourceNodeKeys = (List<String>) nodeInstancePO.get("additionalSourceNodeKeys");
+                if (additionalSourceNodeKeys != null) {
+                    int edgeStatus = (nodeStatus == NodeInstanceStatus.ACTIVE) ? NodeInstanceStatus.COMPLETED : nodeStatus;
+                    for (String additionalSource : additionalSourceNodeKeys) {
+                        FlowElement additionalEdge = FlowModelUtil.getSequenceFlow(flowElementMap, additionalSource, nodeKey);
+                        if (additionalEdge != null) {
+                            elementInstanceList.add(new ElementInstance(additionalEdge.getKey(), edgeStatus, null, null));
+                        } else {
+                            LOGGER.warn("getHistoryElementList: additional source edge not found."
+                                + "||nodeKey={}||additionalSource={}", nodeKey, additionalSource);
+                        }
+                    }
+                }
+
                 //4.2 build nodeInstance
                 ElementInstance nodeInstance = new ElementInstance(nodeKey, nodeStatus, nodeInstanceId, instanceDataId);
                 elementInstanceList.add(nodeInstance);
