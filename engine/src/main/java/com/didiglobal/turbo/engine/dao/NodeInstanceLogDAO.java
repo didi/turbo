@@ -1,24 +1,36 @@
 package com.didiglobal.turbo.engine.dao;
 
+import com.didiglobal.turbo.engine.dao.mapper.NodeInstanceLogMapper;
 import com.didiglobal.turbo.engine.entity.NodeInstanceLogPO;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface NodeInstanceLogDAO {
+@Repository
+public class NodeInstanceLogDAO extends BaseDAO<NodeInstanceLogMapper, NodeInstanceLogPO> {
 
     /**
-     * Insert: insert nodeInstanceLogPO, return -1 while insert failed.
+     * insert nodeInstanceLogPO
      *
      * @param nodeInstanceLogPO
-     * @return int
+     * @return -1 while insert failed
      */
-    int insert(NodeInstanceLogPO nodeInstanceLogPO);
+    public int insert(NodeInstanceLogPO nodeInstanceLogPO) {
+        try {
+            return baseMapper.insert(nodeInstanceLogPO);
+        } catch (Exception e) {
+            LOGGER.error("insert exception.||nodeInstanceLogPO={}", nodeInstanceLogPO, e);
+        }
+        return -1;
+    }
 
     /**
-     * InsertList: nodeInstanceLogList batch insert.
+     * nodeInstanceLogList batch insert
      *
      * @param nodeInstanceLogList
-     * @return boolean
+     * @return
      */
-    boolean insertList(List<NodeInstanceLogPO> nodeInstanceLogList);
+    public boolean insertList(List<NodeInstanceLogPO> nodeInstanceLogList) {
+        return baseMapper.batchInsert(nodeInstanceLogList.get(0).getFlowInstanceId(), nodeInstanceLogList);
+    }
 }

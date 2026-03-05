@@ -1,43 +1,58 @@
 package com.didiglobal.turbo.engine.dao;
 
+import com.didiglobal.turbo.engine.dao.mapper.FlowInstanceMappingMapper;
 import com.didiglobal.turbo.engine.entity.FlowInstanceMappingPO;
+import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
-public interface FlowInstanceMappingDAO {
+@Service
+public class FlowInstanceMappingDAO extends BaseDAO<FlowInstanceMappingMapper, FlowInstanceMappingPO> {
 
     /**
-     * SelectFlowInstanceMappingPOList: used for multiple instances scene.
+     * Used for multiple instances scene
      *
      * @param flowInstanceId
      * @param nodeInstanceId
-     * @return flowInstanceMappingPOList
+     * @return
      */
-    List<FlowInstanceMappingPO> selectFlowInstanceMappingPOList(String flowInstanceId, String nodeInstanceId);
+    public List<FlowInstanceMappingPO> selectFlowInstanceMappingPOList(String flowInstanceId, String nodeInstanceId) {
+        return baseMapper.selectFlowInstanceMappingPOList(flowInstanceId, nodeInstanceId);
+    }
 
     /**
-     * SelectFlowInstanceMappingPO: used for single instances scene.
+     * Used for single instances scene
      *
      * @param flowInstanceId
      * @param nodeInstanceId
-     * @return flowInstanceMappingPO
+     * @return
      */
-    FlowInstanceMappingPO selectFlowInstanceMappingPO(String flowInstanceId, String nodeInstanceId);
+    public FlowInstanceMappingPO selectFlowInstanceMappingPO(String flowInstanceId, String nodeInstanceId) {
+        return baseMapper.selectFlowInstanceMappingPO(flowInstanceId, nodeInstanceId);
+    }
 
     /**
      * Insert: insert flowInstanceMappingPO, return -1 while insert failed.
      *
-     * @param flowInstanceMappingPO
-     * @return int
+     * @param  flowInstanceMappingPO
+     * @return
      */
-    int insert(FlowInstanceMappingPO flowInstanceMappingPO);
+    public int insert(FlowInstanceMappingPO flowInstanceMappingPO) {
+        try {
+            return baseMapper.insert(flowInstanceMappingPO);
+        } catch (Exception e) {
+            LOGGER.error("insert exception.||flowInstanceMappingPO={}", flowInstanceMappingPO, e);
+        }
+        return -1;
+    }
 
-    /**
-     * UpdateType: update flowInstanceMapping type by flowInstanceId and nodeInstanceId.
-     *
-     * @param flowInstanceId
-     * @param nodeInstanceId
-     * @param type
-     */
-    void updateType(String flowInstanceId, String nodeInstanceId, int type);
+    public void updateType(String flowInstanceId, String nodeInstanceId, int type) {
+        FlowInstanceMappingPO flowInstanceMappingPO = new FlowInstanceMappingPO();
+        flowInstanceMappingPO.setFlowInstanceId(flowInstanceId);
+        flowInstanceMappingPO.setNodeInstanceId(nodeInstanceId);
+        flowInstanceMappingPO.setType(type);
+        flowInstanceMappingPO.setModifyTime(new Date());
+        baseMapper.updateType(flowInstanceMappingPO);
+    }
 }

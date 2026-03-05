@@ -13,8 +13,8 @@ import com.didiglobal.turbo.demo.pojo.request.UpdateFlowRequest;
 import com.didiglobal.turbo.demo.pojo.response.FlowModuleListResponse;
 import com.didiglobal.turbo.demo.pojo.response.FlowModuleResponse;
 import com.didiglobal.turbo.engine.common.FlowDeploymentStatus;
-import com.didiglobal.turbo.engine.dao.FlowDefinitionDAOImpl;
-import com.didiglobal.turbo.engine.dao.FlowDeploymentDAOImpl;
+import com.didiglobal.turbo.engine.dao.FlowDefinitionDAO;
+import com.didiglobal.turbo.engine.dao.FlowDeploymentDAO;
 import com.didiglobal.turbo.engine.engine.ProcessEngine;
 import com.didiglobal.turbo.engine.entity.FlowDefinitionPO;
 import com.didiglobal.turbo.engine.entity.FlowDeploymentPO;
@@ -43,10 +43,10 @@ public class FlowServiceImpl {
     private ProcessEngine processEngine;
 
     @Resource
-    private FlowDefinitionDAOImpl flowDefinitionDAO;
+    private FlowDefinitionDAO flowDefinitionDAO;
 
     @Resource
-    private FlowDeploymentDAOImpl flowDeploymentDAO;
+    private FlowDeploymentDAO flowDeploymentDAO;
 
     /**
      * 创建流程
