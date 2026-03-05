@@ -112,12 +112,18 @@ public class InMemoryNodeInstanceDAOTest {
 
     @Test
     public void testInsertOrUpdateList() {
-        NodeInstancePO po1 = buildPO("instanceId10", "nodeInstId10a", NodeInstanceStatus.ACTIVE);
-        NodeInstancePO po2 = buildPO("instanceId10", "nodeInstId10b", NodeInstanceStatus.ACTIVE);
-        dao.insert(po1);
-        po2.setStatus(NodeInstanceStatus.ACTIVE);
-        boolean result = dao.insertOrUpdateList(Arrays.asList(po2, new NodeInstancePO()));
+        // Test that existing (id!=null) nodes are updated and new (id==null) nodes are inserted
+        NodeInstancePO existing = buildPO("instanceId10", "nodeInstId10a", NodeInstanceStatus.ACTIVE);
+        dao.insert(existing); // existing now has an id
+
+        NodeInstancePO newPo = buildPO("instanceId10", "nodeInstId10b", NodeInstanceStatus.ACTIVE);
+        // newPo has no id yet — should be inserted
+
+        existing.setStatus(NodeInstanceStatus.COMPLETED); // will be updated
+        boolean result = dao.insertOrUpdateList(Arrays.asList(existing, newPo));
         Assertions.assertTrue(result);
+        // newPo should now have an id after insert
+        Assertions.assertNotNull(newPo.getId());
     }
 
     @Test
