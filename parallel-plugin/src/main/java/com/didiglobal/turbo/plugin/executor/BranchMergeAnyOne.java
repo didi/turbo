@@ -36,6 +36,9 @@ public class BranchMergeAnyOne extends BranchMergeStrategy {
         NodeInstancePO joinNodeInstancePo = buildNodeInstancePO(runtimeContext, currentNodeInstance);
         nodeInstanceDAO.insert(joinNodeInstancePo);
         nodeInstanceLogDAO.insert(buildNodeInstanceLogPO(joinNodeInstancePo));
+        // Record the first arriving branch's source in the plugin-owned join source table.
+        saveJoinSource(joinNodeInstancePo.getFlowInstanceId(), joinNodeInstancePo.getNodeInstanceId(),
+                currentNodeInstance.getSourceNodeInstanceId(), currentNodeInstance.getSourceNodeKey());
 
         // Close other nodes with pending ACTIVE status
         parallelNodeInstanceService.closeParallelSuspendUserTask(runtimeContext, executeIds);

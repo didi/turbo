@@ -15,7 +15,12 @@ import com.didiglobal.turbo.engine.plugin.manager.PluginManager;
 import com.didiglobal.turbo.engine.util.IdGenerator;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import com.didiglobal.turbo.engine.util.StrongUuidGenerator;
+import com.didiglobal.turbo.plugin.dao.mapper.JoinSourceMapper;
+import com.didiglobal.turbo.plugin.entity.JoinSourcePO;
 import com.didiglobal.turbo.plugin.util.ExecutorUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 import javax.annotation.Resource;
@@ -25,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class BranchMergeStrategy {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BranchMergeStrategy.class);
 
     @Resource
     protected InstanceDataDAO instanceDataDAO;
@@ -38,8 +45,41 @@ public abstract class BranchMergeStrategy {
     @Resource
     protected PluginManager pluginManager;
 
+    @Resource
+    private JoinSourceMapper joinSourceMapper;
+
     protected IdGenerator ID_GENERATOR;
 
+    /**
+     * Records the per-branch source association for a parallel gateway join node
+     * into the plugin-owned ei_node_instance_join_source table.
+     * This avoids accumulating comma-separated IDs into the core
+     * ei_node_instance.source_node_instance_id varchar field, which would
+     * overflow for flows with large numbers of parallel branches.
+     *
+     * @param flowInstanceId       the current flow instance id
+     * @param joinNodeInstanceId   the join gateway's persisted nodeInstanceId (J1 in DB)
+     * @param sourceNodeInstanceId the arriving branch's source node instance id
+     * @param sourceNodeKey        the arriving branch's source node key
+     */
+    protected void saveJoinSource(String flowInstanceId, String joinNodeInstanceId,
+                                  String sourceNodeInstanceId, String sourceNodeKey) {
+        if (StringUtils.isBlank(sourceNodeInstanceId)) {
+            return;
+        }
+        try {
+            JoinSourcePO joinSourcePO = new JoinSourcePO();
+            joinSourcePO.setFlowInstanceId(flowInstanceId);
+            joinSourcePO.setJoinNodeInstanceId(joinNodeInstanceId);
+            joinSourcePO.setSourceNodeInstanceId(sourceNodeInstanceId);
+            joinSourcePO.setSourceNodeKey(sourceNodeKey);
+            joinSourcePO.setCreateTime(new Date());
+            joinSourceMapper.insert(joinSourcePO);
+        } catch (Exception e) {
+            LOGGER.error("saveJoinSource failed.||flowInstanceId={}||joinNodeInstanceId={}||sourceNodeInstanceId={}",
+                    flowInstanceId, joinNodeInstanceId, sourceNodeInstanceId, e);
+        }
+    }
 
 
     /**
@@ -106,15 +146,15 @@ public abstract class BranchMergeStrategy {
     }
 
     protected void buildParallelNodeInstancePo(NodeInstancePO joinNodeInstancePo, NodeInstanceBO currentNodeInstance, int status) {
-        String sourceNodeInstanceId = joinNodeInstancePo.getSourceNodeInstanceId();
-        String sourceNodeKey = joinNodeInstancePo.getSourceNodeKey();
         String executeId = (String) joinNodeInstancePo.get("executeId");
-        joinNodeInstancePo.setSourceNodeInstanceId(ExecutorUtil.append(sourceNodeInstanceId, currentNodeInstance.getSourceNodeInstanceId()));
-        joinNodeInstancePo.setSourceNodeKey(ExecutorUtil.append(sourceNodeKey, currentNodeInstance.getSourceNodeKey()));
         String newExecuteId = ExecutorUtil.append(executeId, ExecutorUtil.getCurrentExecuteId((String) currentNodeInstance.get("executeId")));
         joinNodeInstancePo.put("executeId", newExecuteId);
         joinNodeInstancePo.setStatus(status);
         joinNodeInstancePo.setModifyTime(new Date());
+        // Record per-branch source in the plugin-owned join source table instead of
+        // accumulating comma-separated IDs into the core source_node_instance_id varchar field.
+        saveJoinSource(joinNodeInstancePo.getFlowInstanceId(), joinNodeInstancePo.getNodeInstanceId(),
+                currentNodeInstance.getSourceNodeInstanceId(), currentNodeInstance.getSourceNodeKey());
     }
 
     protected NodeInstanceLogPO buildCurrentNodeInstanceLogPO(NodeInstanceBO currentNodeInstance, String executeId, NodeInstancePO nodeInstancePO) {
