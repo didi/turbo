@@ -185,7 +185,7 @@ public class SyncSingleCallActivityExecutor extends AbstractCallActivityExecutor
         flowInstanceMappingPO.setCaller(runtimeContext.getCaller());
         flowInstanceMappingPO.setCreateTime(new Date());
         flowInstanceMappingPO.setModifyTime(new Date());
-        flowInstanceMappingDAO.save(flowInstanceMappingPO);
+        flowInstanceMappingDAO.insert(flowInstanceMappingPO);
     }
 
     private void handleReentrantSubFlowInstance(RuntimeContext runtimeContext, FlowInstanceMappingPO flowInstanceMappingPO) throws ProcessException {

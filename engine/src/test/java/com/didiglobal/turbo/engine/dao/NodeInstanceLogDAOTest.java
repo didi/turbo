@@ -14,7 +14,7 @@ import java.util.List;
 public class NodeInstanceLogDAOTest extends BaseTest {
 
     @Resource
-    private NodeInstanceLogDAO nodeInstanceLogDAO;
+    private NodeInstanceLogDAOImpl nodeInstanceLogDAO;
 
     @Test
     public void batchInsert() {

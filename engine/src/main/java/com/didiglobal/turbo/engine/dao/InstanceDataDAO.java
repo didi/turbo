@@ -1,67 +1,47 @@
 package com.didiglobal.turbo.engine.dao;
 
-import com.didiglobal.turbo.engine.common.ErrorEnum;
-import com.didiglobal.turbo.engine.dao.mapper.InstanceDataMapper;
 import com.didiglobal.turbo.engine.entity.InstanceDataPO;
-import com.didiglobal.turbo.engine.exception.TurboException;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public class InstanceDataDAO extends BaseDAO<InstanceDataMapper, InstanceDataPO> {
-
-    public InstanceDataPO select(String flowInstanceId, String instanceDataId) {
-        return baseMapper.select(flowInstanceId, instanceDataId);
-    }
+public interface InstanceDataDAO {
 
     /**
-     * select recent InstanceData order by id desc
+     * Select: query instanceDataPO by flowInstanceId and instanceDataId.
      *
      * @param flowInstanceId
-     * @return
+     * @param instanceDataId
+     * @return instanceDataPO
      */
-    public InstanceDataPO selectRecentOne(String flowInstanceId) {
-        return baseMapper.selectRecentOne(flowInstanceId);
-    }
+    InstanceDataPO select(String flowInstanceId, String instanceDataId);
 
     /**
-     * insert instanceDataPO
+     * SelectRecentOne: select recent InstanceData order by id desc.
+     *
+     * @param flowInstanceId
+     * @return instanceDataPO
+     */
+    InstanceDataPO selectRecentOne(String flowInstanceId);
+
+    /**
+     * Insert: insert instanceDataPO, return -1 while insert failed.
      *
      * @param instanceDataPO
-     * @return -1 while insert failed
+     * @return int
      */
-    public int insert(InstanceDataPO instanceDataPO) {
-        try {
-            return baseMapper.insert(instanceDataPO);
-        } catch (Exception e) {
-            // TODO: 2020/2/1 clear reentrant exception log 
-            LOGGER.error("insert exception.||instanceDataPO={}", instanceDataPO, e);
-        }
-        return -1;
-    }
+    int insert(InstanceDataPO instanceDataPO);
 
     /**
-     * update instanceData
+     * UpdateData: update instanceData.
+     *
      * @param instanceDataPO
-     * @return
+     * @return int
      */
-    public int updateData(InstanceDataPO instanceDataPO) {
-        try {
-            return baseMapper.updateData(instanceDataPO);
-        } catch (Exception e) {
-            LOGGER.error("update instance data exception.||instanceDataPO={}", instanceDataPO, e);
-            throw new TurboException(ErrorEnum.UPDATE_INSTANCE_DATA_FAILED);
-        }
-    }
+    int updateData(InstanceDataPO instanceDataPO);
 
     /**
-     * insert or update instanceData
+     * InsertOrUpdate: insert or update instanceData.
+     *
      * @param mergePo
-     * @return
+     * @return int
      */
-    public int insertOrUpdate(InstanceDataPO mergePo) {
-        if (mergePo.getId() != null) {
-            return updateData(mergePo);
-        }
-        return insert(mergePo);
-    }
+    int insertOrUpdate(InstanceDataPO mergePo);
 }

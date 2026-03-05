@@ -1,42 +1,38 @@
 package com.didiglobal.turbo.engine.dao;
 
-import com.didiglobal.turbo.engine.dao.mapper.ProcessInstanceMapper;
 import com.didiglobal.turbo.engine.entity.FlowInstancePO;
-import org.springframework.stereotype.Repository;
 
-import java.util.Date;
-
-@Repository
-public class ProcessInstanceDAO extends BaseDAO<ProcessInstanceMapper, FlowInstancePO> {
-
-    public FlowInstancePO selectByFlowInstanceId(String flowInstanceId) {
-        return baseMapper.selectByFlowInstanceId(flowInstanceId);
-    }
+public interface ProcessInstanceDAO {
 
     /**
-     * insert flowInstancePO
+     * SelectByFlowInstanceId: query flowInstancePO by flowInstanceId.
+     *
+     * @param flowInstanceId
+     * @return flowInstancePO
+     */
+    FlowInstancePO selectByFlowInstanceId(String flowInstanceId);
+
+    /**
+     * Insert: insert flowInstancePO, return -1 while insert failed.
      *
      * @param flowInstancePO
-     * @return -1 while insert failed
+     * @return int
      */
-    public int insert(FlowInstancePO flowInstancePO) {
-        try {
-            return baseMapper.insert(flowInstancePO);
-        } catch (Exception e) {
-            // TODO: 2020/2/1 clear reentrant exception log
-            LOGGER.error("insert exception.||flowInstancePO={}", flowInstancePO, e);
-        }
-        return -1;
-    }
+    int insert(FlowInstancePO flowInstancePO);
 
-    public void updateStatus(String flowInstanceId, int status) {
-        FlowInstancePO flowInstancePO = selectByFlowInstanceId(flowInstanceId);
-        updateStatus(flowInstancePO, status);
-    }
+    /**
+     * UpdateStatus: update flowInstance status by flowInstanceId.
+     *
+     * @param flowInstanceId
+     * @param status
+     */
+    void updateStatus(String flowInstanceId, int status);
 
-    public void updateStatus(FlowInstancePO flowInstancePO, int status) {
-        flowInstancePO.setStatus(status);
-        flowInstancePO.setModifyTime(new Date());
-        baseMapper.updateStatus(flowInstancePO);
-    }
+    /**
+     * UpdateStatus: update flowInstance status by flowInstancePO.
+     *
+     * @param flowInstancePO
+     * @param status
+     */
+    void updateStatus(FlowInstancePO flowInstancePO, int status);
 }
