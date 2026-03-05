@@ -17,6 +17,97 @@
 
 ---
 
+## InMemoryFlowDefinitionDAO 是什么？和引入 Spring 的版本有什么区别？
+
+这是一个高频问题，也是理解 Turbo 非 Spring 接入方式的核心。
+
+### 一句话解释
+
+`InMemoryFlowDefinitionDAO` 是 `FlowDefinitionDAO` 接口的**内存实现**：
+它把流程定义对象存储在 JVM 内存的 `ConcurrentHashMap` 里，**不需要数据库、不需要 Spring**。
+
+### 详细对比
+
+| 对比维度 | `InMemoryFlowDefinitionDAO`（内存版） | `FlowDefinitionDAOImpl`（Spring + MyBatis-Plus 版）|
+|---------|--------------------------------------|--------------------------------------------------|
+| **数据存储** | JVM 堆内存（`ConcurrentHashMap`） | 关系数据库（MySQL），表 `em_flow_definition` |
+| **数据持久化** | ❌ 进程退出后全部丢失 | ✅ 数据永久保存到数据库 |
+| **依赖框架** | 无（仅 JDK 标准库） | Spring、MyBatis-Plus、dynamic-datasource |
+| **初始化方式** | `new InMemoryFlowDefinitionDAO()` | `@Autowired FlowDefinitionDAO dao` |
+| **insert 实现** | `store.put(po.getFlowModuleId(), po)` | `baseMapper.insert(po)` → SQL: `INSERT INTO em_flow_definition ...` |
+| **update 实现** | 从 Map 取出对象、逐字段赋值 | `UPDATE em_flow_definition SET ... WHERE flow_module_id=?` |
+| **select 实现** | `store.get(flowModuleId)` | `SELECT * FROM em_flow_definition WHERE flow_module_id=? LIMIT 1` |
+| **事务支持** | ❌ 无 | ✅ Spring `@Transactional` |
+| **适用场景** | 单元测试、快速验证、轻量非 Spring 接入 | 生产环境（需要持久化） |
+
+### 代码对比
+
+```java
+// ── 内存版（InMemoryFlowDefinitionDAO，turbo-core 内置）─────────────────────────
+public class InMemoryFlowDefinitionDAO implements FlowDefinitionDAO {
+    private final Map<String, FlowDefinitionPO> store = new ConcurrentHashMap<>();
+
+    @Override
+    public int insert(FlowDefinitionPO po) {
+        store.put(po.getFlowModuleId(), po);   // 存入内存 Map
+        return 1;
+    }
+
+    @Override
+    public int updateByModuleId(FlowDefinitionPO po) {
+        FlowDefinitionPO existing = store.get(po.getFlowModuleId());
+        if (existing == null) return 0;
+        if (po.getFlowModel() != null) existing.setFlowModel(po.getFlowModel()); // 原地修改
+        if (po.getStatus() != null)    existing.setStatus(po.getStatus());
+        return 1;
+    }
+
+    @Override
+    public FlowDefinitionPO selectByModuleId(String flowModuleId) {
+        return store.get(flowModuleId);        // 直接从 Map 取
+    }
+}
+
+// ── Spring 版（FlowDefinitionDAOImpl，engine 模块）───────────────────────
+@DS("engine")
+public class FlowDefinitionDAOImpl extends BaseDAO<FlowDefinitionMapper, FlowDefinitionPO>
+        implements FlowDefinitionDAO {
+
+    @Override
+    public int insert(FlowDefinitionPO po) {
+        return baseMapper.insert(po);           // MyBatis: INSERT INTO em_flow_definition ...
+    }
+
+    @Override
+    public int updateByModuleId(FlowDefinitionPO po) {
+        UpdateWrapper<FlowDefinitionPO> wrapper = new UpdateWrapper<>();
+        wrapper.eq("flow_module_id", po.getFlowModuleId());
+        return baseMapper.update(po, wrapper);  // UPDATE em_flow_definition SET ... WHERE flow_module_id=?
+    }
+
+    @Override
+    public FlowDefinitionPO selectByModuleId(String flowModuleId) {
+        return baseMapper.selectByFlowModuleId(flowModuleId); // SELECT * FROM em_flow_definition WHERE ...
+    }
+}
+```
+
+### 什么时候用哪个？
+
+```
+需要在 Spring 项目中使用 Turbo？
+  └─→ 依赖 engine 或 turbo-spring-boot-starter，Spring 自动注入 FlowDefinitionDAOImpl
+
+不用 Spring，只是想跑测试或验证流程逻辑？
+  └─→ 用 InMemoryFlowDefinitionDAO，数据放内存，程序退出即消失
+
+不用 Spring，但需要把数据持久化到数据库？
+  └─→ 自己实现 FlowDefinitionDAO 接口（用 JDBC/JPA/其他 ORM），
+      然后传给 TurboEngineBuilder.create().flowDefinitionDAO(yourImpl).build()
+```
+
+---
+
 ## 快速开始
 
 ### 1. 添加依赖
@@ -37,48 +128,18 @@
 
 `turbo-core` 定义了 7 个持久化接口，由你选择任意存储方案（JDBC、JPA、MyBatis、内存等）实现：
 
-| 接口 | 对应表 | 说明 |
-|------|--------|------|
-| `FlowDefinitionDAO` | `em_flow_definition` | 流程定义 |
-| `FlowDeploymentDAO` | `em_flow_deployment` | 流程部署记录 |
-| `ProcessInstanceDAO` | `ei_flow_instance` | 流程实例 |
-| `NodeInstanceDAO` | `ei_node_instance` | 节点实例 |
-| `InstanceDataDAO` | `ei_instance_data` | 实例数据（流程变量）|
-| `FlowInstanceMappingDAO` | `ei_flow_instance_mapping` | 子流程映射（CallActivity）|
-| `NodeInstanceLogDAO` | `ei_node_instance_log` | 节点执行日志 |
+| 接口 | 对应表 | 内存实现类 |
+|------|--------|-----------|
+| `FlowDefinitionDAO` | `em_flow_definition` | `InMemoryFlowDefinitionDAO` |
+| `FlowDeploymentDAO` | `em_flow_deployment` | `InMemoryFlowDeploymentDAO` |
+| `ProcessInstanceDAO` | `ei_flow_instance` | `InMemoryProcessInstanceDAO` |
+| `NodeInstanceDAO` | `ei_node_instance` | `InMemoryNodeInstanceDAO` |
+| `InstanceDataDAO` | `ei_instance_data` | `InMemoryInstanceDataDAO` |
+| `FlowInstanceMappingDAO` | `ei_flow_instance_mapping` | `InMemoryFlowInstanceMappingDAO` |
+| `NodeInstanceLogDAO` | `ei_node_instance_log` | `InMemoryNodeInstanceLogDAO` |
 
+内存实现类在包 `com.didiglobal.turbo.engine.dao.memory` 中直接提供，可直接使用。
 建表 SQL 参见：`turbo-core/src/main/resources/turbo.db.create/turbo.mysql.sql`
-
-#### 示例：最简内存实现
-
-```java
-// 流程定义 DAO（内存实现示例，实际请对接数据库）
-class MyFlowDefinitionDAO implements FlowDefinitionDAO {
-    private final Map<String, FlowDefinitionPO> store = new ConcurrentHashMap<>();
-
-    @Override
-    public int insert(FlowDefinitionPO po) {
-        store.put(po.getFlowModuleId(), po);
-        return 1;
-    }
-
-    @Override
-    public int updateByModuleId(FlowDefinitionPO po) {
-        FlowDefinitionPO existing = store.get(po.getFlowModuleId());
-        if (existing == null) return 0;
-        if (po.getFlowModel() != null) existing.setFlowModel(po.getFlowModel());
-        if (po.getStatus() != null)    existing.setStatus(po.getStatus());
-        return 1;
-    }
-
-    @Override
-    public FlowDefinitionPO selectByModuleId(String flowModuleId) {
-        return store.get(flowModuleId);
-    }
-}
-```
-
-> 参考 `turbo-core/src/test/java/.../TurboEngineStandaloneTest.java` 中的完整内存 DAO 实现。
 
 ---
 
@@ -87,14 +148,22 @@ class MyFlowDefinitionDAO implements FlowDefinitionDAO {
 使用 `TurboEngineBuilder` 将 DAO 注入引擎，无需任何 IoC 容器：
 
 ```java
+// 方式一：使用内置内存版 DAO（不持久化，适合测试）
 ProcessEngine engine = TurboEngineBuilder.create()
-    .flowDefinitionDAO(new MyFlowDefinitionDAO())
-    .flowDeploymentDAO(new MyFlowDeploymentDAO())
-    .processInstanceDAO(new MyProcessInstanceDAO())
-    .nodeInstanceDAO(new MyNodeInstanceDAO())
-    .instanceDataDAO(new MyInstanceDataDAO())
-    .flowInstanceMappingDAO(new MyFlowInstanceMappingDAO())
-    .nodeInstanceLogDAO(new MyNodeInstanceLogDAO())
+    .flowDefinitionDAO(new InMemoryFlowDefinitionDAO())
+    .flowDeploymentDAO(new InMemoryFlowDeploymentDAO())
+    .processInstanceDAO(new InMemoryProcessInstanceDAO())
+    .nodeInstanceDAO(new InMemoryNodeInstanceDAO())
+    .instanceDataDAO(new InMemoryInstanceDataDAO())
+    .flowInstanceMappingDAO(new InMemoryFlowInstanceMappingDAO())
+    .nodeInstanceLogDAO(new InMemoryNodeInstanceLogDAO())
+    .build();
+
+// 方式二：使用自定义 DAO（对接真实数据库，不用 Spring）
+ProcessEngine engine = TurboEngineBuilder.create()
+    .flowDefinitionDAO(new MyJdbcFlowDefinitionDAO(dataSource))
+    .flowDeploymentDAO(new MyJdbcFlowDeploymentDAO(dataSource))
+    // ... 其余 DAOs
     .build();
 ```
 
@@ -147,8 +216,6 @@ String flowDeployId = deployed.getFlowDeployId(); // 部署唯一标识
 // ── 步骤 4：启动流程实例 ──────────────────────────────────────
 StartProcessParam startParam = new StartProcessParam();
 startParam.setFlowDeployId(flowDeployId);
-// 可以传入初始变量
-// startParam.setVariables(List.of(new InstanceData("key", "value")));
 StartProcessResult started = engine.startProcess(startParam);
 
 String flowInstanceId = started.getFlowInstanceId();
@@ -159,16 +226,8 @@ NodeInstance activeTask  = started.getActiveTaskInstance();
 CommitTaskParam commitParam = new CommitTaskParam();
 commitParam.setFlowInstanceId(flowInstanceId);
 commitParam.setTaskInstanceId(activeTask.getNodeInstanceId());
-// 可以传入表单数据
-// commitParam.setVariables(List.of(new InstanceData("approved", "true")));
 CommitTaskResult committed = engine.commitTask(commitParam);
 // 流程继续推进，直到下一个 UserTask 或 EndEvent
-
-// ── 步骤 6：回滚节点（可选）────────────────────────────────────
-RollbackTaskParam rollbackParam = new RollbackTaskParam();
-rollbackParam.setFlowInstanceId(flowInstanceId);
-rollbackParam.setTaskInstanceId(activeTask.getNodeInstanceId());
-engine.rollbackTask(rollbackParam);
 
 // ── 查询 API ─────────────────────────────────────────────────
 // 查历史人工节点
@@ -278,12 +337,13 @@ boolean ok = ErrorEnum.isSuccess(result.getErrCode());
 
 ---
 
-## 与 Spring 版本的区别
+## 与 Spring 版本的区别总结
 
 | 功能 | 纯 Java（turbo-core）| Spring Boot（turbo-spring-boot-starter）|
 |------|---------------------|----------------------------------------|
 | 引擎初始化 | `TurboEngineBuilder.create()...build()` | `@Autowired ProcessEngine engine` |
-| DAO 实现 | 自行实现 7 个接口 | MyBatis-Plus 自动实现 |
+| DAO 实现 | 使用内置 `InMemoryXxxDAO` 或自行实现接口 | MyBatis-Plus 自动实现，Spring 注入 |
+| 数据持久化 | 内存版不持久化；自定义版可对接任意 DB | 自动持久化到数据库 |
 | 数据源配置 | 在 DAO 实现中处理 | `spring.datasource.*` 配置 |
 | 插件 | `TurboEngineBuilder.pluginManager(...)` | Spring Bean 自动注册 |
 | 表达式 | 默认 Groovy，可替换 | 默认 Groovy，可替换 |
@@ -292,7 +352,8 @@ boolean ok = ErrorEnum.isSuccess(result.getErrCode());
 
 ## 参考
 
-- 完整内存 DAO 实现：[`TurboEngineStandaloneTest.java`](../turbo-core/src/test/java/com/didiglobal/turbo/engine/TurboEngineStandaloneTest.java)
+- 内存版 DAO 实现：[`dao/memory` 包](../turbo-core/src/main/java/com/didiglobal/turbo/engine/dao/memory/)
+- 端到端集成测试（使用内存版 DAO）：[`TurboEngineStandaloneTest.java`](../turbo-core/src/test/java/com/didiglobal/turbo/engine/TurboEngineStandaloneTest.java)
 - DAO 接口定义：`turbo-core/src/main/java/com/didiglobal/turbo/engine/dao/`
 - 建表 SQL：`turbo-core/src/main/resources/turbo.db.create/turbo.mysql.sql`
 - Spring 解耦影响报告：[spring-decouple-impact.md](./spring-decouple-impact.md)

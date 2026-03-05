@@ -4,23 +4,15 @@ import com.alibaba.fastjson.JSON;
 import com.didiglobal.turbo.engine.bo.NodeInstance;
 import com.didiglobal.turbo.engine.common.ErrorEnum;
 import com.didiglobal.turbo.engine.common.FlowElementType;
-import com.didiglobal.turbo.engine.common.NodeInstanceStatus;
-import com.didiglobal.turbo.engine.dao.FlowDefinitionDAO;
-import com.didiglobal.turbo.engine.dao.FlowDeploymentDAO;
-import com.didiglobal.turbo.engine.dao.FlowInstanceMappingDAO;
-import com.didiglobal.turbo.engine.dao.InstanceDataDAO;
-import com.didiglobal.turbo.engine.dao.NodeInstanceDAO;
-import com.didiglobal.turbo.engine.dao.NodeInstanceLogDAO;
-import com.didiglobal.turbo.engine.dao.ProcessInstanceDAO;
+import com.didiglobal.turbo.engine.dao.memory.InMemoryFlowDefinitionDAO;
+import com.didiglobal.turbo.engine.dao.memory.InMemoryFlowDeploymentDAO;
+import com.didiglobal.turbo.engine.dao.memory.InMemoryFlowInstanceMappingDAO;
+import com.didiglobal.turbo.engine.dao.memory.InMemoryInstanceDataDAO;
+import com.didiglobal.turbo.engine.dao.memory.InMemoryNodeInstanceDAO;
+import com.didiglobal.turbo.engine.dao.memory.InMemoryNodeInstanceLogDAO;
+import com.didiglobal.turbo.engine.dao.memory.InMemoryProcessInstanceDAO;
 import com.didiglobal.turbo.engine.engine.ProcessEngine;
 import com.didiglobal.turbo.engine.engine.TurboEngineBuilder;
-import com.didiglobal.turbo.engine.entity.FlowDefinitionPO;
-import com.didiglobal.turbo.engine.entity.FlowDeploymentPO;
-import com.didiglobal.turbo.engine.entity.FlowInstanceMappingPO;
-import com.didiglobal.turbo.engine.entity.FlowInstancePO;
-import com.didiglobal.turbo.engine.entity.InstanceDataPO;
-import com.didiglobal.turbo.engine.entity.NodeInstanceLogPO;
-import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.FlowModel;
 import com.didiglobal.turbo.engine.param.CommitTaskParam;
@@ -39,15 +31,12 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 /**
  * Pure Java end-to-end test — no Spring context required.
  *
- * <p>Demonstrates the complete Turbo workflow using in-memory DAO implementations:
+ * <p>Demonstrates the complete Turbo workflow using in-memory DAO implementations
+ * from the {@code com.didiglobal.turbo.engine.dao.memory} package:
  * <ol>
  *   <li>Build engine via {@link TurboEngineBuilder}</li>
  *   <li>Create a flow definition</li>
@@ -58,38 +47,26 @@ import java.util.stream.Collectors;
  * </ol>
  *
  * <p>This test serves as living documentation of the standalone integration path.
- * New integrators can copy the in-memory DAO implementations and adapt them to any
- * persistence layer (JDBC, JPA, MyBatis, etc.) without Spring.
+ * New integrators can use the {@code InMemoryXxxDAO} classes directly (or as a reference)
+ * and adapt them to any persistence layer (JDBC, JPA, MyBatis, etc.) without Spring.
  */
 public class TurboEngineStandaloneTest {
 
     private ProcessEngine engine;
     private InMemoryFlowDefinitionDAO flowDefinitionDAO;
-    private InMemoryFlowDeploymentDAO flowDeploymentDAO;
-    private InMemoryProcessInstanceDAO processInstanceDAO;
-    private InMemoryNodeInstanceDAO nodeInstanceDAO;
-    private InMemoryInstanceDataDAO instanceDataDAO;
-    private InMemoryFlowInstanceMappingDAO flowInstanceMappingDAO;
-    private InMemoryNodeInstanceLogDAO nodeInstanceLogDAO;
 
     @Before
     public void setUp() {
         flowDefinitionDAO = new InMemoryFlowDefinitionDAO();
-        flowDeploymentDAO = new InMemoryFlowDeploymentDAO();
-        processInstanceDAO = new InMemoryProcessInstanceDAO();
-        nodeInstanceDAO = new InMemoryNodeInstanceDAO();
-        instanceDataDAO = new InMemoryInstanceDataDAO();
-        flowInstanceMappingDAO = new InMemoryFlowInstanceMappingDAO();
-        nodeInstanceLogDAO = new InMemoryNodeInstanceLogDAO();
 
         engine = TurboEngineBuilder.create()
                 .flowDefinitionDAO(flowDefinitionDAO)
-                .flowDeploymentDAO(flowDeploymentDAO)
-                .processInstanceDAO(processInstanceDAO)
-                .nodeInstanceDAO(nodeInstanceDAO)
-                .instanceDataDAO(instanceDataDAO)
-                .flowInstanceMappingDAO(flowInstanceMappingDAO)
-                .nodeInstanceLogDAO(nodeInstanceLogDAO)
+                .flowDeploymentDAO(new InMemoryFlowDeploymentDAO())
+                .processInstanceDAO(new InMemoryProcessInstanceDAO())
+                .nodeInstanceDAO(new InMemoryNodeInstanceDAO())
+                .instanceDataDAO(new InMemoryInstanceDataDAO())
+                .flowInstanceMappingDAO(new InMemoryFlowInstanceMappingDAO())
+                .nodeInstanceLogDAO(new InMemoryNodeInstanceLogDAO())
                 .build();
     }
 
@@ -247,287 +224,5 @@ public class TurboEngineStandaloneTest {
         model.setFlowElementList(elements);
         return JSON.toJSONString(model);
     }
-
-    // ==================== In-memory DAO implementations ====================
-    // These show exactly what a non-Spring integrator needs to implement.
-
-    /** Simple in-memory store for flow definitions. */
-    static class InMemoryFlowDefinitionDAO implements FlowDefinitionDAO {
-        private final Map<String, FlowDefinitionPO> store = new ConcurrentHashMap<>();
-
-        @Override
-        public int insert(FlowDefinitionPO po) {
-            store.put(po.getFlowModuleId(), po);
-            return 1;
-        }
-
-        @Override
-        public int updateByModuleId(FlowDefinitionPO po) {
-            FlowDefinitionPO existing = store.get(po.getFlowModuleId());
-            if (existing == null) return 0;
-            if (po.getFlowModel() != null) existing.setFlowModel(po.getFlowModel());
-            if (po.getFlowName() != null) existing.setFlowName(po.getFlowName());
-            if (po.getFlowKey() != null) existing.setFlowKey(po.getFlowKey());
-            if (po.getStatus() != null) existing.setStatus(po.getStatus());
-            return 1;
-        }
-
-        @Override
-        public FlowDefinitionPO selectByModuleId(String flowModuleId) {
-            return store.get(flowModuleId);
-        }
-    }
-
-    /** Simple in-memory store for flow deployments. */
-    static class InMemoryFlowDeploymentDAO implements FlowDeploymentDAO {
-        private final Map<String, FlowDeploymentPO> byDeployId = new ConcurrentHashMap<>();
-        private final Map<String, FlowDeploymentPO> latestByModuleId = new ConcurrentHashMap<>();
-
-        @Override
-        public int insert(FlowDeploymentPO po) {
-            byDeployId.put(po.getFlowDeployId(), po);
-            latestByModuleId.put(po.getFlowModuleId(), po);
-            return 1;
-        }
-
-        @Override
-        public FlowDeploymentPO selectByDeployId(String flowDeployId) {
-            return byDeployId.get(flowDeployId);
-        }
-
-        @Override
-        public FlowDeploymentPO selectRecentByFlowModuleId(String flowModuleId) {
-            return latestByModuleId.get(flowModuleId);
-        }
-    }
-
-    /** Simple in-memory store for flow (process) instances. */
-    static class InMemoryProcessInstanceDAO implements ProcessInstanceDAO {
-        private final Map<String, FlowInstancePO> store = new ConcurrentHashMap<>();
-
-        @Override
-        public FlowInstancePO selectByFlowInstanceId(String flowInstanceId) {
-            return store.get(flowInstanceId);
-        }
-
-        @Override
-        public int insert(FlowInstancePO po) {
-            store.put(po.getFlowInstanceId(), po);
-            return 1;
-        }
-
-        @Override
-        public void updateStatus(String flowInstanceId, int status) {
-            FlowInstancePO po = store.get(flowInstanceId);
-            if (po != null) po.setStatus(status);
-        }
-
-        @Override
-        public void updateStatus(FlowInstancePO po, int status) {
-            po.setStatus(status);
-        }
-    }
-
-    /** Simple in-memory store for node instances. */
-    static class InMemoryNodeInstanceDAO implements NodeInstanceDAO {
-        private final AtomicLong idSeq = new AtomicLong(1);
-        private final Map<String, NodeInstancePO> byNodeInstanceId = new ConcurrentHashMap<>();
-        // flowInstanceId -> list of node instances
-        private final Map<String, List<NodeInstancePO>> byFlowInstanceId = new ConcurrentHashMap<>();
-
-        @Override
-        public int insert(NodeInstancePO po) {
-            if (po.getId() == null) po.setId(idSeq.getAndIncrement());
-            byNodeInstanceId.put(key(po.getFlowInstanceId(), po.getNodeInstanceId()), po);
-            byFlowInstanceId.computeIfAbsent(po.getFlowInstanceId(), k -> new ArrayList<>()).add(po);
-            return 1;
-        }
-
-        @Override
-        public boolean insertOrUpdateList(List<NodeInstancePO> list) {
-            for (NodeInstancePO po : list) {
-                if (po.getId() == null) {
-                    insert(po);
-                } else {
-                    // Update existing entry: replace in byNodeInstanceId and update in-place in byFlowInstanceId
-                    String nodeKey = key(po.getFlowInstanceId(), po.getNodeInstanceId());
-                    NodeInstancePO existing = byNodeInstanceId.get(nodeKey);
-                    if (existing != null) {
-                        // Update fields on the existing object so references in byFlowInstanceId are also updated
-                        existing.setStatus(po.getStatus());
-                        existing.setInstanceDataId(po.getInstanceDataId());
-                        existing.setSourceNodeInstanceId(po.getSourceNodeInstanceId());
-                        existing.setSourceNodeKey(po.getSourceNodeKey());
-                    } else {
-                        byNodeInstanceId.put(nodeKey, po);
-                        byFlowInstanceId.computeIfAbsent(po.getFlowInstanceId(), k -> new ArrayList<>()).add(po);
-                    }
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public NodeInstancePO selectByNodeInstanceId(String flowInstanceId, String nodeInstanceId) {
-            return byNodeInstanceId.get(key(flowInstanceId, nodeInstanceId));
-        }
-
-        @Override
-        public NodeInstancePO selectBySourceInstanceId(String flowInstanceId, String sourceNodeInstanceId, String nodeKey) {
-            List<NodeInstancePO> list = byFlowInstanceId.getOrDefault(flowInstanceId, java.util.Collections.emptyList());
-            return list.stream()
-                    .filter(n -> sourceNodeInstanceId.equals(n.getSourceNodeInstanceId()) && nodeKey.equals(n.getNodeKey()))
-                    .findFirst().orElse(null);
-        }
-
-        @Override
-        public NodeInstancePO selectRecentOne(String flowInstanceId) {
-            List<NodeInstancePO> list = byFlowInstanceId.getOrDefault(flowInstanceId, java.util.Collections.emptyList());
-            return list.isEmpty() ? null : list.get(list.size() - 1);
-        }
-
-        @Override
-        public NodeInstancePO selectRecentActiveOne(String flowInstanceId) {
-            List<NodeInstancePO> list = new ArrayList<>(byFlowInstanceId.getOrDefault(flowInstanceId, java.util.Collections.emptyList()));
-            for (int i = list.size() - 1; i >= 0; i--) {
-                Integer status = list.get(i).getStatus();
-                if (status != null && NodeInstanceStatus.ACTIVE == status) return list.get(i);
-            }
-            return null;
-        }
-
-        @Override
-        public NodeInstancePO selectRecentCompletedOne(String flowInstanceId) {
-            List<NodeInstancePO> list = new ArrayList<>(byFlowInstanceId.getOrDefault(flowInstanceId, java.util.Collections.emptyList()));
-            for (int i = list.size() - 1; i >= 0; i--) {
-                Integer status = list.get(i).getStatus();
-                if (status != null && NodeInstanceStatus.COMPLETED == status) return list.get(i);
-            }
-            return null;
-        }
-
-        @Override
-        public NodeInstancePO selectEnabledOne(String flowInstanceId) {
-            NodeInstancePO active = selectRecentActiveOne(flowInstanceId);
-            return active != null ? active : selectRecentCompletedOne(flowInstanceId);
-        }
-
-        @Override
-        public List<NodeInstancePO> selectByFlowInstanceId(String flowInstanceId) {
-            return new ArrayList<>(byFlowInstanceId.getOrDefault(flowInstanceId, java.util.Collections.emptyList()));
-        }
-
-        @Override
-        public List<NodeInstancePO> selectDescByFlowInstanceId(String flowInstanceId) {
-            List<NodeInstancePO> list = new ArrayList<>(byFlowInstanceId.getOrDefault(flowInstanceId, java.util.Collections.emptyList()));
-            java.util.Collections.reverse(list);
-            return list;
-        }
-
-        @Override
-        public void updateStatus(NodeInstancePO po, int status) {
-            po.setStatus(status);
-        }
-
-        @Override
-        public List<NodeInstancePO> selectByFlowInstanceIdAndNodeKey(String flowInstanceId, String nodeKey) {
-            return byFlowInstanceId.getOrDefault(flowInstanceId, java.util.Collections.emptyList()).stream()
-                    .filter(n -> nodeKey.equals(n.getNodeKey()))
-                    .collect(Collectors.toList());
-        }
-
-        private static String key(String flowInstanceId, String nodeInstanceId) {
-            return flowInstanceId + ":" + nodeInstanceId;
-        }
-    }
-
-    /** Simple in-memory store for instance data (process variables). */
-    static class InMemoryInstanceDataDAO implements InstanceDataDAO {
-        private final AtomicLong idSeq = new AtomicLong(1);
-        private final Map<String, InstanceDataPO> store = new ConcurrentHashMap<>();
-
-        @Override
-        public InstanceDataPO select(String flowInstanceId, String instanceDataId) {
-            return store.get(key(flowInstanceId, instanceDataId));
-        }
-
-        @Override
-        public InstanceDataPO selectRecentOne(String flowInstanceId) {
-            return store.values().stream()
-                    .filter(p -> flowInstanceId.equals(p.getFlowInstanceId()))
-                    .reduce((a, b) -> b) // last inserted
-                    .orElse(null);
-        }
-
-        @Override
-        public int insert(InstanceDataPO po) {
-            if (po.getId() == null) po.setId(idSeq.getAndIncrement());
-            store.put(key(po.getFlowInstanceId(), po.getInstanceDataId()), po);
-            return 1;
-        }
-
-        @Override
-        public int updateData(InstanceDataPO po) {
-            store.put(key(po.getFlowInstanceId(), po.getInstanceDataId()), po);
-            return 1;
-        }
-
-        @Override
-        public int insertOrUpdate(InstanceDataPO po) {
-            return po.getId() != null ? updateData(po) : insert(po);
-        }
-
-        private static String key(String flowInstanceId, String instanceDataId) {
-            return flowInstanceId + ":" + instanceDataId;
-        }
-    }
-
-    /** Simple in-memory store for flow instance mappings (used by CallActivity). */
-    static class InMemoryFlowInstanceMappingDAO implements FlowInstanceMappingDAO {
-        private final Map<String, List<FlowInstanceMappingPO>> store = new ConcurrentHashMap<>();
-
-        @Override
-        public List<FlowInstanceMappingPO> selectFlowInstanceMappingPOList(String flowInstanceId, String nodeInstanceId) {
-            return store.getOrDefault(key(flowInstanceId, nodeInstanceId), java.util.Collections.emptyList());
-        }
-
-        @Override
-        public FlowInstanceMappingPO selectFlowInstanceMappingPO(String flowInstanceId, String nodeInstanceId) {
-            List<FlowInstanceMappingPO> list = selectFlowInstanceMappingPOList(flowInstanceId, nodeInstanceId);
-            return list.isEmpty() ? null : list.get(list.size() - 1);
-        }
-
-        @Override
-        public int insert(FlowInstanceMappingPO po) {
-            store.computeIfAbsent(key(po.getFlowInstanceId(), po.getNodeInstanceId()), k -> new ArrayList<>()).add(po);
-            return 1;
-        }
-
-        @Override
-        public void updateType(String flowInstanceId, String nodeInstanceId, int type) {
-            FlowInstanceMappingPO po = selectFlowInstanceMappingPO(flowInstanceId, nodeInstanceId);
-            if (po != null) po.setType(type);
-        }
-
-        private static String key(String flowInstanceId, String nodeInstanceId) {
-            return flowInstanceId + ":" + nodeInstanceId;
-        }
-    }
-
-    /** Simple in-memory store for node instance logs. */
-    static class InMemoryNodeInstanceLogDAO implements NodeInstanceLogDAO {
-        private final List<NodeInstanceLogPO> logs = new ArrayList<>();
-
-        @Override
-        public int insert(NodeInstanceLogPO po) {
-            logs.add(po);
-            return 1;
-        }
-
-        @Override
-        public boolean insertList(List<NodeInstanceLogPO> list) {
-            logs.addAll(list);
-            return true;
-        }
-    }
 }
+
