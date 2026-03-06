@@ -6,11 +6,9 @@ import com.didiglobal.turbo.engine.common.RuntimeContext;
 import com.didiglobal.turbo.engine.entity.InstanceDataPO;
 import com.didiglobal.turbo.engine.model.InstanceData;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-@Component
 public class DataMergeNone extends DataMergeStrategy{
 
     @Override

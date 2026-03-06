@@ -15,13 +15,11 @@ import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Set;
 
-@Component
 public class BranchMergeJoinAll extends BranchMergeStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BranchMergeJoinAll.class);

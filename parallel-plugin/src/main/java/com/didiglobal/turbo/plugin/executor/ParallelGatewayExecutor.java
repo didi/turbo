@@ -2,11 +2,9 @@ package com.didiglobal.turbo.plugin.executor;
 
 import com.didiglobal.turbo.engine.model.FlowElement;
 import com.didiglobal.turbo.engine.model.InstanceData;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@Service
 public class ParallelGatewayExecutor extends AbstractGatewayExecutor {
 
     @Override

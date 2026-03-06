@@ -16,7 +16,7 @@ import com.didiglobal.turbo.engine.util.IdGenerator;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import com.didiglobal.turbo.engine.util.StrongUuidGenerator;
 import com.didiglobal.turbo.plugin.util.ExecutorUtil;
-import org.springframework.beans.BeanUtils;
+import com.didiglobal.turbo.engine.util.BeanUtil;
 
 import javax.annotation.Resource;
 
@@ -84,7 +84,7 @@ public abstract class BranchMergeStrategy {
 
     protected NodeInstancePO buildNodeInstancePO(RuntimeContext runtimeContext, NodeInstanceBO nodeInstanceBO) {
         NodeInstancePO nodeInstancePO = new NodeInstancePO();
-        BeanUtils.copyProperties(nodeInstanceBO, nodeInstancePO);
+        BeanUtil.copyProperties(nodeInstanceBO, nodeInstancePO);
         nodeInstancePO.setFlowDeployId(runtimeContext.getFlowDeployId());
         nodeInstancePO.setFlowInstanceId(runtimeContext.getFlowInstanceId());
         nodeInstancePO.setCaller(runtimeContext.getCaller());
@@ -99,7 +99,7 @@ public abstract class BranchMergeStrategy {
 
     protected NodeInstanceLogPO buildNodeInstanceLogPO(NodeInstancePO nodeInstancePO) {
         NodeInstanceLogPO nodeInstanceLogPO = new NodeInstanceLogPO();
-        BeanUtils.copyProperties(nodeInstancePO, nodeInstanceLogPO);
+        BeanUtil.copyProperties(nodeInstancePO, nodeInstanceLogPO);
         nodeInstanceLogPO.setId(null);
         nodeInstanceLogPO.setType(NodeInstanceType.EXECUTE);
         return nodeInstanceLogPO;
@@ -119,7 +119,7 @@ public abstract class BranchMergeStrategy {
 
     protected NodeInstanceLogPO buildCurrentNodeInstanceLogPO(NodeInstanceBO currentNodeInstance, String executeId, NodeInstancePO nodeInstancePO) {
         NodeInstanceLogPO nodeInstanceLogPO = new NodeInstanceLogPO();
-        BeanUtils.copyProperties(nodeInstancePO, nodeInstanceLogPO);
+        BeanUtil.copyProperties(nodeInstancePO, nodeInstanceLogPO);
         nodeInstanceLogPO.setId(null);
         nodeInstanceLogPO.setType(NodeInstanceType.EXECUTE);
         nodeInstanceLogPO.setNodeInstanceId(currentNodeInstance.getNodeInstanceId());
