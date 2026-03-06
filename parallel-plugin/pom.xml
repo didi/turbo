@@ -140,8 +140,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <source>17</source>
+                    <target>17</target>
                     <encoding>UTF-8</encoding>
                     <compilerArgs>
                         <arg>-parameters</arg>
@@ -178,7 +178,7 @@
                     <charset>UTF-8</charset>
                     <docencoding>UTF-8</docencoding>
                     <doclint>none</doclint>
-                    <source>21</source>
+                    <source>17</source>
                 </configuration>
                 <executions>
                     <execution>
