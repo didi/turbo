@@ -3,8 +3,11 @@ package com.didiglobal.turbo.plugin.dao;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import com.didiglobal.turbo.engine.plugin.CustomOperationHandler;
 import com.didiglobal.turbo.engine.util.MapToObjectConverter;
+import com.didiglobal.turbo.plugin.dao.mapper.JoinSourceMapper;
 import com.didiglobal.turbo.plugin.dao.mapper.ParallelNodeInstanceMapper;
+import com.didiglobal.turbo.plugin.entity.JoinSourcePO;
 import com.didiglobal.turbo.plugin.entity.ParallelNodeInstancePO;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.session.SqlSession;
@@ -12,6 +15,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,6 +23,19 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 public class ParallelNodeInstanceHandler implements CustomOperationHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ParallelNodeInstanceHandler.class);
+
+    /**
+     * Property key injected into NodeInstancePO.properties to carry additional
+     * source node keys for join-gateway nodes that have more than one incoming branch.
+     * Used by RuntimeProcessor.getHistoryElementList to reconstruct all incoming edges.
+     */
+    public static final String ADDITIONAL_SOURCE_NODE_KEYS = "additionalSourceNodeKeys";
+
+    private final JoinSourceMapper joinSourceMapper;
+
+    public ParallelNodeInstanceHandler(JoinSourceMapper joinSourceMapper) {
+        this.joinSourceMapper = joinSourceMapper;
+    }
 
     @Override
     public void handle(SqlCommandType commandType, MappedStatement mappedStatement, Object parameterObject, Object originalResult, SqlSessionFactory sqlSessionFactory) {
@@ -114,17 +131,58 @@ public class ParallelNodeInstanceHandler implements CustomOperationHandler {
     }
 
     private void handleSelect(Object originalResult, ParallelNodeInstanceMapper mapper) {
-        if (originalResult instanceof List) {
-            List<NodeInstancePO> nodeInstancePOList = (List<NodeInstancePO>) originalResult;
-            nodeInstancePOList.forEach(nodeInstancePO -> {
-                try {
-                    ParallelNodeInstancePO parallelNodeInstancePO = mapper.selectById(nodeInstancePO.getId());
-                    Map<String, Object> properties = MapToObjectConverter.convertObjectToMap(parallelNodeInstancePO);
-                    nodeInstancePO.getProperties().putAll(properties);
-                } catch (IllegalAccessException e) {
-                    LOGGER.error("Error converting ParallelNodeInstancePO to map. ID={}", nodeInstancePO.getId(), e);
+        if (!(originalResult instanceof List)) {
+            return;
+        }
+        List<NodeInstancePO> nodeInstancePOList = (List<NodeInstancePO>) originalResult;
+        nodeInstancePOList.forEach(nodeInstancePO -> {
+            // 1. Enrich with executeId from the parallel table
+            try {
+                ParallelNodeInstancePO parallelNodeInstancePO = mapper.selectById(nodeInstancePO.getId());
+                Map<String, Object> properties = MapToObjectConverter.convertObjectToMap(parallelNodeInstancePO);
+                nodeInstancePO.getProperties().putAll(properties);
+            } catch (IllegalAccessException e) {
+                LOGGER.error("Error converting ParallelNodeInstancePO to map. ID={}", nodeInstancePO.getId(), e);
+            }
+
+            // 2. For join nodes, enrich with all additional source node keys from ei_node_instance_join_source
+            //    so that getHistoryElementList can render every incoming branch's sequence-flow edge.
+            if (joinSourceMapper != null) {
+                enrichWithAdditionalSources(nodeInstancePO);
+            }
+        });
+    }
+
+    /**
+     * Queries ei_node_instance_join_source for all branches that arrived at this join node.
+     * If there are more sources than what is already stored in nodeInstancePO.sourceNodeKey,
+     * the extras are placed into properties[ADDITIONAL_SOURCE_NODE_KEYS] so that
+     * RuntimeProcessor.getHistoryElementList can emit all incoming sequence-flow edges.
+     */
+    private void enrichWithAdditionalSources(NodeInstancePO nodeInstancePO) {
+        String nodeInstanceId = nodeInstancePO.getNodeInstanceId();
+        if (StringUtils.isBlank(nodeInstanceId)) {
+            return;
+        }
+        try {
+            List<JoinSourcePO> joinSources = joinSourceMapper.selectByJoinNodeInstanceId(nodeInstanceId);
+            if (joinSources == null || joinSources.isEmpty()) {
+                return;
+            }
+            // Collect the source node keys that are NOT already in nodeInstancePO.sourceNodeKey
+            String primarySource = nodeInstancePO.getSourceNodeKey();
+            List<String> additionalKeys = new ArrayList<>();
+            for (JoinSourcePO joinSource : joinSources) {
+                String sourceKey = joinSource.getSourceNodeKey();
+                if (StringUtils.isNotBlank(sourceKey) && !sourceKey.equals(primarySource)) {
+                    additionalKeys.add(sourceKey);
                 }
-            });
+            }
+            if (!additionalKeys.isEmpty()) {
+                nodeInstancePO.put(ADDITIONAL_SOURCE_NODE_KEYS, additionalKeys);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error enriching join sources. nodeInstanceId={}", nodeInstanceId, e);
         }
     }
 
