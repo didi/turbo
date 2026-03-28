@@ -16,34 +16,64 @@
     </parent>
     <properties>
         <groovy.version>4.0.22</groovy.version>
-        <spring-boot-starter.version>3.2.2</spring-boot-starter.version>
+        <spring-boot.version>3.5.0</spring-boot.version>
+        <!-- Override to allow build with Java 17 in CI -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
+        <!-- Turbo Core (pure Java engine, no Spring) -->
+        <dependency>
+            <groupId>com.didiglobal.turbo</groupId>
+            <artifactId>turbo-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- MyBatis-Plus Spring integration -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+            <optional>true</optional>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -51,39 +81,20 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <!-- Datasource -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-3-starter</artifactId>
+            <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.uuid</groupId>
-            <artifactId>java-uuid-generator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-collections4</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
+
+        <!-- Standard Java annotations -->
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
@@ -92,6 +103,8 @@
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
         </dependency>
+
+        <!-- Test -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -99,5 +112,19 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

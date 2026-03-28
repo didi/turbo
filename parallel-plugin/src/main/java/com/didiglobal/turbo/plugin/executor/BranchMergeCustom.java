@@ -5,11 +5,9 @@ import com.didiglobal.turbo.engine.common.RuntimeContext;
 import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.plugin.common.ParallelErrorEnum;
-import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-@Component
 public class BranchMergeCustom extends BranchMergeStrategy{
 
     @Override

@@ -11,15 +11,13 @@ import com.didiglobal.turbo.engine.entity.NodeInstancePO;
 import com.didiglobal.turbo.engine.exception.ProcessException;
 import com.didiglobal.turbo.plugin.common.ParallelNodeInstanceStatus;
 import com.didiglobal.turbo.plugin.util.ExecutorUtil;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
+import com.didiglobal.turbo.engine.util.BeanUtil;
 
 import javax.annotation.Resource;
 
 import java.util.Collection;
 import java.util.List;
 
-@Service
 public class ParallelNodeInstanceService {
 
     @Resource
@@ -53,7 +51,7 @@ public class ParallelNodeInstanceService {
 
     protected NodeInstanceLogPO buildNodeInstanceLogPO(NodeInstancePO nodeInstancePO) {
         NodeInstanceLogPO nodeInstanceLogPO = new NodeInstanceLogPO();
-        BeanUtils.copyProperties(nodeInstancePO, nodeInstanceLogPO);
+        BeanUtil.copyProperties(nodeInstancePO, nodeInstanceLogPO);
         nodeInstanceLogPO.setId(null);
         nodeInstanceLogPO.setType(NodeInstanceType.EXECUTE);
         return nodeInstanceLogPO;

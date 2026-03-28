@@ -3,7 +3,6 @@ package com.didiglobal.turbo.plugin.executor;
 import com.didiglobal.turbo.plugin.common.ParallelErrorEnum;
 import com.didiglobal.turbo.plugin.common.MergeStrategy;
 import com.didiglobal.turbo.engine.exception.TurboException;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
@@ -12,7 +11,6 @@ import javax.annotation.Resource;
  *
  * @author didi
  */
-@Component
 public class MergeStrategyFactory {
 
     @Resource

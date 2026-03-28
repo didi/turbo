@@ -6,11 +6,9 @@ import com.didiglobal.turbo.engine.entity.InstanceDataPO;
 import com.didiglobal.turbo.engine.model.InstanceData;
 import com.didiglobal.turbo.engine.util.InstanceDataUtil;
 import com.google.common.collect.Maps;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-@Component
 public class DataMergeAll extends DataMergeStrategy{
 
     @Override

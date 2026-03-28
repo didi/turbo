@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.didiglobal.turbo</groupId>
+        <artifactId>turbo</artifactId>
+        <version>1.3.1</version>
+    </parent>
+
+    <artifactId>turbo-core</artifactId>
+    <version>1.3.1</version>
+    <packaging>jar</packaging>
+    <name>turbo-core</name>
+    <description>Turbo core engine - pure Java, no Spring dependencies</description>
+
+    <properties>
+        <groovy.version>4.0.22</groovy.version>
+        <mybatis-plus-annotation.version>3.5.5</mybatis-plus-annotation.version>
+        <druid.version>1.2.18</druid.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <!-- Override Java version to allow build with Java 17 in CI -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <!-- ============================================================ -->
+        <!-- Core utilities - no Spring -->
+        <!-- ============================================================ -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.uuid</groupId>
+            <artifactId>java-uuid-generator</artifactId>
+        </dependency>
+
+        <!-- MyBatis-Plus annotation only (not Spring-Boot starter) -->
+        <!-- Used by entity PO classes (@TableName, @TableId, @TableField) -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
+            <version>${mybatis-plus-annotation.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Druid connection pool (plugin SQL execution utility; not Spring-Boot starter) -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- Standard Java annotations (javax + jakarta) -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
+
+        <!-- MyBatis (needed for CustomOperationHandler interface) -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.15</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
